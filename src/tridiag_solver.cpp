@@ -3,9 +3,7 @@
 #include <armadillo>
 #include <cmath>
 
-using namespace arma;
-
-TriDiag::TriDiag(int N, double h, vec& x){
+TriDiag::TriDiag(int N, double h, arma::vec& x){
   m_N = N;
   m_h = h;
   m_h2 = h*h;
@@ -36,18 +34,18 @@ double TriDiag::relative_error(arma::vec& u_anal)
   /* Calculates log10 of relative error in all steps, and returns
   *  the maximum of these values.
   */
-  vec epsilon = zeros<vec>(m_N);
+  arma::vec epsilon = arma::zeros(m_N);
   for (int i=1; i<m_N-1; ++i){
-    epsilon[i] = log10( abs((m_u[i]-u_anal[i]) / u_anal[i]) );
+    epsilon[i] = std::log10( std::abs((m_u[i]-u_anal[i]) / u_anal[i]) );
 
   }
-  return max(epsilon);
+  return arma::max(epsilon);
 }
 
 void TriDiag::solve() {
-  m_u = zeros<vec>(m_N);          // Vector for numerical solution
-  m_b_twiddle = zeros<vec>(m_N);  // Vector with known points.
-  m_b_recip = zeros<vec>(m_N);    // Vector with 1/b.
+  m_u = arma::zeros(m_N);          // Vector for numerical solution
+  m_b_twiddle = arma::zeros(m_N);  // Vector with known points.
+  m_b_recip = arma::zeros(m_N);    // Vector with 1/b.
 
   // Generating values for input function
   for (int i = 0; i<m_N; ++i){
@@ -68,6 +66,6 @@ void TriDiag::solve() {
 }
 
 void TriDiag::save_data(std::string filename){
-  m_u.save(filename, raw_binary);
+  m_u.save(filename, arma::raw_binary);
   // m_u.save("u_special" + std::to_string(m_N) + ".txt", arma_ascii);
 }
