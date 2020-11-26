@@ -59,10 +59,6 @@ void TriDiag::solve() {
 
   special_forward();
   special_backward();
-
-  // setting known values:
-  m_u[0] = 0;
-  m_u[m_N-1] = 0;
 }
 
 void TriDiag::save_data(std::string filename){
