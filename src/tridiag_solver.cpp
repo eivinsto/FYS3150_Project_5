@@ -2,7 +2,6 @@
 #include <iostream>
 #include <armadillo>
 #include <cmath>
-#include "time.h"
 
 using namespace arma;
 
@@ -56,12 +55,6 @@ void TriDiag::solve() {
     m_b_twiddle[i] = m_h2*100*exp(-10*m_x[i]);
   }
 
-  // Declaring variables for CPU time measurement
-  std::clock_t start, finish;
-
-  // Start of special algorithm
-  start = clock();
-
   // Calculating 1/b where b is the diagonal elements.
   for (int i = 1; i < m_N+1; ++i) {
     m_b_recip[i-1] = i/(i + 1.0);
@@ -70,23 +63,17 @@ void TriDiag::solve() {
   special_forward();
   special_backward();
 
-  // Special algorithm finished
-  finish = clock();
-
   // setting known values:
   m_u[0] = 0;
   m_u[m_N-1] = 0;
-
-  // Print time spent
-  double special_cputime = ( double(finish - start)/CLOCKS_PER_SEC );
-  cout << "Special algorithm took " << special_cputime << " seconds to finish."
-       << endl;
 
   // Calculate maximum of log10 of relative error
   find_relative_error();
   cout << "Maximum (log10 of) relative error in special algorithm with " << m_N
        << " steps: " << m_eps << endl;
+}
 
-  m_u.save("../data/u_special" + std::to_string(m_N) + ".bin", raw_binary);
-  // u.save("u_special" + std::to_string(m_N) + ".txt", arma_ascii);
+void TriDiag::save_data(std::string filename){
+  m_u.save(filename, raw_binary);
+  // m_u.save("u_special" + std::to_string(m_N) + ".txt", arma_ascii);
 }

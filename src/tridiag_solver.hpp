@@ -4,6 +4,7 @@ class TriDiag{
 public:
   TriDiag(int, double, arma::vec&, arma::vec&);
   void solve();
+  void save_data(std::string);
 
 private:
   void special_forward();
