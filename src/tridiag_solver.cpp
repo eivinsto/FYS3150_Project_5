@@ -5,11 +5,10 @@
 
 using namespace arma;
 
-TriDiag::TriDiag(int N, double h, vec& u_anal, vec& x){
+TriDiag::TriDiag(int N, double h, vec& x){
   m_N = N;
   m_h = h;
   m_h2 = h*h;
-  m_u_anal = u_anal;
   m_x = x;
 }
 
@@ -32,17 +31,17 @@ void TriDiag::special_backward()
   }
 }
 
-void TriDiag::find_relative_error()
+double TriDiag::relative_error(arma::vec& u_anal)
 {
   /* Calculates log10 of relative error in all steps, and returns
   *  the maximum of these values.
   */
   vec epsilon = zeros<vec>(m_N);
   for (int i=1; i<m_N-1; ++i){
-    epsilon[i] = log10( abs((m_u[i]-m_u_anal[i]) / m_u_anal[i]) );
+    epsilon[i] = log10( abs((m_u[i]-u_anal[i]) / u_anal[i]) );
 
   }
-  m_eps = max(epsilon);
+  return max(epsilon);
 }
 
 void TriDiag::solve() {
@@ -66,11 +65,6 @@ void TriDiag::solve() {
   // setting known values:
   m_u[0] = 0;
   m_u[m_N-1] = 0;
-
-  // Calculate maximum of log10 of relative error
-  find_relative_error();
-  cout << "Maximum (log10 of) relative error in special algorithm with " << m_N
-       << " steps: " << m_eps << endl;
 }
 
 void TriDiag::save_data(std::string filename){
