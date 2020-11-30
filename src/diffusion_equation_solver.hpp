@@ -2,7 +2,7 @@
 
 class DiffusionEquationSolver{
 public:
-  DiffusionEquationSolver(int, double, double(*init_func)(double), std::string);
+  DiffusionEquationSolver(int, double, double(*)(double), std::string);
 
 private:
   void forward_euler_solve(int);
