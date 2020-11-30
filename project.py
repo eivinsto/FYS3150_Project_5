@@ -22,7 +22,7 @@ if __name__=="__main__":
     dt = 1e-5
     M = 1000
     write_limit = 100
-    method = "CrankNicholson"
+    method = "ForwardEuler"
     output_filename = data + "test.dat"
 
 

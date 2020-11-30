@@ -38,7 +38,7 @@ DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int wr
   if (m_method=="ForwardEuler"){
     m_coeff = 1-2*m_alpha;  // Precalculated coefficient for use in moving system in time
     // Print warning if solution will not converge
-    if (m_alpha <= 1/2){
+    if (m_alpha >= 1.0/2){
       std::cout << "Warning: Soution will not converge properly with this choice of parameters N and dt." << std::endl;
       std::cout << "They need to be such that dt/dx^2 < 1/2, where dx = 1/(N+1). Currently dt/dx^2 = " << m_alpha << std::endl;
     }
