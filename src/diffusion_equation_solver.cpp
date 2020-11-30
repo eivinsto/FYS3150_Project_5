@@ -5,28 +5,50 @@
 #include <cmath>
 #include <string>
 
-DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, double(*init_func)(double), std::string method, std::string filename){
-  m_N = N;
-  m_dt = dt;
-  m_dx = 1.0/double(N+1);
-  m_u = arma::zeros(m_N+1);
-  m_y = arma::zeros(m_N+1);
-  m_init_func = init_func;
-  m_alpha = m_dt/(m_dx*m_dx);
-  m_a = m_c = -m_alpha;
-  m_method = method;
-  m_output_filename = filename;
-  m_ofile.open(m_output_filename.c_str(), std::ofstream::out);
+/**
+* Constructor for the DiffusionEquationSolver class. This constructor assigns
+* the necessary member variables of the class.
+*
+* N - integer, amount of steps in length
+* dt - double, timestep
+* M - integer, amount of time steps
+* write_limit - integer, write results every <write_limit> timesteps
+* init_func - function, initial condition of the system (should return correct
+*             initial state u as u = init_func(x), where x is the length coordinate)
+* method - string, should contain the method of choice, can be either:
+*          ForwardEuler, BackwardEuler, or CrankNicholson.
+* filename - string, name of file to write results to
+*/
+DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int write_limit, double(*init_func)(double), std::string method, std::string filename){
+  m_N = N;                      // Amount of lengthsteps
+  m_dt = dt;                    // Timestep
+  m_dx = 1.0/double(N+1);       // Lengthstep
+  m_M = M;                      // Amount of timesteps
+  m_write_limit = write_limit;  // Write results every <write_limit> timesteps
+  m_u = arma::zeros(m_N+1);     // Vector containing solution
+  m_y = arma::zeros(m_N+1);     // Vector containing solution in previous timestep
+  m_init_func = init_func;      // Initial condition function
+  m_alpha = m_dt/(m_dx*m_dx);   // Coefficient for use in all algorithms
+  m_a = m_c = -m_alpha;         // Lower and upper diagonal elements of tridiagonal matrix
+  m_method = method;            // Which scheme to use when solving the system
+  m_output_filename = filename; // Name of file which results should be written to (output file)
+  m_ofile.open(m_output_filename.c_str(), std::ofstream::out);  // Ofstream object of output file
 
   // If-else block to determine value of m_b pertaining to the choice of method
   if (m_method=="ForwardEuler"){
-    m_coeff = 1-2*m_alpha;
+    m_coeff = 1-2*m_alpha;  // Precalculated coefficient for use in moving system in time
+    // Print warning if solution will not converge
+    if (m_alpha <= 1/2){
+      std::cout << "Warning: Soution will not converge properly with this choice of parameters N and dt." << std::endl;
+      std::cout << "They need to be such that dt/dx^2 < 1/2, where dx = 1/(N+1). Currently dt/dx^2 = " << m_alpha << std::endl;
+    }
   } else if (m_method=="BackwardEuler"){
-    m_b = 1 + 2*m_alpha;
+    m_b = 1 + 2*m_alpha;    // Diagonal elements of matrix
   } else if (m_method=="CrankNicholson"){
-    m_b = 2 + 2*m_alpha;
-    m_coeff = 2 - 2*m_alpha;
+    m_b = 2 + 2*m_alpha;    // Diagonal elements of matrix
+    m_coeff = 2 - 2*m_alpha;// Precalculated coefficient for use in moving system in time
   } else {
+    // Exit program if invalid method is specified
     std::cout << "Invalid method specified. When initiating DiffusionEquationSolver class, please specify one of the following allowed methods:" << std::endl;
     std::cout << "ForwardEuler" << std::endl;
     std::cout << "BackwardEuler" << std::endl;
@@ -136,9 +158,7 @@ void DiffusionEquationSolver::crank_nicholson_solve(){
   }
 }
 
-void DiffusionEquationSolver::solve(int M, int write_limit){
-  m_M = M;
-  m_write_limit = write_limit;
+void DiffusionEquationSolver::solve(){
   if (m_method=="ForwardEuler"){ forward_euler_solve(); }
   else if (m_method=="BackwardEuler"){ backward_euler_solve(); }
   else if (m_method=="CrankNicholson"){ crank_nicholson_solve(); }

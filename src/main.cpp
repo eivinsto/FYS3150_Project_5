@@ -12,8 +12,8 @@ int main(int argc, char** argv) {
   std::string method = argv[5];
   std::string output_filename = argv[6];
 
-  DiffusionEquationSolver system(N,dt,init_func,method,output_filename);
-  system.solve(M,write_limit);
+  DiffusionEquationSolver system(N,dt,M,write_limit,init_func,method,output_filename);
+  system.solve();
 
   return 0;
 }

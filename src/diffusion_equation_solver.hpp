@@ -4,8 +4,8 @@
 
 class DiffusionEquationSolver{
 public:
-  DiffusionEquationSolver(int, double, double(*)(double), std::string, std::string);
-  void solve(int, int);
+  DiffusionEquationSolver(int, double, int, int, double(*)(double), std::string, std::string);
+  void solve();
 
 private:
   void forward_euler_solve();
