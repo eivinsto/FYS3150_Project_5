@@ -1,15 +1,19 @@
 #include <armadillo>
+#include <iostream>
+#include <string>
 
 class DiffusionEquationSolver{
 public:
-  DiffusionEquationSolver(int, double, double(*)(double), std::string);
+  DiffusionEquationSolver(int, double, double(*)(double), std::string, std::string);
+  void solve(int, int);
 
 private:
-  void forward_euler_solve(int);
-  void backward_euler_solve(int);
-  void crank_nicholson_solve(int);
+  void forward_euler_solve();
+  void backward_euler_solve();
+  void crank_nicholson_solve();
   void tridiag();
   double (*m_init_func)(double);
+  void write_to_file();
 
   int m_N;
   arma::vec m_u;
@@ -20,4 +24,10 @@ private:
   double m_b;
   double m_c;
   arma::vec m_y;
+  std::string m_method;
+  double m_coeff;
+  std::string m_output_filename;
+  std::ofstream m_ofile;
+  int m_M;
+  int m_write_limit;
 };
