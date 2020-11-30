@@ -6,8 +6,9 @@
 DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, double(*init_func)(double), std::string method){
   m_N = N;
   m_dt = dt;
-  m_dx = 1/(N+2);
+  m_dx = 1/(N+1);
   m_u = arma::zeros(m_N+1);
+  m_y = arma::zeros(m_N+1);
   m_init_func = init_func;
   m_alpha = m_dt/(m_dx*m_dx);
   m_a = m_c = -m_alpha;
@@ -47,9 +48,6 @@ void DiffusionEquationSolver::tridiag(){
 
 // M amount of timesteps
 void DiffusionEquationSolver::forward_euler_solve(int M){
-  // Initialize vector to be used when updating
-  m_y = arma::zeros(m_N+1);
-
   // Set boundary conditions
   m_u(0) = m_u(m_N) = 0;
 
@@ -71,9 +69,6 @@ void DiffusionEquationSolver::forward_euler_solve(int M){
 
 // M amount of timesteps
 void DiffusionEquationSolver::backward_euler_solve(int M){
-  // Define vector to be used when updating
-  m_y = arma::zeros(m_N+1);
-
   // Set boundary conditions
   m_u(0) = m_u(m_N) = 0;
 
@@ -96,8 +91,6 @@ void DiffusionEquationSolver::backward_euler_solve(int M){
 }
 
 void DiffusionEquationSolver::crank_nicholson_solve(int M){
-  m_y = arma::zeros(m_N+1);
-
   // Set initial condition
   for (int i = 1; i < m_N; i++){
     m_u(i) = m_init_func(m_dx*i);
