@@ -2,7 +2,7 @@ CC := g++
 FLAGS := -Wall -Wextra -O3 -march=native -fopenmp
 DEBUG := -g
 LIBS := -larmadillo
-OFILES := tridiag_solver.o
+OFILES := tridiag_solver.o diffusion_equation_solver.o
 
 .PHONY: all clean benchmark test
 
@@ -18,6 +18,9 @@ main.o: main.cpp
 
 tridiag_solver.o: tridiag_solver.cpp
 	$(CC) $(FLAGS) $(DEBUG) tridiag_solver.cpp -c
+
+diffusion_equation_solver.o: diffusion_equation_solver.cpp
+	$(CC) $(FLAGS) $(DEBUG) diffusion_equation_solver.cpp -c
 
 
 # unittest program:
