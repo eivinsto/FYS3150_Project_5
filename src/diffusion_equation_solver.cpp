@@ -60,17 +60,29 @@ DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int wr
 
 }
 
+/**
+* Solves matrix-vector equation Au = y for u, when A is a tridiagonal matrix with
+* lower diagonal elements a, diagonal elements b, and upper diagonal elements c.
+* This member function takes no arguments but edits m_u so that it is moved one
+* step in time.
+*/
 void DiffusionEquationSolver::tridiag(){
+  // Precalculate factors to reduce necessary FLOPs
   double decomp_factor = m_a/m_b;
   double b_temp = m_b - m_c*decomp_factor;
+
+  // Initialize temporary vector for RHS of equation
   arma::vec b_twiddle = m_y;
 
+  // Update RHS elements
   for (int i = 1; i < m_N+1; i++){
     b_twiddle(i) -= b_twiddle(i-1)*decomp_factor;
   }
 
+  // Set boundary
   m_u(m_N) = b_twiddle(m_N)/b_temp;
 
+  // Find m_u 
   for (int i = m_N; i >= 1; i--){
     m_u(i-1) = (b_twiddle(i-1) - m_c*m_u(i))/b_temp;
   }
