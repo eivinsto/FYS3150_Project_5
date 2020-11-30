@@ -8,7 +8,7 @@
 DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, double(*init_func)(double), std::string method, std::string filename){
   m_N = N;
   m_dt = dt;
-  m_dx = 1/(N+1);
+  m_dx = 1.0/double(N+1);
   m_u = arma::zeros(m_N+1);
   m_y = arma::zeros(m_N+1);
   m_init_func = init_func;
