@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 # Retrieving working directories
 rootdir = os.getcwd()
 src = rootdir + "/src/"
+data = rootdir + "/data/"
 
 
 def build_cpp():
@@ -17,12 +18,21 @@ def build_cpp():
 
 
 if __name__=="__main__":
+    N = 100
+    dt = 1e-5
+    M = 1000
+    write_limit = 100
+    method = "CrankNicholson"
+    output_filename = data + "test.dat"
+
+
     build_cpp()
-    run(["./main.exe"],cwd=src)
+    run(["./main.exe", f"{N}", f"{dt}", f"{M}", f"{write_limit}", method,
+         output_filename],cwd=src)
 
     data = np.genfromtxt(rootdir + "/data/test.dat")
 
-    x = np.linspace(0,1,101)
+    x = np.linspace(0,1,N+1)
 
     f, ax = plt.subplots()
     for i in range(len(data[:,0])):

@@ -4,13 +4,13 @@
 
 double init_func(double);
 
-int main() {
-  int N = 100;
-  double dt = 1e-5;
-  std::string method = "ForwardEuler";
-  std::string output_filename = "../data/test.dat";
-  int M = 1000;
-  int write_limit = 100;
+int main(int argc, char** argv) {
+  int N = atoi(argv[1]);
+  double dt = atof(argv[2]);
+  int M = atoi(argv[3]);
+  int write_limit = atoi(argv[4]);
+  std::string method = argv[5];
+  std::string output_filename = argv[6];
 
   DiffusionEquationSolver system(N,dt,init_func,method,output_filename);
   system.solve(M,write_limit);
