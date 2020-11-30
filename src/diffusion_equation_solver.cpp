@@ -117,9 +117,10 @@ void DiffusionEquationSolver::crank_nicholson_solve(){
   // Iterate over timesteps
   for (int j = 1; j <= m_M; j++){
     // Set correct y
-    for (int i = 1; i <= m_N; i++){
+    for (int i = 1; i < m_N; i++){
       m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i-1) + m_u(i+1));
     }
+
     m_y(0) = m_y(m_N) = 0;
 
     // Use tridiagonal solver to move one step
