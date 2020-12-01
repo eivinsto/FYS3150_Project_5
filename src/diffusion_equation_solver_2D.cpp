@@ -22,61 +22,78 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   m_M = M;                                               // Amount of timesteps
   m_ofilename = ofilename;                               // Output filename
   m_ofile.open(m_ofilename.c_str(), std::ofstream::out); // Ofstream object of output file
-  m_h = 1/(m_N+1);                                       // Lengthstep
+  m_h = 1.0/double(m_N+1);                                       // Lengthstep
   m_alpha = m_dt/(m_h*m_h);                              // Coefficient for use in time integration
-  m_u = arma::zeros(m_N,m_N);                            // Solution matrix
-  m_q = arma::zeros(m_N,m_N);                            // Source term
+  m_u = arma::zeros<arma::mat>(m_N,m_N);                            // Solution matrix
+  m_q = arma::zeros<arma::mat>(m_N,m_N);                            // Source term
   m_write_limit = write_limit;                           // Write every <write_limit> timesteps
 }
 
 void DiffusionEquationSolver2D::jacobi(){
   // Generate dense matrix to store previous solution
-  arma::mat old(m_N,m_N); old.fill(1);
+  arma::mat old = arma::ones<arma::mat>(m_N,m_N);
+  double s = 0;
 
   // Boundary conditions
-  for (int i = 0; i < m_N; i++){
+  for (int i = 1; i < m_N-1; i++){
     m_u(0,i) = m_x_lb(i*m_h);
     m_u(m_N-1,i) = m_x_ub(i*m_h);
     m_u(i,0) = m_y_lb(i*m_h);
     m_u(i,m_N-1) = m_y_ub(i*m_h);
   }
+  m_u(0,0) = m_x_lb(0);
+  m_u(m_N-1,m_N-1) = m_x_ub(1);
+  m_u(m_N-1,0) = m_y_ub(1);
+  m_u(0,m_N-1) = m_y_lb(0);
 
   // Iterative solver
   for (int k = 0; k < m_maxiter; k++){
     for (int i = 1; i < m_N-1; i++){
       for (int j = 1; j < m_N-1; j++){
-          m_u(i,j) = m_dt*m_q(i,j) + old(i,j) + m_alpha*(old(i+1,j) + old(i,j+1)
-                      - 4*old(i,j) + old(i-1,j) + old(i,j-1));
+        m_u(i,j) = m_u(i,j) + m_alpha*(old(i+1,j) + old(i,j+1)
+                    - 4.0*old(i,j) + old(i-1,j) + old(i,j-1));
       }
     }
 
     // Check convergence
-    double s = 0;
+    s = 0;
     double term = 0;
     for (int i = 0; i < m_N; i++){
       for (int j = 0; j < m_N; j++){
         term = old(i,j) - m_u(i,j);
         s += term*term;
+
+        // Overwrite old solution
+        old(i,j) = m_u(i,j);
       }
     }
     if (std::sqrt(s) < m_abstol){
       // Return if solution has converged
       return;
     }
-
-    // Overwrite old solution
-    old = m_u;
   }
   // Output error/warning if solution did not converge within set number of max iterations
   std::cerr << "Solution using Jacobi iterative method did not converge properly within set limit of maximum iterations." << std::endl;
+  std::cout << "Final sum: " << s << std::endl;
 }
 
 void DiffusionEquationSolver2D::solve(){
+  // Set initial condition
+  for (int i = 0; i < m_N; i++){
+    for (int j = 0; j < m_N; j++){
+      m_u(i,j) = m_init_func(i*m_h,j*m_h);
+    }
+  }
+
   for (m_t = 0; m_t < m_M; m_t++){
     // Set up source term here TODO
 
     // Move one step in time
     jacobi();
+
+    if (m_t%m_write_limit == 0){
+      write_to_file();
+    }
   }
 }
 
@@ -85,6 +102,6 @@ void DiffusionEquationSolver2D::write_to_file(){
     for (int j = 0; j < m_N; j++){
       m_ofile << std::setw(15) << std::setprecision(8) << m_u(i,j) << ' ';
     }
-    m_ofile << std::setw(15) << std::setprecision(8) << m_t*m_dt << std::endl;
   }
+  m_ofile << std::setw(15) << std::setprecision(8) << m_t*m_dt << std::endl;
 }

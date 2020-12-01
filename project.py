@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # Retrieving working directories
 rootdir = os.getcwd()
 src = rootdir + "/src/"
-data = rootdir + "/data/"
+datadir = rootdir + "/data/"
 
 
 def build_cpp():
@@ -18,17 +18,20 @@ def build_cpp():
 
 
 if __name__=="__main__":
+    """
+    # 1D sample run
+
     N = 100
     dt = 1e-5
     M = 100000
     write_limit = 10000
     method = "ForwardEuler"
-    output_filename = data + "test.dat"
+    output_filename = datadir + "test.dat"
     u_b = 1
     l_b = 0
 
     build_cpp()
-    run(["./main.exe", f"{N}", f"{dt}", f"{M}", f"{write_limit}", method,
+    run(["./main.exe", "1D", f"{N}", f"{dt}", f"{M}", f"{write_limit}", method,
          output_filename, f"{u_b}",f"{l_b}"],cwd=src)
 
     data = np.genfromtxt(rootdir + "/data/test.dat")
@@ -42,4 +45,42 @@ if __name__=="__main__":
     ax.legend()
     ax.grid()
 
+    plt.show()
+    """
+
+    # 2D sample run
+
+    N = 10
+    dt = 1e-4
+    M = 1000
+    write_limit = 100
+    output_filename = datadir + "test.dat"
+
+    build_cpp()
+    run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
+         output_filename], cwd=src)
+
+    data = np.genfromtxt(datadir + "test.dat")
+    print(data)
+
+    # Reformat data
+    tsteps = int(M/write_limit)
+    reformatted_data = np.zeros([tsteps,N,N])
+    t = np.zeros(tsteps)
+    h = 1/(N+1)
+    x = np.linspace(0,1,N)
+    y = np.linspace(0,1,N)
+    X,Y = np.meshgrid(x,y)
+    for k in range(tsteps):
+        for i in range(1,N):
+            reformatted_data[k,i,:] = data[k,(i-1)*N:i*N]
+        t[k] = data[k,-1]
+
+    f, (ax1,ax2) = plt.subplots(1,2)
+    ax1.contour(X,Y,reformatted_data[0,:,:])
+    ax1.set_title(f"t = {t[0]}")
+    ax1.grid()
+    ax2.contour(X,Y,reformatted_data[-1,:,:])
+    ax2.set_title(f"t = {t[-1]}")
+    ax2.grid()
     plt.show()
