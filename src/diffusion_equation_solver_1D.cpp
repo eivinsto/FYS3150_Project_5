@@ -56,12 +56,12 @@ DiffusionEquationSolver1D::DiffusionEquationSolver1D(int N, double dt, int M, in
     m_coeff = 2 - 2*m_alpha;// Precalculated coefficient for use in moving system in time
   } else {
     // Exit program if invalid method is specified
-    std::cout << "Invalid method specified. When initiating DiffusionEquationSolver1D class, please specify one of the following allowed methods:" << std::endl;
-    std::cout << "ForwardEuler" << std::endl;
-    std::cout << "BackwardEuler" << std::endl;
-    std::cout << "CrankNicholson" << std::endl;
-    std::cout << "--------" << std::endl;
-    std::cout << "Your input: " << m_method << std::endl;
+    std::cerr << "Invalid method specified. When initiating DiffusionEquationSolver1D class, please specify one of the following allowed methods:" << std::endl;
+    std::cerr << "ForwardEuler" << std::endl;
+    std::cerr << "BackwardEuler" << std::endl;
+    std::cerr << "CrankNicholson" << std::endl;
+    std::cerr << "--------" << std::endl;
+    std::cerr << "Your input: " << m_method << std::endl;
     std::exit(0);
   }
 
@@ -192,7 +192,7 @@ void DiffusionEquationSolver1D::solve(){
   else if (m_method=="BackwardEuler"){ backward_euler_solve(); }
   else if (m_method=="CrankNicholson"){ crank_nicholson_solve(); }
   else {
-    std::cout << "Method specification does not match any implemented methods. Error occured during call to solve()." << std::endl;
+    std::cerr << "Method specification does not match any implemented methods. Error occured during call to solve()." << std::endl;
     std::exit(0);
   }
 }
