@@ -18,8 +18,12 @@
 * method - string, should contain the method of choice, can be either:
 *          ForwardEuler, BackwardEuler, or CrankNicholson.
 * filename - string, name of file to write results to
+* u_b - double, lower boundary value
+* l_b - lower boundary value
 */
-DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int write_limit, double(*init_func)(double), std::string method, std::string filename){
+DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int write_limit,
+                                                 double(*init_func)(double), std::string method,
+                                                 std::string filename, double u_b, double l_b){
   m_N = N;                      // Amount of lengthsteps
   m_dt = dt;                    // Timestep
   m_dx = 1.0/double(N+1);       // Lengthstep
@@ -33,6 +37,8 @@ DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int wr
   m_method = method;            // Which scheme to use when solving the system
   m_output_filename = filename; // Name of file which results should be written to (output file)
   m_ofile.open(m_output_filename.c_str(), std::ofstream::out);  // Ofstream object of output file
+  m_ub = u_b;                   // Upper boundary value
+  m_lb = l_b;                   // Lower boundary value
 
   // If-else block to determine value of m_b pertaining to the choice of method
   if (m_method=="ForwardEuler"){
@@ -82,7 +88,7 @@ void DiffusionEquationSolver::tridiag(){
   // Set boundary
   m_u(m_N) = b_twiddle(m_N)/b_temp;
 
-  // Find m_u 
+  // Find m_u
   for (int i = m_N; i >= 1; i--){
     m_u(i-1) = (b_twiddle(i-1) - m_c*m_u(i))/b_temp;
   }
@@ -91,7 +97,8 @@ void DiffusionEquationSolver::tridiag(){
 // M amount of timesteps
 void DiffusionEquationSolver::forward_euler_solve(){
   // Set boundary conditions
-  m_u(0) = m_u(m_N) = 0;
+  m_u(0) = m_lb;
+  m_u(m_N) = m_ub;
 
   // Set initial condition
   for (int i = 1; i<m_N; i++){
@@ -116,13 +123,15 @@ void DiffusionEquationSolver::forward_euler_solve(){
 
 // M amount of timesteps
 void DiffusionEquationSolver::backward_euler_solve(){
-  // Set boundary conditions
-  m_u(0) = m_u(m_N) = 0;
 
   // Set initial condition
   for (int i = 1; i<m_N; i++){
     m_u(i) = m_y(i) = m_init_func(m_dx*i);
   }
+
+  // Set boundary conditions
+  m_u(0) = m_lb;
+  m_u(m_N) = m_ub;
 
   // Iterate over timesteps
   for (int j = 1; j <= m_M; j++){
@@ -130,7 +139,8 @@ void DiffusionEquationSolver::backward_euler_solve(){
     tridiag();
 
     // Set boundary conditions
-    m_u(0) = m_u(m_N) = 0;
+    m_u(0) = m_lb;
+    m_u(m_N) = m_ub;
 
     // Update previous solution
     m_y = m_u;
@@ -148,6 +158,10 @@ void DiffusionEquationSolver::crank_nicholson_solve(){
     m_u(i) = m_init_func(m_dx*i);
   }
 
+  // Set boundary conditions
+  m_u(0) = m_lb;
+  m_u(m_N) = m_ub;
+
   // Iterate over timesteps
   for (int j = 1; j <= m_M; j++){
     // Set correct y
@@ -155,13 +169,15 @@ void DiffusionEquationSolver::crank_nicholson_solve(){
       m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i-1) + m_u(i+1));
     }
 
-    m_y(0) = m_y(m_N) = 0;
+    m_y(0) = m_lb;
+    m_y(m_N) = m_ub;
 
     // Use tridiagonal solver to move one step
     tridiag();
 
     // Set boundary conditions
-    m_u(0) = m_u(m_N) = 0;
+    m_u(0) = m_lb;
+    m_u(m_N) = m_ub;
 
     // Write to file
     if (j%m_write_limit==0){

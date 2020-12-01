@@ -11,13 +11,16 @@ int main(int argc, char** argv) {
   int write_limit = atoi(argv[4]);
   std::string method = argv[5];
   std::string output_filename = argv[6];
+  double u_b = atof(argv[7]);
+  double l_b = atof(argv[8]);
 
-  DiffusionEquationSolver system(N,dt,M,write_limit,init_func,method,output_filename);
+
+  DiffusionEquationSolver system(N,dt,M,write_limit,init_func,method,output_filename,u_b,l_b);
   system.solve();
 
   return 0;
 }
 
 double init_func(double x){
-  return 100*std::exp(-10*x);
+  return std::exp(x);
 }

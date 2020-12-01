@@ -4,7 +4,8 @@
 
 class DiffusionEquationSolver{
 public:
-  DiffusionEquationSolver(int, double, int, int, double(*)(double), std::string, std::string);
+  DiffusionEquationSolver(int, double, int, int, double(*)(double), std::string,
+                          std::string, double, double);
   void solve();
 
 private:
@@ -30,4 +31,6 @@ private:
   std::ofstream m_ofile;
   int m_M;
   int m_write_limit;
+  double m_lb;
+  double m_ub;
 };

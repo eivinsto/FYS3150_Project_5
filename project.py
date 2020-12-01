@@ -20,15 +20,16 @@ def build_cpp():
 if __name__=="__main__":
     N = 100
     dt = 1e-5
-    M = 1000
-    write_limit = 100
+    M = 100000
+    write_limit = 10000
     method = "ForwardEuler"
     output_filename = data + "test.dat"
-
+    u_b = 1
+    l_b = 0
 
     build_cpp()
     run(["./main.exe", f"{N}", f"{dt}", f"{M}", f"{write_limit}", method,
-         output_filename],cwd=src)
+         output_filename, f"{u_b}",f"{l_b}"],cwd=src)
 
     data = np.genfromtxt(rootdir + "/data/test.dat")
 
