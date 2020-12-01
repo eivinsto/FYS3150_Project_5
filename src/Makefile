@@ -2,7 +2,7 @@ CC := g++
 FLAGS := -Wall -Wextra -O3 -march=native -fopenmp
 DEBUG := -g
 LIBS := -larmadillo
-OFILES := diffusion_equation_solver_1D.o
+OFILES := diffusion_equation_solver_1D.o diffusion_equation_solver_2D.o
 
 .PHONY: all clean benchmark test
 
@@ -19,6 +19,8 @@ main.o: main.cpp
 diffusion_equation_solver_1D.o: diffusion_equation_solver_1D.cpp
 	$(CC) $(FLAGS) $(DEBUG) diffusion_equation_solver_1D.cpp -c
 
+diffusion_equation_solver_2D.o: diffusion_equation_solver_2D.cpp
+	$(CC) $(FLAGS) $(DEBUG) diffusion_equation_solver_2D.cpp -c
 
 # unittest program:
 test: test_main.exe
