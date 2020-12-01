@@ -2,9 +2,9 @@
 #include <iostream>
 #include <string>
 
-class DiffusionEquationSolver{
+class DiffusionEquationSolver1D{
 public:
-  DiffusionEquationSolver(int, double, int, int, double(*)(double), std::string,
+  DiffusionEquationSolver1D(int, double, int, int, double(*)(double), std::string,
                           std::string, double, double);
   void solve();
 

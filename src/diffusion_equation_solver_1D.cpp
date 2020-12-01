@@ -1,4 +1,4 @@
-#include "diffusion_equation_solver.hpp"
+#include "diffusion_equation_solver_1D.hpp"
 #include <iostream>
 #include <iomanip>
 #include <armadillo>
@@ -6,7 +6,7 @@
 #include <string>
 
 /**
-* Constructor for the DiffusionEquationSolver class. This constructor assigns
+* Constructor for the DiffusionEquationSolver1D class. This constructor assigns
 * the necessary member variables of the class.
 *
 * N - integer, amount of steps in length
@@ -21,7 +21,7 @@
 * u_b - double, lower boundary value
 * l_b - lower boundary value
 */
-DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int write_limit,
+DiffusionEquationSolver1D::DiffusionEquationSolver1D(int N, double dt, int M, int write_limit,
                                                  double(*init_func)(double), std::string method,
                                                  std::string filename, double u_b, double l_b){
   m_N = N;                      // Amount of lengthsteps
@@ -55,7 +55,7 @@ DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int wr
     m_coeff = 2 - 2*m_alpha;// Precalculated coefficient for use in moving system in time
   } else {
     // Exit program if invalid method is specified
-    std::cout << "Invalid method specified. When initiating DiffusionEquationSolver class, please specify one of the following allowed methods:" << std::endl;
+    std::cout << "Invalid method specified. When initiating DiffusionEquationSolver1D class, please specify one of the following allowed methods:" << std::endl;
     std::cout << "ForwardEuler" << std::endl;
     std::cout << "BackwardEuler" << std::endl;
     std::cout << "CrankNicholson" << std::endl;
@@ -72,7 +72,7 @@ DiffusionEquationSolver::DiffusionEquationSolver(int N, double dt, int M, int wr
 * This member function takes no arguments but edits m_u so that it is moved one
 * step in time.
 */
-void DiffusionEquationSolver::tridiag(){
+void DiffusionEquationSolver1D::tridiag(){
   // Precalculate factors to reduce necessary FLOPs
   double decomp_factor = m_a/m_b;
   double b_temp = m_b - m_c*decomp_factor;
@@ -95,7 +95,7 @@ void DiffusionEquationSolver::tridiag(){
 }
 
 // M amount of timesteps
-void DiffusionEquationSolver::forward_euler_solve(){
+void DiffusionEquationSolver1D::forward_euler_solve(){
   // Set boundary conditions
   m_u(0) = m_lb;
   m_u(m_N) = m_ub;
@@ -122,7 +122,7 @@ void DiffusionEquationSolver::forward_euler_solve(){
 }
 
 // M amount of timesteps
-void DiffusionEquationSolver::backward_euler_solve(){
+void DiffusionEquationSolver1D::backward_euler_solve(){
 
   // Set initial condition
   for (int i = 1; i<m_N; i++){
@@ -152,7 +152,7 @@ void DiffusionEquationSolver::backward_euler_solve(){
   }
 }
 
-void DiffusionEquationSolver::crank_nicholson_solve(){
+void DiffusionEquationSolver1D::crank_nicholson_solve(){
   // Set initial condition
   for (int i = 1; i < m_N; i++){
     m_u(i) = m_init_func(m_dx*i);
@@ -186,7 +186,7 @@ void DiffusionEquationSolver::crank_nicholson_solve(){
   }
 }
 
-void DiffusionEquationSolver::solve(){
+void DiffusionEquationSolver1D::solve(){
   if (m_method=="ForwardEuler"){ forward_euler_solve(); }
   else if (m_method=="BackwardEuler"){ backward_euler_solve(); }
   else if (m_method=="CrankNicholson"){ crank_nicholson_solve(); }
@@ -196,7 +196,7 @@ void DiffusionEquationSolver::solve(){
   }
 }
 
-void DiffusionEquationSolver::write_to_file(){
+void DiffusionEquationSolver1D::write_to_file(){
   for (int i = 0; i<=m_N; i++){
     m_ofile << std::setw(15) << std::setprecision(8) << m_u(i) << ' ';
   }

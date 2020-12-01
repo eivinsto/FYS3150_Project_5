@@ -1,4 +1,4 @@
-#include "diffusion_equation_solver.hpp"
+#include "diffusion_equation_solver_1D.hpp"
 #include <cmath>
 #include <string>
 
@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
   double l_b = atof(argv[8]);
 
 
-  DiffusionEquationSolver system(N,dt,M,write_limit,init_func,method,output_filename,u_b,l_b);
+  DiffusionEquationSolver1D system(N,dt,M,write_limit,init_func,method,output_filename,u_b,l_b);
   system.solve();
 
   return 0;
