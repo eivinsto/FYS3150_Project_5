@@ -84,33 +84,18 @@ void DiffusionEquationSolver2D::solve(){
       m_u(i,j) = m_init_func(i*m_h,j*m_h);
     }
   }
-  // TEMPORARY TO MAKE SURE IT WORKS AS IT SHOULD (should be ONLY in jacobi() function)
-  // Boundary conditions
-  for (int i = 1; i < m_N-1; i++){
-    m_u(0,i) = m_x_lb(i*m_h);
-    m_u(m_N-1,i) = m_x_ub(i*m_h);
-    m_u(i,0) = m_y_lb(i*m_h);
-    m_u(i,m_N-1) = m_y_ub(i*m_h);
-  }
-  m_u(0,0) = m_x_lb(0);
-  m_u(m_N-1,m_N-1) = m_x_ub(1);
-  m_u(m_N-1,0) = m_y_ub(1);
-  m_u(0,m_N-1) = m_y_lb(0);
-
 
   // Time iteration
   for (m_t = 0; m_t < m_M; m_t++){
     m_q = m_u;
 
-
-    // TEMPORARY PLACEMENT TO CHECK BOUNDARY CONDITIONS (should be after call to jacobi())
-    if (m_t%m_write_limit == 0){
-      write_to_file();
-    }
-
     // Move one step in time
     jacobi();
 
+    // Write to file
+    if (m_t%m_write_limit == 0){
+      write_to_file();
+    }
   }
 }
 

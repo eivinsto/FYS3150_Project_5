@@ -78,10 +78,10 @@ if __name__=="__main__":
     print(x)
 
     f, (ax1,ax2) = plt.subplots(1,2)
-    c1 = ax1.pcolor(Y,X,reformatted_data[0,:,:])
+    c1 = ax1.contour(Y,X,reformatted_data[0,:,:])
     ax1.set_title(f"t = {t[0]}")
     ax1.grid()
-    c2 = ax2.pcolor(Y,X,reformatted_data[-1,:,:])
+    c2 = ax2.contour(Y,X,reformatted_data[-1,:,:])
     ax2.set_title(f"t = {t[-1]}")
     ax2.grid()
     f.colorbar(c1,ax=ax1)
