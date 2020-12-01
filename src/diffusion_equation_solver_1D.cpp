@@ -4,6 +4,7 @@
 #include <armadillo>
 #include <cmath>
 #include <string>
+#include <fstream>
 
 /**
 * Constructor for the DiffusionEquationSolver1D class. This constructor assigns

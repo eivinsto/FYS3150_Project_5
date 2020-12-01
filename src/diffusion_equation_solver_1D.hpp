@@ -1,6 +1,7 @@
 #include <armadillo>
 #include <iostream>
 #include <string>
+#include <fstream>
 
 class DiffusionEquationSolver1D{
 public:
