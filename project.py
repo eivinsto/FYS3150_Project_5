@@ -50,9 +50,9 @@ if __name__=="__main__":
 
     # 2D sample run
 
-    N = 10
+    N = 11
     dt = 1e-4
-    M = 1000
+    M = 1100
     write_limit = 100
     output_filename = datadir + "test.dat"
 
@@ -61,7 +61,6 @@ if __name__=="__main__":
          output_filename], cwd=src)
 
     data = np.genfromtxt(datadir + "test.dat")
-    print(data)
 
     # Reformat data
     tsteps = int(M/write_limit)
@@ -72,15 +71,19 @@ if __name__=="__main__":
     y = np.linspace(0,1,N)
     X,Y = np.meshgrid(x,y)
     for k in range(tsteps):
-        for i in range(1,N):
-            reformatted_data[k,i,:] = data[k,(i-1)*N:i*N]
+        for i in range(N):
+            reformatted_data[k,i,:] = data[k,i*N:(i+1)*N]
         t[k] = data[k,-1]
 
+    print(x)
+
     f, (ax1,ax2) = plt.subplots(1,2)
-    ax1.contour(X,Y,reformatted_data[0,:,:])
+    c1 = ax1.pcolor(Y,X,reformatted_data[0,:,:])
     ax1.set_title(f"t = {t[0]}")
     ax1.grid()
-    ax2.contour(X,Y,reformatted_data[-1,:,:])
+    c2 = ax2.pcolor(Y,X,reformatted_data[-1,:,:])
     ax2.set_title(f"t = {t[-1]}")
     ax2.grid()
+    f.colorbar(c1,ax=ax1)
+    f.colorbar(c2,ax=ax2)
     plt.show()

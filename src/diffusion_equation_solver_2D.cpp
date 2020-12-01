@@ -27,6 +27,7 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   m_u = arma::zeros<arma::mat>(m_N,m_N);                            // Solution matrix
   m_q = arma::zeros<arma::mat>(m_N,m_N);                            // Source term
   m_write_limit = write_limit;                           // Write every <write_limit> timesteps
+  m_alpha_coeff = 1.0/(1.0+4.0*m_alpha);
 }
 
 void DiffusionEquationSolver2D::jacobi(){
@@ -50,8 +51,7 @@ void DiffusionEquationSolver2D::jacobi(){
   for (int k = 0; k < m_maxiter; k++){
     for (int i = 1; i < m_N-1; i++){
       for (int j = 1; j < m_N-1; j++){
-        m_u(i,j) = m_u(i,j) + m_alpha*(old(i+1,j) + old(i,j+1)
-                    - 4.0*old(i,j) + old(i-1,j) + old(i,j-1));
+        m_u(i,j) = m_alpha_coeff*(m_alpha*(old(i+1,j) + old(i-1,j) + old(i,j-1) + old(i,j+1)) + m_dt*m_q(i,j));
       }
     }
 
@@ -84,16 +84,33 @@ void DiffusionEquationSolver2D::solve(){
       m_u(i,j) = m_init_func(i*m_h,j*m_h);
     }
   }
+  // TEMPORARY TO MAKE SURE IT WORKS AS IT SHOULD (should be ONLY in jacobi() function)
+  // Boundary conditions
+  for (int i = 1; i < m_N-1; i++){
+    m_u(0,i) = m_x_lb(i*m_h);
+    m_u(m_N-1,i) = m_x_ub(i*m_h);
+    m_u(i,0) = m_y_lb(i*m_h);
+    m_u(i,m_N-1) = m_y_ub(i*m_h);
+  }
+  m_u(0,0) = m_x_lb(0);
+  m_u(m_N-1,m_N-1) = m_x_ub(1);
+  m_u(m_N-1,0) = m_y_ub(1);
+  m_u(0,m_N-1) = m_y_lb(0);
 
+
+  // Time iteration
   for (m_t = 0; m_t < m_M; m_t++){
-    // Set up source term here TODO
+    m_q = m_u;
+
+
+    // TEMPORARY PLACEMENT TO CHECK BOUNDARY CONDITIONS (should be after call to jacobi())
+    if (m_t%m_write_limit == 0){
+      write_to_file();
+    }
 
     // Move one step in time
     jacobi();
 
-    if (m_t%m_write_limit == 0){
-      write_to_file();
-    }
   }
 }
 
