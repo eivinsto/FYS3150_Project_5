@@ -51,7 +51,7 @@ void DiffusionEquationSolver2D::jacobi(){
   for (int k = 0; k < m_maxiter; k++){
     for (int i = 1; i < m_N-1; i++){
       for (int j = 1; j < m_N-1; j++){
-        m_u(i,j) = m_alpha_coeff*(m_alpha*(old(i+1,j) + old(i-1,j) + old(i,j-1) + old(i,j+1)) + m_dt*m_q(i,j));
+        m_u(i,j) = m_alpha_coeff*(m_alpha*(old(i+1,j) + old(i-1,j) + old(i,j-1) + old(i,j+1)) + m_q(i,j));
       }
     }
 
