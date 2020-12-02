@@ -144,6 +144,42 @@ Abstract
 
 \section{Formalism} \label{sec:formalism}
 
+\subsection{Diffusion equation} \label{sec:formalism_diffusion_equation}
+
+By scaling variables, we can write the general diffusion equation as follows:
+
+\begin{align*}
+\nabla^2 u(\vec{r},t) = \frac{\partial u(\vec{r},t)}{\partial t} \, , \numberthis \label{eq:3D_diff_eq}
+\end{align*}
+
+where $\nabla$ is the spatial derivative, $\vec{r}$ a vector containing spatial coordinates, $t$ is time, and what $u$ is depends on which system we are looking it in particular. This equation can be used to model several physical phenomena, such as mixing of particles, and perhaps most famously heat conductance through the heat equation:
+
+\begin{align*}
+\frac{\kappa}{C \rho} \nabla^2 T(\vec{r},t) = \frac{\partial T (\vec{r},t)}{\partial t} \, , \numberthis \label{eq:heat_equation_general}
+\end{align*}
+
+where $\kappa$ is the thermal conductivity, $C$ is the specific heat, $\rho$ is the density of the material, and $T$ is the temperature gradient. This is an equation that we will use, and so we need to scale it. Firstly we can define the diffusion constant $D = C\rho/\kappa$. This means we can write the heat equation as:
+
+\begin{align*}
+\nabla^2 T(\vec{r},t) &= D \frac{\partial T(\vec{r},t)}{\partial t}
+\end{align*}
+
+Now we define the spatial coordinate vector $\vec{r} = \alpha \hat{\vec{r}}$, where $\alpha$ is an arbitrary constant. Substituting this affects the spatial derivative such that the equation now reads:
+
+\begin{align*}
+\frac{1}{\alpha^2} \nabla^2 T(\vec{r},t) &= D \frac{\partial T(\vec{r},t)}{\partial t}
+\end{align*}  
+
+As $\alpha$ is an arbitrary constant we can now choose it such that $D = 1/\alpha^2$. The equation then reads:
+
+\begin{align*}
+\nabla^2 T(\vec{r},t) &= \frac{\partial T(\vec{r},t)}{\partial t} \, ,
+\end{align*}
+
+which is just the general diffusion equation we have listed earlier, with $u$ exchanged for $T$. In other words, if we can solve the general diffusion equation, we can also solve the heat equation.
+
+When solving the diffusion equation numerically it is common to scale the spatial coordinates so that $x,y,z \in [0,1]$ if we are using cartesian coordinates. As long as we are looking at a square system, this does not cause any problems for the method outlined earlier, as we can easily model other choices of limits by adding a constant to the spatial coordinate and correctly choosing $\alpha$.  
+
 \subsection{Euler methods} \label{sec:formalism_euler_methods}
 
 
