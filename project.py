@@ -71,17 +71,15 @@ if __name__=="__main__":
     y = np.linspace(0,1,N)
     X,Y = np.meshgrid(x,y)
     for k in range(tsteps):
-        for i in range(N):
-            reformatted_data[k,i,:] = data[k,i*N:(i+1)*N]
+        for ix in range(N):
+            reformatted_data[k,:,ix] = data[k,ix*N:(ix+1)*N]
         t[k] = data[k,-1]
 
-    print(x)
-
     f, (ax1,ax2) = plt.subplots(1,2)
-    c1 = ax1.contour(Y,X,reformatted_data[0,:,:])
+    c1 = ax1.contour(X,Y,reformatted_data[0,:,:])
     ax1.set_title(f"t = {t[0]}")
     ax1.grid()
-    c2 = ax2.contour(Y,X,reformatted_data[-1,:,:])
+    c2 = ax2.contour(X,Y,reformatted_data[-1,:,:])
     ax2.set_title(f"t = {t[-1]}")
     ax2.grid()
     f.colorbar(c1,ax=ax1)
