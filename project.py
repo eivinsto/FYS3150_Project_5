@@ -18,6 +18,7 @@ def build_cpp():
 def import_data_2D(file,tsteps,N):
     data = np.genfromtxt(file)
     reformatted_data = np.zeros([tsteps,N,N])
+    t = np.zeros(tsteps)
     for k in range(tsteps):
         for ix in range(N):
             reformatted_data[k,:,ix] = data[k,ix*N:(ix+1)*N]
@@ -61,10 +62,10 @@ if __name__=="__main__":
 
     # 2D sample run
 
-    N = 11
+    N = 100
     dt = 1e-4
-    M = 1100
-    write_limit = 100
+    M = 10000
+    write_limit = 1000
     output_filename = datadir + "test.dat"
 
     build_cpp()
@@ -74,7 +75,6 @@ if __name__=="__main__":
 
     # Reformat data
     tsteps = int(M/write_limit)
-    t = np.zeros(tsteps)
     h = 1/(N+1)
     x = np.linspace(0,1,N)
     y = np.linspace(0,1,N)
@@ -83,10 +83,10 @@ if __name__=="__main__":
     t, data = import_data_2D(output_filename,tsteps,N)
 
     f, (ax1,ax2) = plt.subplots(1,2)
-    c1 = ax1.contour(X,Y,data[0,:,:])
+    c1 = ax1.contourf(X,Y,data[0,:,:])
     ax1.set_title(f"t = {t[0]}")
     ax1.grid()
-    c2 = ax2.contour(X,Y,data[-1,:,:])
+    c2 = ax2.contourf(X,Y,data[-1,:,:])
     ax2.set_title(f"t = {t[-1]}")
     ax2.grid()
     f.colorbar(c1,ax=ax1)
