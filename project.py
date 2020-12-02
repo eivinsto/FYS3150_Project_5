@@ -15,6 +15,17 @@ def build_cpp():
     """Function building cpp program."""
     run(["make", "all"], cwd=src)
 
+def import_data_2D(file,tsteps,N):
+    data = np.genfromtxt(file)
+    reformatted_data = np.zeros([tsteps,N,N])
+    for k in range(tsteps):
+        for ix in range(N):
+            reformatted_data[k,:,ix] = data[k,ix*N:(ix+1)*N]
+        t[k] = data[k,-1]
+
+    return t, reformatted_data
+
+
 
 
 if __name__=="__main__":
@@ -60,26 +71,22 @@ if __name__=="__main__":
     run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
          output_filename], cwd=src)
 
-    data = np.genfromtxt(datadir + "test.dat")
 
     # Reformat data
     tsteps = int(M/write_limit)
-    reformatted_data = np.zeros([tsteps,N,N])
     t = np.zeros(tsteps)
     h = 1/(N+1)
     x = np.linspace(0,1,N)
     y = np.linspace(0,1,N)
     X,Y = np.meshgrid(x,y)
-    for k in range(tsteps):
-        for ix in range(N):
-            reformatted_data[k,:,ix] = data[k,ix*N:(ix+1)*N]
-        t[k] = data[k,-1]
+
+    t, data = import_data_2D(output_filename,tsteps,N)
 
     f, (ax1,ax2) = plt.subplots(1,2)
-    c1 = ax1.contour(X,Y,reformatted_data[0,:,:])
+    c1 = ax1.contour(X,Y,data[0,:,:])
     ax1.set_title(f"t = {t[0]}")
     ax1.grid()
-    c2 = ax2.contour(X,Y,reformatted_data[-1,:,:])
+    c2 = ax2.contour(X,Y,data[-1,:,:])
     ax2.set_title(f"t = {t[-1]}")
     ax2.grid()
     f.colorbar(c1,ax=ax1)
