@@ -178,13 +178,85 @@ As $\alpha$ is an arbitrary constant we can now choose it such that $D = 1/\alph
 
 which is just the general diffusion equation we have listed earlier, with $u$ exchanged for $T$. In other words, if we can solve the general diffusion equation, we can also solve the heat equation.
 
-When solving the diffusion equation numerically it is common to scale the spatial coordinates so that $x,y,z \in [0,1]$ if we are using cartesian coordinates. As long as we are looking at a square system, this does not cause any problems for the method outlined earlier, as we can easily model other choices of limits by adding a constant to the spatial coordinate and correctly choosing $\alpha$.  
+When solving the diffusion equation numerically it is common to scale the spatial coordinates so that $x,y,z \in [0,1]$ if we are using cartesian coordinates. As long as we are looking at a square system, this does not cause any problems for the method outlined earlier, as we can easily model other choices of limits by adding a constant to the spatial coordinate and correctly choosing $\alpha$.
 
-\subsection{Euler methods} \label{sec:formalism_euler_methods}
+In the following sections we present three schemes which can be used to solve the diffusion equation numerically in one dimension. First we look at both an explicit and an implicit scheme based on the Euler method, and following that we look at the Crank-Nicholson scheme. Following this, again, we present a scheme for solving the diffusion equation in two dimensions using Jacobi's iterative method.
 
 
+\subsubsection{Euler methods} \label{sec:formalism_euler_methods}
 
-\subsection{Crank-Nicolson scheme} \label{sec:formalism_crank_nicolson}
+First, we write down the diffusion equation in one dimension:
+
+\begin{align*}
+\frac{\partial^2 u(x,t)}{\partial x ^2} &= \frac{\partial u(x,t)}{\partial t} \, , \numberthis \label{eq:1D_diff_eq}
+\end{align*}
+
+where $x$ is the spatial coordinate, and other variables are as previously defined. This can be written in the short-hand notation:
+
+\begin{align*}
+u_{xx} = u_t \, ,
+\end{align*}
+
+where the subscripts denote a partial derivative with respect to the variable in the subscript. The spatial derivative part of this equation can be approximated:
+
+\begin{align*}
+u_{xx} &= \frac{u(x + \Delta x,t) - 2u(x,t) + u(x-\Delta x,t)}{\Delta x^2} + \mathcal{O}(\Delta x^2)
+\end{align*}
+
+We also need to approximate the time derivative part, and we can do this in one of two ways, either using the forward approximation of the derivative:
+
+\begin{align*}
+u_t &= \frac{u(x,t+\Delta t) - u(x,t)}{\Delta t} + \mathcal{O}(\Delta t) \, ,
+\end{align*}
+
+or the backwards approximation:
+
+\begin{align*}
+u_t &= \frac{u(x,t) - u(x,t-\Delta t)}{\Delta t} + \mathcal{O}(\Delta t) \, .
+\end{align*}
+
+We can discretize the equations by first defining a steplength:
+
+\begin{align*}
+\Delta x = \frac{1}{n+1} \, ,
+\end{align*}
+
+and a timestep $\Delta t$, and then defining a set of points for both $x$ and $t$ given by the subscripts $i$ and $j$ respectively:
+
+\begin{align*}
+x_i &= i \Delta x \quad 0 \leq i \leq n+1 \\
+t_j &= j \Delta t \quad 0 \leq j \, ,
+\end{align*}
+
+with both $i,j$ being positive integers or zero. By denoting $u$ with subscripts $i$ and $j$ we can thus express which set of $x$ and $t$ it is evaluated at. We can then rewrite the spatial approximation:
+
+\begin{align*}
+u_{xx} &\approx \frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta x^2} \, ,
+\end{align*}
+
+the forward time approximation:
+
+\begin{align*}
+u_t &\approx \frac{u_{i,j+1} - u_{i,j}}{\Delta t} \, ,
+\end{align*}
+
+and the backwards time approximation:
+
+\begin{align*}
+u_t &\approx \frac{u_{i,j}- u_{i,j-1}}{\Delta t}
+\end{align*}
+
+Now, we set up the diffusion equation using the forward approximation in time first:
+
+\begin{align*}
+u_{xx} &= u_t \\
+\frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta x^2} &= \frac{u_{i,j+1} - u_{i,j}}{\Delta t} \\
+u_{i,j+1} &= u_{i,j} + \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \numberthis \label{eq:forward_euler_method}
+\end{align*}
+
+It is clear that if we know the initial state of this system, and the boundary conditions in all time points, we can use this to move the system ahead in time. 
+
+\subsubsection{Crank-Nicolson scheme} \label{sec:formalism_crank_nicolson}
 
 
 
