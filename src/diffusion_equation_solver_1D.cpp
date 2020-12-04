@@ -105,6 +105,7 @@ void DiffusionEquationSolver1D::forward_euler_solve(){
   for (int i = 1; i<m_N; i++){
     m_y(i) = m_init_func(m_dx*i);
   }
+  write_to_file();
 
   // Iterate over timesteps
   for (int j = 1; j <= m_M; j++){
@@ -133,6 +134,7 @@ void DiffusionEquationSolver1D::backward_euler_solve(){
   // Set boundary conditions
   m_u(0) = m_lb;
   m_u(m_N) = m_ub;
+  write_to_file();
 
   // Iterate over timesteps
   for (int j = 1; j <= m_M; j++){
@@ -162,6 +164,7 @@ void DiffusionEquationSolver1D::crank_nicholson_solve(){
   // Set boundary conditions
   m_u(0) = m_lb;
   m_u(m_N) = m_ub;
+  write_to_file();
 
   // Iterate over timesteps
   for (int j = 1; j <= m_M; j++){
