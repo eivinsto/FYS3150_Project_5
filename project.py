@@ -15,21 +15,20 @@ def build_cpp():
     """Function building cpp program."""
     run(["make", "all"], cwd=src)
 
-def import_data_2D(file,tsteps,N):
+
+def import_data_2D(file, tsteps, N):
     data = np.genfromtxt(file)
-    reformatted_data = np.zeros([tsteps,N,N])
+    reformatted_data = np.zeros([tsteps, N, N])
     t = np.zeros(tsteps)
     for k in range(tsteps):
         for ix in range(N):
-            reformatted_data[k,:,ix] = data[k,ix*N:(ix+1)*N]
-        t[k] = data[k,-1]
+            reformatted_data[k, :, ix] = data[k, ix*N:(ix+1)*N]
+        t[k] = data[k, -1]
 
     return t, reformatted_data
 
 
-
-
-if __name__=="__main__":
+if __name__ == "__main__":
     """
     # 1D sample run
 
@@ -61,34 +60,36 @@ if __name__=="__main__":
     """
 
     # 2D sample run
-
+    genflag = input("Generate data? y/n: ")
     N = 100
     dt = 1e-4
     M = 10000
     write_limit = 1000
     output_filename = datadir + "test.dat"
 
-    build_cpp()
-    run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
-         output_filename], cwd=src)
-
+    if genflag == "y":
+        build_cpp()
+        run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
+             output_filename], cwd=src)
 
     # Reformat data
     tsteps = int(M/write_limit)
     h = 1/(N+1)
-    x = np.linspace(0,1,N)
-    y = np.linspace(0,1,N)
-    X,Y = np.meshgrid(x,y)
+    x = np.linspace(0, 1, N)
+    y = np.linspace(0, 1, N)
+    X, Y = np.meshgrid(x, y)
 
-    t, data = import_data_2D(output_filename,tsteps,N)
+    t, data = import_data_2D(output_filename, tsteps, N)
 
-    f, (ax1,ax2) = plt.subplots(1,2)
-    c1 = ax1.contourf(X,Y,data[0,:,:])
+    f, (ax1, ax2) = plt.subplots(1, 2)
+    c1 = ax1.imshow(data[0, :, :], interpolation='none',
+                    origin="lower", aspect='auto', extent=[0, 1, 0, 1])
     ax1.set_title(f"t = {t[0]}")
     ax1.grid()
-    c2 = ax2.contourf(X,Y,data[-1,:,:])
+    c2 = ax2.imshow(data[-1, :, :], interpolation='none',
+                    origin="lower", aspect='auto', extent=[0, 1, 0, 1])
     ax2.set_title(f"t = {t[-1]}")
     ax2.grid()
-    f.colorbar(c1,ax=ax1)
-    f.colorbar(c2,ax=ax2)
+    f.colorbar(c1, ax=ax1)
+    f.colorbar(c2, ax=ax2)
     plt.show()
