@@ -52,28 +52,44 @@ if __name__ == "__main__":
 
     # 1D sample run
     if runflag == "1d":
-        N = 9
-        dt = 1e-5
-        M = 100000
-        write_limit = 10000
-        method = "ForwardEuler"
-        output_filename = datadir + "test1d.dat"
+        Ns = [9, 99]
+        dt = [0.25*0.5*1/(N+1)**2 for N in Ns]
+        T = 100
+        M = [T//dt[j] for j in range(len(Ns))]
+        write_limit = 100
+        methods = ["ForwardEuler", "BackwardEuler", "CrankNicholson"]
+
+        output_files = []
+        for method in methods:
+            output_files.append([datadir + method + f"_{N}.dat" for N in Ns])
+
         u_b = 1
         l_b = 0
 
         if genflag == "y":
-            run_1D(output_filename, N, dt, M, u_b, l_b, write_limit)
+            for i, method in enumerate(methods):
+                for j, N in enumerate(Ns):
+                    run_1D(output_files[i][j], method, N, dt[j], M[j], u_b,
+                           l_b, write_limit)
 
-        data = np.genfromtxt(output_filename)
+        data = {}
+        for i, method in enumerate(methods):
+            for j, N in enumerate(Ns):
+                data[method, N] = np.genfromtxt(output_files[i][j])
 
-        x = np.linspace(0, 1, N+1)
+        for i, method in enumerate(methods):
+            f, ax = plt.subplots(1, 2)
+            for j, N in enumerate(Ns):
+                x = np.linspace(0, 1, N+1)
+                ax[j].plot(x, data[method, N][0, :],
+                           label=f"$t_{1} = $ {dt[j]*0}")
+                ax[j].plot(x, data[method, N][-1, :],
+                           label=f"$t_{2} = $ {dt[j]*M[j]}")
+                ax[j].set_title(f"dx = {1/(N+1)}")
+                ax[j].legend()
+                ax[j].grid()
 
-        f, ax = plt.subplots()
-        for i in range(len(data[:, 0])):
-            ax.plot(x, data[i, :], label=f"t = {i*1e-5}")
-
-        ax.legend()
-        ax.grid()
+            f.suptitle(method)
 
         plt.show()
 
