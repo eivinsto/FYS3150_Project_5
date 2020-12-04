@@ -195,7 +195,7 @@ In the following sections we will look at solutions to the diffusion equation in
 
 
 
-\subsection{Analytical solution of diffusion equation in one dimension} \label{sec:formalism_1D_diff_eq_analytic}
+\subsection{Analytical solution of diffusion equation in one dimension} \label{sec:formalism_1D_diff_eq_analytical}
 
 In order to find a solution we need to make some assumptions based on the initial and boundary conditions. We assume that:
 
@@ -381,7 +381,7 @@ u_{i,j+1} &= u_{i,j} + \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} +
 u_{i,j+1} &= u_{i,j} + \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \, ,\numberthis \label{eq:forward_euler_method}
 \end{align*}
 
-where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. At this point we make the assumption that the boundary conditions are zero. By the arguments given in \ref{sec:formalism_1D_diff_eq_analytic} this can easily be extended to constant boundary conditions by use of the steady state solution of the problem.
+where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. At this point we make the assumption that the boundary conditions are zero. By the arguments given in \ref{sec:formalism_1D_diff_eq_analytical} this can easily be extended to constant boundary conditions by use of the steady state solution of the problem. Implementing a numerical solution for other boundary conditions is not difficult, as the only requirement we must have is that the solver cannot modify the boundary values outside of the boundary condition specified. Assuming Dirichlet boundary conditions simplify the calculaton of the condition for convergence, and so we keep them in this section.
 
 The equation above gives directly the solution in the next timestep, and thus this is an explicit scheme. This can also be rewritten as a matrix vector equation by using $U_j = [u_{1,j} \quad u_{1,j} \quad ... \quad u_{n,j} ] ^T$. And the matrix:
 
@@ -491,10 +491,12 @@ We recognize that by setting $\theta=0$ this returns the explicit scheme, and th
 
 \begin{align*}
 &-\alpha u_{i-1,j} + (2 + 2 \alpha) u_{i,j} - \alpha u_{i+1,j} \\
-&= \alpha u_{i-1,j-1} + (2-2\alpha) u_{i,j-1} + \alpha u_{i+1,j-1}
+&= \alpha u_{i-1,j-1} + (2-2\alpha) u_{i,j-1} + \alpha u_{i+1,j-1} \numberthis \label{eq:crank_nicholson}
 \end{align*}
 
-This can be rewritten as a matrix-vector equation using the identity matrix $I$, the matrix $B$ and the vector $U_j$ as defined in the previous section:
+For the full derivation of this scheme we refer to \cite[p.~311]{Hjorth-Jensen2015}. It is derived from approximating around a midpoint $t' = t + \Delta t/2$, which gives that the error from the time approximation goes as $\mathcal{O}(\Delta t^2)$ instead of $\mathcal{O}(\Delta t)$. The spatial approximation still results in an error $\mathcal{O}(\Delta x^2)$, however.
+
+Equation \eqref{eq:crank_nicholson} can be rewritten as a matrix-vector equation using the identity matrix $I$, the matrix $B$ and the vector $U_j$ as defined in the previous section, and by assuming Dirichlet boundary conditions:
 
 \begin{align*}
 (2I + \alpha B ) U_j &= (2I - \alpha B) U_{j-1} \\
@@ -503,7 +505,154 @@ U_j &= (2I + \alpha B)^{-1} (2I - \alpha B) u_{j-1}
 
 In other words a matrix inversion is required in order to find the solution in the next timestep. This means that this scheme is an implicit one. First we need to multiply the previous solution with the matrix $(2I - \alpha B)$, which is straightforward. After that we need to find the inverse of $(2I + \alpha B)$ and apply this. As this matrix is tridiagonal we can use a tridiagonal solver for this operation. Thus the numerical solution of this scheme can be split into two parts, one which functions similar to the way in which the solver for the forward Euler based explicit scheme, and a second part that functions similarly to the solver for the backwards Euler based implicit scheme.
 
+The solution with the Crank-Nicholson scheme converges if the spectral radius:
 
+\begin{align*}
+\rho\bigg( (2I + \alpha B)^{-1} (2I - \alpha B) \bigg) < 1 \, .
+\end{align*}
+
+This is the case if:
+
+\begin{align*}
+| \frac{2 - \alpha \mu_k}{2 + \alpha \mu_k} | < 1
+\end{align*}
+
+As $\mu_k = 2 - 2 \cos(k\pi/n + 1)$ is always positive this condition is always met, and thus the Crank-Nicholson scheme also converges for any $\alpha$. 
+
+
+
+
+\subsection{Analytical solution of diffusion equation in two dimensions} \label{sec:formalism_2D_diff_eq_analytical}
+
+The equation we wish to solve is to two-dimensional diffusion equation:
+
+\begin{align*}
+\frac{\partial^2 u(x,y,t)}{\partial x^2} + \frac{\partial^2 u(x,y,t)}{\partial y^2} &= \frac{\partial u(x,y,t)}{\partial t}
+\end{align*}
+
+We wish to solve for a square system, with $x,y \in [0,L]$. We assume a general initial state $u(x,y,0) = g(x,y)$ and Dirichlet boundary conditions $u(0,y,t) = u(L,y,t) = u(x,0,t) = u(x,L,t) = 0$. We assume separation of variables:
+
+\begin{align*}
+u(x,y,t) = F(x,y) G(t)
+\end{align*}
+
+The diffusion equation then gives:
+
+\begin{align*}
+G\bigg( \frac{\partial^2 F}{\partial x^2} + \frac{\partial^2 F}{\partial y^2} \bigg) &= F\frac{\partial G}{\partial t} \\
+GF'' &= FG'\\
+\frac{F''}{F} &= \frac{G'}{G} \numberthis \label{eq:2D_separation_of_variables_step1} \, ,
+\end{align*}
+
+where:
+
+\begin{align*}
+F'' &= \frac{\partial^2 F}{\partial x^2} + \frac{\partial^2 F}{\partial y^2} \\
+G' &= \frac{\partial G}{\partial t}
+\end{align*}
+
+In equation \eqref{eq:2D_separation_of_variables_step1} the right-hand side and left-hand side do not share any variables, and thus they must be constant. We define this constant as $-\lambda^2$. This gives us the differential equations:
+
+\begin{align*}
+F'' + \lambda^2 F &= 0 \\
+G' + \lambda^2 G &= 0
+\end{align*}
+
+The second of these has the familiar solution:
+
+\begin{align*}
+G(t) = Ee^{-\lambda^2 t} \, ,
+\end{align*}
+
+where $E$ is an integration constant. The first differential equation is not as easy to solve, but we can do it by again assuming separation of variables in $F$:
+
+\begin{align*}
+F(x,y) &= X(x) Y(y)
+\end{align*}
+
+Inserting this into the differential equation gives:
+
+\begin{align*}
+F'' &= -\lambda^2 F \\
+Y \frac{\partial^2 X}{\partial x^2} + X \frac{\partial^2 Y}{\partial y^2} &= -\lambda^2 XY \\
+\frac{X''}{X} +  &= - \frac{Y''}{Y} - \lambda^2 \, ,
+\end{align*}
+
+where:
+
+\begin{align*}
+X'' &= \frac{\partial^2 X}{\partial x^2} \\
+Y'' &= \frac{\partial^2 Y}{\partial y^2}
+\end{align*}
+
+As $X$ is only dependent on $x$ and $Y$ only dependent on $y$, this means that:
+
+\begin{align*}
+\frac{X''}{X} &= - \frac{Y''}{Y} - \lambda^2 &= \text{constant}
+\end{align*}
+
+We define this constant to be $-\mu^2$. And we also define $\nu^2 = \lambda^2 - \mu^2$. This gives us the following set of differential equation:
+
+\begin{align*}
+X'' + \mu^2 X &= 0 \\
+Y'' + \nu^2 Y &= 0 \, ,
+\end{align*}  
+
+which have solutions:
+
+\begin{align*}
+X(x) &= A \sin(\mu x) + B\cos(\mu x) \\
+Y(y) &= C \sin (\nu y) + D \cos (\nu y)
+\end{align*}
+
+The boundary conditions imply that $B=D=0$, and that $\mu = n\pi/L$ and $\nu = m\pi/L$, where $n$ and $m$ are positive integers. We also have that $\lambda^2 = \nu^2 + \mu^2 = (n^2+m^2) \pi^2/L^2$. This gives us that a solution of the diffusion equation in two dimensions can be written as:
+
+\begin{align*}
+u_{n,m}(x,y,t) = A_{n,m} \sin (\frac{n\pi}{L} x)  \sin (\frac{m\pi}{L} y) e^{-\frac{(n^2 + m^2)\pi^2}{L^2} t} \, ,
+\end{align*}
+
+where the coefficients $A_{n,m}$ include the constants $A$, $C$ and $E$. A general solution can be written as a linear combination of these (sum over all $n$ and $m$):
+
+\begin{align*}
+u(x,y,t) &= \sum\limits_{n=1}^\infty \sum\limits_{m=1}^\infty A_{n,m} \sin (\frac{n\pi}{L} x)  \sin (\frac{m\pi}{L} y) e^{-\frac{(n^2 + m^2)\pi^2}{L^2} t} \numberthis \label{eq:2D_diffusion_equation_analytical_solution}
+\end{align*} 
+
+In order to find an expression for the coefficients $A_{n,m}$ we first write down the initial state of the system:
+
+\begin{align*}
+g(x,y) &= u(x,y,0) \\
+g(x,y) &= \sum\limits_{n=1}^\infty \sum\limits_{m=1}^\infty A_{n,m} \sin (\frac{n\pi}{L} x)  \sin (\frac{m\pi}{L} y)
+\end{align*}
+
+Similarly to the one-dimensional case, this is reminiscent of a Fourier transform. As $x$ and $y$ are independent, we can find the coefficients $A_{n,m}$ as:
+
+\begin{align*}
+A_{n,m} &= \frac{4}{L^2} \int_0^L \int_0^L g(x,y) \sin( \frac{n\pi}{L} x) \sin (\frac{m\pi}{L} y) \, dx \, dy \numberthis \label{eq:2D_diffusion_equation_analytical_coefficients}
+\end{align*}
+
+This lets us determine the analytical solution in two dimensions for any initial state $g(x,y)$ such that this integral is solvable, with Dirichlet boundary conditions.
+
+Again, similarly to the one dimensional case, we can extend this solution for general time-independent boundary conditions. If the boundary conditions are independent of time we can simply add the steady-state function of that system to the solution with Dirichlet boundary conditions:
+
+\begin{align*}
+u(x,y,t) = v(x,y,t) + f(x,y) \, ,
+\end{align*}
+
+where $v(x,y,t)$ is the solution with Dirichlet boundary conditions, and $f(x,y)$ is the steady state solution. The steady state solution must fulfill the Laplace equation:
+
+\begin{align*}
+\nabla^2 f(x,y) &= 0 \, ,
+\end{align*}
+
+constrained by the boundary conditions specified. As long as the Laplace equation holds for the steady state solution, it is easy to the see that adding it to $v(x,y,t)$ does not disturb the diffusion equation:
+
+\begin{align*}
+\nabla^2 u(x,y,t) &= \frac{\partial u(x,y,t)}{\partial t} \\
+\nabla^2 (v(x,y,t) + f(x,y) ) &= \frac{\partial v(x,y,t)}{\partial t} + \frac{\partial f(x,y)}{\partial t} \\
+\nabla^2 v(x,y,t) &= \frac{\partial v(x,y,t)}{\partial t} \, ,
+\end{align*}
+
+where we have used that the Laplace equation holds for $f(x,y)$ and that it is independent of time. Finding a general steady state solution is not as easy as in the one-dimensional case, however, as the boundaries need to be well defined at the corners. In order for this to be the case, the boundary conditions for at least one of the spatial coordinates has to depend on the other spatial coordinate if we assume the boundary values to be non-zero. 
 
 
 
