@@ -190,8 +190,124 @@ u(x,0,z,t) &= k(x,z,t) \\
 
 and so on for the other coordinates as well.
  
-In the following sections we present three schemes which can be used to solve the diffusion equation numerically in one dimension. First we look at both an explicit and an implicit scheme based on the Euler method, and following that we look at the Crank-Nicholson scheme. Following this, again, we present a scheme for solving the diffusion equation in two dimensions using Jacobi's iterative method.
+In the following sections we will look at solutions to the diffusion equation in 1D and 2D both numerically and analytically.
 
+
+
+
+\subsection{Analytical solution of diffusion equation in one dimension} \label{sec:formalism_1D_diff_eq_analytic}
+
+In order to find a solution we need to make some assumptions based on the initial and boundary conditions. We assume that:
+
+\begin{align*}
+u(x,0) = g(x) \quad 0 < x < L
+\end{align*}
+
+and:
+
+\begin{align*}
+u(0,t) = u(L,t) = 0 \quad t \geq 0
+\end{align*}
+
+The equation wish to solve is the general diffusion equation in one dimension:
+
+\begin{align*}
+\frac{\partial^2 u(x,t)}{\partial x^2} &= \frac{\partial u(x,t)}{\partial t}
+\end{align*}
+
+In order to proceed we assume separation of variables:
+
+\begin{align*}
+u(x,t) &= F(x)G(t) 
+\end{align*}
+
+The diffusion equation can then be rewritten:
+
+\begin{align*}
+G \frac{\partial^2 F}{\partial x^2} &= F \frac{\partial G}{\partial t} \\
+\frac{F''}{F} &= \frac{G'}{G} \, ,
+\end{align*}
+
+where we have denoted the derivatives with primes. In the equation above the left-hand side is completely independent of $t$ and the right-hand side is completely independent of $x$. This directly implies that both sides have to be equal to a constant. We define this constant as $-\lambda^2$, which gives us the following differential equations we need to solve:
+
+\begin{align*}
+F'' + \lambda^2 F &= 0 \\
+G' + \lambda^2 G &= 0
+\end{align*}
+
+These have solutions:
+
+\begin{align*}
+F(x) &= A \sin (\lambda x) + B \cos ( \lambda x) \\
+G(t) &= Ce^{-\lambda^2 t}
+\end{align*}
+
+The boundary conditions are satisfied if we set $B = 0$ and $\lambda = n\pi /L$ where $n$ is a positive integer ($n$ can be 0 as well, but this solution is just 0 everywhere and is thus wholly uninteresting). A solution can then be written:
+
+\begin{align*}
+u_n(x,t) &= A_n \sin (\frac{n\pi}{L} x ) e^{-\frac{n^2 \pi^2}{L^2} t} \, ,
+\end{align*}
+
+where we have included the constants $C$ and $A$ in $A_n$. A general solution will thus be a linear combination of these solutions for all $n$:
+
+\begin{align*}
+u(x,t) &= \sum\limits_{n=1}^\infty A_n \sin (\frac{n\pi}{L} x) e^{-\frac{n^2 \pi^2}{L^2} t} 
+\end{align*}
+
+We still need to determine the constants $A_n$ and these are given by the initial condition:
+
+\begin{align*}
+g(x) &= u(x,0) \\
+g(x) &= \sum\limits_{n=1}^\infty A_n \sin ( \frac{n\pi}{L} x) 
+\end{align*}
+
+This is the expression for a Fourier expansion of $g(x)$, and we can thus determine the coefficients as:
+
+\begin{align*}
+A_n &= \frac{2}{L} \int_0^L g(x) \sin (\frac{n\pi}{L} x) \, dx
+\end{align*}
+
+We can also adapt our solution for different boundary conditions. In most cases we assume the the boundary values are constants $u(0,t) = a$, $u(L,t) = b$ where $a$ and $b$ are constants. If we assume there to be a steady state solution $f(x)$ fitting these boundary conditions, then we can write $u(x,t) = v(x,t) + f(x)$, where $v(x,t)$ is the solution of the differential equation when the boundary conditions are zero. The steady state solution is determined by solving the Laplace equation:
+
+\begin{align*}
+\frac{\partial^2 f(x)}{\partial x^2} &= 0 
+\end{align*}
+
+If the boundary conditions are constant this is simply a linear polynomial of first order:
+
+\begin{align*}
+f(x) &= \frac{b-a}{L} x + a
+\end{align*}
+
+As this is a first order polynomial, it falls away in the diffusion equation, meaning that the solution for a $u(x,t)$ with general constant boundary conditions can be given as the solution with boundary conditions zero plus the steady state solution of the problem. In other words, the solution is given fully as:
+
+\begin{align*}
+u(x,t) &= f(x) + \sum\limits_{n=1}^\infty A_n \sin( \frac{n\pi}{L} x) e^{-\frac{n^2 \pi^2}{L^2} t}
+\end{align*}
+
+Finding the coefficients turns out slightly different, as we have:
+
+\begin{align*}
+g(x) &= u(x,0) \\
+g(x) &= f(x) + \sum\limits_{n=1}^\infty A_n \sin( \frac{n\pi}{L} x)
+\end{align*}
+
+This is not a simple Fourier expansion, but by defining $h(x) = g(x) - f(x)$ we can rewrite the equation above as:
+
+\begin{align*}
+h(x) &= \sum\limits_{n=1}^\infty A_n \sin( \frac{n\pi}{L} x)
+\end{align*}
+
+This is a Fourier expansion of $h(x)$, and thus we can find the coefficients:
+
+\begin{align*}
+A_n &= \frac{2}{L} \int_0^L h(x) \sin (\frac{n\pi}{L} x) \, dx \, ,
+\end{align*}
+
+by using $h(x)$ instead of $g(x)$. 
+
+
+\subsection{Numerical solutions of one-dimensional diffusion equation} \label{sec:formalism_numerical_1D}
 
 \subsubsection{Euler methods} \label{sec:formalism_euler_methods}
 
@@ -265,15 +381,17 @@ u_{i,j+1} &= u_{i,j} + \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} +
 u_{i,j+1} &= u_{i,j} + \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \, ,\numberthis \label{eq:forward_euler_method}
 \end{align*}
 
-where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. This equation gives directly the solution in the next timestep, and thus it is an explicit scheme. This can also be rewritten as a matrix vector equation by using $U_j = [u_{0,j} \quad u_{1,j} \quad ... \quad u_{n,j} ] ^T$. And the matrix:
+where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. At this point we make the assumption that the boundary conditions are zero. By the arguments given in \ref{sec:formalism_1D_diff_eq_analytic} this can easily be extended to constant boundary conditions by use of the steady state solution of the problem.
+
+The equation above gives directly the solution in the next timestep, and thus this is an explicit scheme. This can also be rewritten as a matrix vector equation by using $U_j = [u_{1,j} \quad u_{1,j} \quad ... \quad u_{n,j} ] ^T$. And the matrix:
 
 \begin{align*}
 A_\text{f} &= \begin{bmatrix}
-0 & \cdots & \cdots   &\cdots & 0 \\
+1 - 2\alpha & \alpha & 0   &\cdots & 0 \\
 \alpha & 1-2\alpha & \alpha   & \cdots & 0 \\
 \vdots & \ddots & \ddots & \ddots  & \vdots \\
 0 & \cdots  & \alpha & 1 - 2\alpha & \alpha \\
-0 & \cdots & \cdots & \cdots & 0 
+0 & \cdots & 0 & \alpha & 1 - 2\alpha 
 \end{bmatrix} \, ,
 \end{align*}
 
@@ -283,7 +401,7 @@ where the subscript f denotes that this is the scheme based on the forward Euler
 U_{j+1} &= A_\text{f} U_{j}
 \end{align*}
 
-Note that the first and last row of the matrix are set to zero. This is to make sure we do not manipulate the boundaries, which are assumed to be fixed as functions of time. As they may be non-zero, they are necessary in order to calculate the solution at the other points and cannot be safely excluded from the matrix-vector equation. Also note that if we know the solution at a previous timestep $U_j$ we can directly determine the solution in the next timestep $U_{j+1}$, and thus we do not need to solve this matrix-vector equation per se. It is just a practical way of denoting things that we will get back to.
+Note that if we know the solution at a previous timestep $U_j$ we can directly determine the solution in the next timestep $U_{j+1}$, and thus we do not need to solve this matrix-vector equation per se. It is just a practical way of denoting things that we will get back to. The vector $U_j$ does not contain the boundary elements $u_{0,j}$ and $u_{n+1,j}$ as they are generally assumed to be zero.
 
 Using the backwards time approximation in a similar fashion gives us the following: 
 
@@ -298,11 +416,11 @@ As we cannot directly determine the solution in the next timestep from this equa
 
 \begin{align*}
 A_\text{b} &= \begin{bmatrix}
-0 & \cdots & \cdots   &\cdots & 0 \\
+1 + 2\alpha & -\alpha & 0   &\cdots & 0 \\
 -\alpha & 1+2\alpha & -\alpha   & \cdots & 0 \\
 \vdots & \ddots & \ddots & \ddots  & \vdots \\
 0 & \cdots  & -\alpha & 1 + 2\alpha & -\alpha \\
-0 & \cdots & \cdots & \cdots & 0 
+0 & \cdots & 0 & -\alpha & 1 + 2\alpha 
 \end{bmatrix} \, , 
 \end{align*} 
 
@@ -313,7 +431,8 @@ U_{j-1} &= A_\text{b} U_j \\
 A_\text{b}^{-1} &= U_j
 \end{align*}
 
-where we again have to take care not to manipulate the boundaries. In order to determine the solution in the next timestep $j$ it is thus necessary to solve this matrix-vector equation. This can be done in a multitude of ways, but the simplest way of solving this is that this matrix is tridiagonal if we exclude the boundaries. Thus we can use a solver for a tridiagonal matrix, as long as we handle the boundaries correctly as a special case. Solving the equation as such greatly reduces the computational cost of solving the problem compared to a general matrix inversion.
+
+In order to determine the solution in the next timestep $j$ it is thus necessary to solve this matrix-vector equation. This can be done in a multitude of ways, but the simplest way of solving this is that this matrix is tridiagonal if we exclude the boundaries. Thus we can use a solver for a tridiagonal matrix, as long as we handle the boundaries correctly as a special case. Solving the equation as such greatly reduces the computational cost of solving the problem compared to a general matrix inversion.
 
 
 \subsubsection{Crank-Nicolson scheme} \label{sec:formalism_crank_nicolson}
@@ -352,6 +471,7 @@ U_j &= (2I + \alpha B)^{-1} (2I - \alpha B) u_{j-1}
 \end{align*}
 
 In other words a matrix inversion is required in order to find the solution in the next timestep. This means that this scheme is an implicit one. First we need to multiply the previous solution with the matrix $(2I - \alpha B)$, which is straightforward. After that we need to find the inverse of $(2I + \alpha B)$ and apply this. As this matrix is tridiagonal we can use a tridiagonal solver for this operation. Thus the numerical solution of this scheme can be split into two parts, one which functions similar to the way in which the solver for the forward Euler based explicit scheme, and a second part that functions similarly to the solver for the backwards Euler based implicit scheme.
+
 
 
 
