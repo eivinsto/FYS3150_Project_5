@@ -178,8 +178,18 @@ As $\alpha$ is an arbitrary constant we can now choose it such that $D = 1/\alph
 
 which is just the general diffusion equation we have listed earlier, with $u$ exchanged for $T$. In other words, if we can solve the general diffusion equation, we can also solve the heat equation.
 
-When solving the diffusion equation numerically it is common to scale the spatial coordinates so that $x,y,z \in [0,1]$ if we are using cartesian coordinates. As long as we are looking at a square system, this does not cause any problems for the method outlined earlier, as we can easily model other choices of limits by adding a constant to the spatial coordinate and correctly choosing $\alpha$.
+When solving the diffusion equation numerically it is common to scale the spatial coordinates so that $x,y,z \in [0,1]$ if we are using cartesian coordinates. As long as we are looking at a square system, this does not cause any problems for the method outlined earlier, as we can easily model other choices of limits by adding a constant to the spatial coordinate and correctly choosing $\alpha$. We also assume that the initial state and the boundary conditions are known: 
 
+\begin{align*}
+u(x,y,z,0) &= f(x,y,z) \\
+u(0,y,z,t) &= g(y,z,t) \\
+u(1,y,z,t) &= h(y,z,t) \\
+u(x,0,z,t) &= k(x,z,t) \\
+\vdots 
+\end{align*}
+
+and so on for the other coordinates as well.
+ 
 In the following sections we present three schemes which can be used to solve the diffusion equation numerically in one dimension. First we look at both an explicit and an implicit scheme based on the Euler method, and following that we look at the Crank-Nicholson scheme. Following this, again, we present a scheme for solving the diffusion equation in two dimensions using Jacobi's iterative method.
 
 
@@ -249,14 +259,100 @@ u_t &\approx \frac{u_{i,j}- u_{i,j-1}}{\Delta t}
 Now, we set up the diffusion equation using the forward approximation in time first:
 
 \begin{align*}
-u_{xx} &= u_t \\
-\frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta x^2} &= \frac{u_{i,j+1} - u_{i,j}}{\Delta t} \\
-u_{i,j+1} &= u_{i,j} + \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \numberthis \label{eq:forward_euler_method}
+u_t &= u_{xx} \\
+\frac{u_{i,j+1} - u_{i,j}}{\Delta t} &= \frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta x^2}  \\
+u_{i,j+1} &= u_{i,j} + \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \\
+u_{i,j+1} &= u_{i,j} + \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \, ,\numberthis \label{eq:forward_euler_method}
 \end{align*}
 
-It is clear that if we know the initial state of this system, and the boundary conditions in all time points, we can use this to move the system ahead in time. 
+where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. This equation gives directly the solution in the next timestep, and thus it is an explicit scheme. This can also be rewritten as a matrix vector equation by using $U_j = [u_{0,j} \quad u_{1,j} \quad ... \quad u_{n,j} ] ^T$. And the matrix:
+
+\begin{align*}
+A_\text{f} &= \begin{bmatrix}
+0 & \cdots & \cdots   &\cdots & 0 \\
+\alpha & 1-2\alpha & \alpha   & \cdots & 0 \\
+\vdots & \ddots & \ddots & \ddots  & \vdots \\
+0 & \cdots  & \alpha & 1 - 2\alpha & \alpha \\
+0 & \cdots & \cdots & \cdots & 0 
+\end{bmatrix} \, ,
+\end{align*}
+
+where the subscript f denotes that this is the scheme based on the forward Euler method. This gives us that the explicit scheme can be described by the matrix-vector equation:
+
+\begin{align*}
+U_{j+1} &= A_\text{f} U_{j}
+\end{align*}
+
+Note that the first and last row of the matrix are set to zero. This is to make sure we do not manipulate the boundaries, which are assumed to be fixed as functions of time. As they may be non-zero, they are necessary in order to calculate the solution at the other points and cannot be safely excluded from the matrix-vector equation. Also note that if we know the solution at a previous timestep $U_j$ we can directly determine the solution in the next timestep $U_{j+1}$, and thus we do not need to solve this matrix-vector equation per se. It is just a practical way of denoting things that we will get back to.
+
+Using the backwards time approximation in a similar fashion gives us the following: 
+
+\begin{align*}
+u_t &= u_{xx} \\ 
+\frac{u_{i,j} - u_{i,j-1}}{\Delta t} &= \frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta x^2} \\
+u_{i,j-1} &= u_{i,j} - \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \\
+u_{i,j-1} &= u_{i,j} - \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \numberthis \label{eq:backward_euler_method}
+\end{align*}
+
+As we cannot directly determine the solution in the next timestep from this equation, this is an implicit scheme, and we must formulate a way we can solve this equation. We can write down the above equation as a matrix-vector equation by using the same vector $U_j$ as earlier and the matrix:
+
+\begin{align*}
+A_\text{b} &= \begin{bmatrix}
+0 & \cdots & \cdots   &\cdots & 0 \\
+-\alpha & 1+2\alpha & -\alpha   & \cdots & 0 \\
+\vdots & \ddots & \ddots & \ddots  & \vdots \\
+0 & \cdots  & -\alpha & 1 + 2\alpha & -\alpha \\
+0 & \cdots & \cdots & \cdots & 0 
+\end{bmatrix} \, , 
+\end{align*} 
+
+where the subscript b denotes that this is the matrix based on the backwards Euler method. This gives us the matrix-vector equation:
+
+\begin{align*}
+U_{j-1} &= A_\text{b} U_j \\
+A_\text{b}^{-1} &= U_j
+\end{align*}
+
+where we again have to take care not to manipulate the boundaries. In order to determine the solution in the next timestep $j$ it is thus necessary to solve this matrix-vector equation. This can be done in a multitude of ways, but the simplest way of solving this is that this matrix is tridiagonal if we exclude the boundaries. Thus we can use a solver for a tridiagonal matrix, as long as we handle the boundaries correctly as a special case. Solving the equation as such greatly reduces the computational cost of solving the problem compared to a general matrix inversion.
+
 
 \subsubsection{Crank-Nicolson scheme} \label{sec:formalism_crank_nicolson}
+
+The two schemes outlined above can be combined into a single scheme using a parameter $\theta$:
+
+\begin{align*}
+\frac{\theta}{\Delta x^2} \bigg( u_{i-1,j} - 2u_{i,j} + u_{i+1,j} \bigg) &+ \frac{1 - \theta}{\Delta x^2} \bigg( u_{i+1,j-1} \\
+- 2u_{i,j-1} + u_{i-1,j-1} \bigg) &= \frac{1}{\Delta t} \bigg( u_{i,j} - u_{i,j-1} \bigg) \numberthis \label{eq:theta_rule}
+\end{align*}
+
+We recognize that by setting $\theta=0$ this returns the explicit scheme, and that it returns the implicit scheme when $\theta = 1$. If we set $\theta = 1/2$, however, we get what is called the Crank-Nicholson scheme. By using $\alpha = \Delta t / \Delta x^2$ we can in this case rewrite the equation above as:
+
+\begin{align*}
+&-\alpha u_{i-1,j} + (2 + 2 \alpha) u_{i,j} - \alpha u_{i+1,j} \\
+&= \alpha u_{i-1,j-1} + (2-2\alpha) u_{i,j-1} + \alpha u_{i+1,j-1}
+\end{align*}
+
+This can be rewritten as a matrix-vector equation using the identity matrix $I$, the matrix:
+
+\begin{align*}
+B &= \begin{bmatrix}
+2 & -1 & 0 & \cdots & 0 \\
+-1 & 2 & -1 &  \cdots & 0 \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+\vdots & \vdots & \ddots & \ddots & -1 \\
+0 & 0 & \cdots & -1 & 2 
+\end{bmatrix} \, ,
+\end{align*}
+
+and the vector $U_j$ which was defined earlier:
+
+\begin{align*}
+(2I + \alpha B ) U_j &= (2I - \alpha B) U_{j-1} \\
+U_j &= (2I + \alpha B)^{-1} (2I - \alpha B) u_{j-1}
+\end{align*}
+
+In other words a matrix inversion is required in order to find the solution in the next timestep. This means that this scheme is an implicit one. First we need to multiply the previous solution with the matrix $(2I - \alpha B)$, which is straightforward. After that we need to find the inverse of $(2I + \alpha B)$ and apply this. As this matrix is tridiagonal we can use a tridiagonal solver for this operation. Thus the numerical solution of this scheme can be split into two parts, one which functions similar to the way in which the solver for the forward Euler based explicit scheme, and a second part that functions similarly to the solver for the backwards Euler based implicit scheme.
+
 
 
 
