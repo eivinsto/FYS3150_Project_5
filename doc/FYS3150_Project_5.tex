@@ -434,6 +434,49 @@ A_\text{b}^{-1} &= U_j
 
 In order to determine the solution in the next timestep $j$ it is thus necessary to solve this matrix-vector equation. This can be done in a multitude of ways, but the simplest way of solving this is that this matrix is tridiagonal if we exclude the boundaries. Thus we can use a solver for a tridiagonal matrix, as long as we handle the boundaries correctly as a special case. Solving the equation as such greatly reduces the computational cost of solving the problem compared to a general matrix inversion.
 
+We also wish to examine the convergence of these schemes. By defining the matrix:
+
+\begin{align*}
+B &= \begin{bmatrix}
+2 & -1 & 0 & \cdots & 0 \\
+-1 & 2 & -1 &  \cdots & 0 \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+\vdots & \vdots & \ddots & \ddots & -1 \\
+0 & 0 & \cdots & -1 & 2 
+\end{bmatrix} \, ,
+\end{align*}
+
+we can rewrite $A_\text{f} = I - 2B$ and $A_\text{b} = I + 2B$. First we look at the explicit scheme.
+
+For the solution to converge we need the spectral radius to be less than one. The spectral radius of a matrix is the absolute of the largest eigenvalue of the matrix. Thus we need to find the eigenvalues of $A_\text{f}$, $\lambda$. Since $A_\text{f} = I - \alpha B$ it is obvious that it has eigenvalues $\lambda_{k} = 1 - \alpha \mu_k$ where $\mu$ are the eigenvalues of $B$ and the subscript $k$ denotes which eigenvalue we are looking at. The eigenvalues of $B$ are (\cite[p.~307]{Hjorth-Jensen2015}):
+
+\begin{align*}
+\mu_k = 2 - 2\cos(\frac{k\pi}{n} + 1) \, , 
+\end{align*}
+
+where $n$ is as defined earlier. The requirement for the solution to converge is that the spectral radius $\rho(A_\text{f})$:
+
+\begin{align*}
+\rho(A_\text{f}) &< 1 \\
+|\max (\lambda_k) | &< 1 \\
+|\max ( 1 - 2\alpha(1 - \cos (\frac{k\pi}{n} + 1) ) | &< 1
+\end{align*}
+
+This is only the case if:
+
+\begin{align*}
+2\alpha ( 1 - \cos( \frac{k\pi}{n} + 1) ) &< 2 \\
+\alpha &< ( 1 - \cos( \frac{k\pi}{n} + 1) )^{-1} 
+\end{align*}
+
+The right-hand side can never be smaller than $1/2$, which gives us that $\alpha$ has to be less than $1/2$ in order for the solution to converge. The condition for convergence with the explicit scheme is thus:
+
+\begin{align*}
+\frac{\Delta t}{\Delta x^2} &\leq \frac{1}{2} \, , \numberthis \label{eq:forward_euler_convergence}
+\end{align*}
+
+In order to determine the condition for convergence with the implicit scheme we need that $\rho(A_\text{b}^{-1}) < 1$. This is the case if $\rho(A_\text{b}) > 1$. As we can write $A_\text{b} = I + 2B$, we can infer that the eigenvalues of $A_\text{b}$ are $\lambda_k = 1 + 2\alpha \mu_k = 1 + 2\alpha (1 - \cos(k\pi/n + 1) )$ which is always greater than one. Thus the spectral radius $\rho(A_\text{b})$ is always greater than one, and the solutions converges for any choice of $\alpha$. 
+
 
 \subsubsection{Crank-Nicolson scheme} \label{sec:formalism_crank_nicolson}
 
@@ -451,19 +494,7 @@ We recognize that by setting $\theta=0$ this returns the explicit scheme, and th
 &= \alpha u_{i-1,j-1} + (2-2\alpha) u_{i,j-1} + \alpha u_{i+1,j-1}
 \end{align*}
 
-This can be rewritten as a matrix-vector equation using the identity matrix $I$, the matrix:
-
-\begin{align*}
-B &= \begin{bmatrix}
-2 & -1 & 0 & \cdots & 0 \\
--1 & 2 & -1 &  \cdots & 0 \\
-\vdots & \ddots & \ddots & \ddots & \vdots \\
-\vdots & \vdots & \ddots & \ddots & -1 \\
-0 & 0 & \cdots & -1 & 2 
-\end{bmatrix} \, ,
-\end{align*}
-
-and the vector $U_j$ which was defined earlier:
+This can be rewritten as a matrix-vector equation using the identity matrix $I$, the matrix $B$ and the vector $U_j$ as defined in the previous section:
 
 \begin{align*}
 (2I + \alpha B ) U_j &= (2I - \alpha B) U_{j-1} \\
