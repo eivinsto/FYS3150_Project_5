@@ -89,7 +89,7 @@ void DiffusionEquationSolver1D::tridiag(){
     f_tilde(i) -= f_tilde(i-1)*m_a/d_tilde(i-1);
   }
 
-  // Find m_u
+  // Find m_u (boundaries m_u(N) and m_u(0) are set manually outside of the tridiag function)
   for (int i = m_N; i >= 2; i--){
     m_u(i-1) = (f_tilde(i-1) - m_c*m_u(i))/d_tilde(i-1);
   }
