@@ -29,12 +29,13 @@ def run_2D(filename, N, dt, M, write_limit):
 
 
 def import_data_2D(file, tsteps, N):
+    t_N = N+1
     data = np.genfromtxt(file)
-    reformatted_data = np.zeros([tsteps, N, N])
+    reformatted_data = np.zeros([tsteps, t_N, t_N])
     t = np.zeros(tsteps)
     for k in range(tsteps):
-        for ix in range(N):
-            reformatted_data[k, :, ix] = data[k, ix*N:(ix+1)*N]
+        for ix in range(t_N):
+            reformatted_data[k, :, ix] = data[k, ix*t_N:(ix+1)*t_N]
         t[k] = data[k, -1]
 
     return t, reformatted_data
