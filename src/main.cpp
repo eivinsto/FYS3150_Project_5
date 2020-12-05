@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "diffusion_equation_solver_1D.hpp"
 #include "diffusion_equation_solver_2D.hpp"
 #include <cmath>
@@ -42,7 +43,7 @@ int main(int argc, char** argv) {
 }
 
 double init_func(double x){
-  return std::exp(x);
+  return std::sin(2*M_PI*x) + x;
 }
 
 double init_func2D(double x, double y){
