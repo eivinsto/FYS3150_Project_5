@@ -75,23 +75,23 @@ DiffusionEquationSolver1D::DiffusionEquationSolver1D(int N, double dt, int M, in
 */
 void DiffusionEquationSolver1D::tridiag(){
   // Precalculate factors to reduce necessary FLOPs
-  double decomp_factor = m_a/m_b;
-  double b_temp = m_b - m_c*decomp_factor;
+  double ac = m_a*m_c;
 
   // Initialize temporary vector for RHS of equation
-  arma::vec b_twiddle = m_y;
+  arma::vec f_tilde = m_y;
+
+  arma::vec d_tilde = arma::zeros(m_N);
+  d_tilde(0) = m_b;
 
   // Update RHS elements
-  for (int i = 1; i < m_N+1; i++){
-    b_twiddle(i) -= b_twiddle(i-1)*decomp_factor;
+  for (int i = 1; i < m_N; i++){
+    d_tilde(i) = m_b - ac/d_tilde(i-1);
+    f_tilde(i) -= f_tilde(i-1)*m_a/d_tilde(i-1);
   }
 
-  // Set boundary
-  m_u(m_N) = b_twiddle(m_N)/b_temp;
-
   // Find m_u
-  for (int i = m_N; i >= 1; i--){
-    m_u(i-1) = (b_twiddle(i-1) - m_c*m_u(i))/b_temp;
+  for (int i = m_N; i >= 2; i--){
+    m_u(i-1) = (f_tilde(i-1) - m_c*m_u(i))/d_tilde(i-1);
   }
 }
 
