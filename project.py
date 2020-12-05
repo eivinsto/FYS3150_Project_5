@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # 1D sample run
     if runflag == "1d":
         Ns = [10, 100]
-        dt = [0.5*0.5*1/(N)**2 for N in Ns]
+        dt = [0.49*1/(N)**2 for N in Ns]
         T = 100
         M = [int(T/dt[j] - 1) for j in range(len(Ns))]
         write_limit = 100
@@ -84,7 +84,7 @@ if __name__ == "__main__":
                 ax[j].plot(x, data[method, N][0, :],
                            label=f"$t_{1} = $ {dt[j]*0}")
                 ax[j].plot(x, data[method, N][-1, :],
-                           label=f"$t_{2} = $ {dt[j]*(M[j]+1)}")
+                           label=f"$t_{2} = $ {dt[j]*M[j]}")
                 ax[j].set_title(f"dx = {1/N}")
                 ax[j].legend()
                 ax[j].grid()
