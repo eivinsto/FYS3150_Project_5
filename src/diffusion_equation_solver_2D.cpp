@@ -42,10 +42,7 @@ void DiffusionEquationSolver2D::jacobi(){
     m_u(i,0) = m_y_lb(i*m_h);
     m_u(i,m_N-1) = m_y_ub(i*m_h);
   }
-  m_u(0,0) = m_x_lb(0);
-  m_u(m_N-1,m_N-1) = m_x_ub(1);
-  m_u(m_N-1,0) = m_y_ub(1);
-  m_u(0,m_N-1) = m_y_lb(0);
+  
 
   // Iterative solver
   for (int k = 0; k < m_maxiter; k++){
