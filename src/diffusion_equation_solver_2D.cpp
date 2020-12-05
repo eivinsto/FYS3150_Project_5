@@ -17,12 +17,12 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   m_y_lb = y_lb;                                         // Lower boundary function in y-direction
   m_x_ub = x_ub;                                         // Upper boundary function in x-direction
   m_x_lb = x_lb;                                         // Lower boundary function in x-direction
-  m_N = N;                                               // Amount of lengthsteps
+  m_N = N+1;                                               // Amount of lengthsteps
   m_dt = dt;                                             // Timestep
   m_M = M;                                               // Amount of timesteps
   m_ofilename = ofilename;                               // Output filename
   m_ofile.open(m_ofilename.c_str(), std::ofstream::out); // Ofstream object of output file
-  m_h = 1.0/double(m_N+1);                                       // Lengthstep
+  m_h = 1.0/double(N);                                       // Lengthstep
   m_alpha = m_dt/(m_h*m_h);                              // Coefficient for use in time integration
   m_u = arma::zeros<arma::mat>(m_N,m_N);                            // Solution matrix
   m_q = arma::zeros<arma::mat>(m_N,m_N);                            // Source term
@@ -36,7 +36,7 @@ void DiffusionEquationSolver2D::jacobi(){
   double s = 0;
 
   // Boundary conditions
-  for (int i = 1; i < m_N-1; i++){
+  for (int i = 0; i < m_N; i++){
     m_u(0,i) = m_x_lb(i*m_h);
     m_u(m_N-1,i) = m_x_ub(i*m_h);
     m_u(i,0) = m_y_lb(i*m_h);
@@ -84,6 +84,8 @@ void DiffusionEquationSolver2D::solve(){
       m_u(i,j) = m_init_func(i*m_h,j*m_h);
     }
   }
+
+  write_to_file();
 
   // Time iteration
   for (m_t = 0; m_t < m_M; m_t++){
