@@ -701,7 +701,7 @@ We can write this in terms of $u_{i,j}^l$:
 u_{i,j}^l &= \frac{1}{1 + 4\alpha} (\alpha \Delta_{i,j}^l + u_{i,j}^{l-1} ) \numberthis \label{eq:2D_diff_eq_numerical_solution}
 \end{align*}
 
-As we have now moved to two dimensions this cannot be represented as a matrix-vector equation as in the one-dimensional case. This makes it difficult to solve this with the methods we have used so far, and so we need to find an alternative way of solving this. For this purpose we choose to use Jacobi's iterative method. With a standard matrix-vector equation:
+As we have now moved to two dimensions this cannot be represented as a matrix-vector equation as in the one-dimensional case. This makes it difficult to solve this with the methods we have used so far, and so we need to find an alternative way of solving this. For this purpose we choose to use Jacobi's iterative method (this method is outlined in \cite[p~.189-190]{Hjorth-Jensen2015}). With a standard matrix-vector equation:
 
 \begin{align*}
 Ax = b \, ,
@@ -713,25 +713,65 @@ this method can be formulated as:
 x^{k+1} = D^{-1}(b - (L+U)x^k) \, , \numberthis \label{eq:jacobi_iterative_method}
 \end{align*}
 
-where $A = D + U + L$, $D$ is a diagonal matrix, $U$ an upper triangular matrix, $L$ a lower triangular matrix, and $k$ denotes the iteration. This is iterated until $x^k$ is sufficiently close to $x^{k+1}$, which is usually marked as the case when the sum of the square of the elements of $x^{k+1} - x^k$ is less than a specified tolerance limit. If we instead define the elements of each of these matrices as the $d^{-1}_{i,j}$ for $D^{-1}$, $v_{i,j}$ for $U$ and $l_{i,j}$ for $L$ we can rewrite this equation as:
+where $A = D + U + L$, $D$ is a diagonal matrix, $U$ an upper triangular matrix, $L$ a lower triangular matrix, and $k$ denotes the iteration. This is iterated until $x^k$ is sufficiently close to $x^{k+1}$, which is usually marked as the case when the sum of the square of the elements of $x^{k+1} - x^k$ is less than a specified tolerance limit. 
+
+%If we instead define the elements of each of these matrices as the $d^{-1}_{i,j}$ for $D^{-1}$, $v_{i,j}$ for $U$ and $l_{i,j}$ for $L$ we can rewrite this equation as:
+
+We can rewrite this for a component $i$ in terms of the elements of $A$, $a_{i,j}$, as follows:
 
 \begin{align*}
-x^{k+1}_i &= \sum\limits_j d^{-1}_{i,j} (b_i - (l_{i,j} + u_{i,j} ) x^k_i)
+x^{k+1}_i &= \frac{1}{a_{ii}} ( b_i - \sum\limits_i \sum\limits_{j\neq i} a_{i,j} x_j^k)
 \end{align*}
 
-This form of the method can easily be "adapted" to higher dimensions by adding more indices:
+This can be adapted to a two-dimensional case by adding more indices to $a$:
 
 \begin{align*}
-x^{k+1}_{i,j} &= \sum\limits_m \sum\limits_n d^{-1}_{i,j,m,n} (b_{i,j} - (l_{i,j,m,n} + v_{i,j,m,n})x^k_{i,j} 
+x_{i,j}^{k+1} &= \frac{1}{a_{i,j,i,j}} (b_{i,j} - \sum\limits_i \sum\limits_j \sum\limits_{m\neq i} \sum\limits_{n \neq j} a_{i,j,m,n} x_{i,j}^k ) \, ,
 \end{align*}
 
-In order for this to have the same meaning as earlier we have to assume that $d^{-1}_{i,j,m,n}$ is zero whenever $m \neq i$ and $n \neq j$. Similarly $l_{i,j,m,n}$ and $v_{i,j,m,n}$ have to return elements where $m<i$ and $n<j$, or $m>i$ and $n>j$ respectively multiplied by some constant corresponding to the element. We wish to adopt an iterative scheme such as this to solve the 2D diffusion equation as it is given in equation \eqref{eq:2D_diff_eq_numerical_solution}. This equation is actually already on the form of Jacobi's iterative method as long as we add the iteration index $k$. The constraints on $m$ and $n$ for the different matrices make it clear that this is the case if we view $u_{i,j}^{l-1}$ as $b_{i,j}$, $\alpha \Delta_{i,j}^l$ as $(l_{i,j,m,n} + v_{i,j,m,n})x_{i,j}^k$, and set $d^{-1}_{i,j,m,n} = \delta_{i,m} \delta_{j,n} /(1+4\alpha)$. This means that we can iterate:
+where $a_{i,j,i,j}$ equates to the "diagonal elements" in this case. We wish to adopt this iterative scheme to solve the 2D diffusion equation as it is given in \eqref{eq:2D_diff_eq_numerical_solution}. This equation is already nearly on the form of what we need for the iterative scheme if we set:
 
 \begin{align*}
-u_{i,j}^{l,k+1} &= \frac{1}{1 + 4\alpha}(\alpha \Delta_{i,j}^{l,k} - u_{i,j}^{l-1}) \, , \numberthis \label{eq:Jacobi_iteratation_diffusion_2D}
+x_{i,j} &= u_{i,j}^l
+b_{i,j} &= u_{i,j}^{l-1} \\
+\alpha \Delta_{i,j}^l &= -\sum\limits_m \sum\limits_n a_{i,j,m,n}  u_{i,j}^l
 \end{align*} 
 
-where $u_{i,j}^{l-1}$ is left as a constant during iteration, to find the solution in the next timestep. If the solution has converged so that $u_{i,j}^{l,k+1}$ is sufficiently close to $u_{i,j}^{l,k}$ for all $i$ and $j$, we stop the iteration. In the one-dimensional case, this solution converges if the spectral radius $\rho(D^{-1}(L+U)) < 1$. This is always the case if the matrix $A$ is diagonally dominant. In the two-dimensional case there are four elements equal to $\alpha$ off what equates to the diagonal. As the "diagonal" elements are $1 + 4\alpha$ (which is always larger than $4\alpha$ as $\alpha$ is positive), we have that what equates to $A$ is diagonally dominant. Because of this we know that the solution converges for any choice of timestep $\Delta t$ and steplength $h$.
+We can then also add the iteration index $k$, in order to obtain the equation that we iterate:
+
+\begin{align*}
+u_{i,j}^{l,k+1} &= \frac{1}{1 + 4\alpha} (\alpha \Delta_{i,j}^{l,k} + u_{i,j}^l) \, ,
+\end{align*}
+
+where $u_{i,j}^l$ is left as a constant during the iteration. If the solution has converged so that $u_{i,j}^{l,k+1}$ is sufficiently close to $u_{i,j}^{l,k}$ for all $i$ and $j$, we stop the iteration. In the one-dimensional case, this solution converges if the spectral radius $\rho(D^{-1}(L+U)) < 1$. This is always the case if the matrix $A$ is diagonally dominant. In the two-dimensional case, this equates to:
+
+\begin{align*}
+|a_{i,j,i,j}| > \sum\limits_{m\neq i} \sum\limits_{n\neq j} |a_{i,j,m,n}| \\
+|1 + 4 \alpha| > 4|\alpha| \, ,
+\end{align*}
+
+which is always the case, as $\alpha$ is a positive number. Thus this method converges to the correct answer for any choice of timestep $\Delta t$ and steplength $h$.
+
+
+%old argument in case needed:
+
+%\begin{align*}
+%x^{k+1}_i &= \sum\limits_j d^{-1}_{i,j} (b_i - (l_{i,j} + u_{i,j} ) x^k_i)
+%\end{align*}
+
+%This form of the method can easily be "adapted" to higher dimensions by adding more indices:
+
+%\begin{align*}
+%x^{k+1}_{i,j} &= \sum\limits_m \sum\limits_n d^{-1}_{i,j,m,n} (b_{i,j} - (l_{i,j,m,n} + v_{i,j,m,n})x^k_{i,j} 
+%\end{align*}
+
+%In order for this to have the same meaning as earlier we have to assume that $d^{-1}_{i,j,m,n}$ is zero whenever $m \neq i$ and $n \neq j$. Similarly $l_{i,j,m,n}$ and $v_{i,j,m,n}$ have to return elements where $m<i$ and $n<j$, or $m>i$ and $n>j$ respectively multiplied by some constant corresponding to the element. We wish to adopt an iterative scheme such as this to solve the 2D diffusion equation as it is given in equation \eqref{eq:2D_diff_eq_numerical_solution}. This equation is actually already on the form of Jacobi's iterative method as long as we add the iteration index $k$. The constraints on $m$ and $n$ for the different matrices make it clear that this is the case if we view $u_{i,j}^{l-1}$ as $b_{i,j}$, $\alpha \Delta_{i,j}^l$ as $(l_{i,j,m,n} + v_{i,j,m,n})x_{i,j}^k$, and set $d^{-1}_{i,j,m,n} = \delta_{i,m} \delta_{j,n} /(1+4\alpha)$. This means that we can iterate:
+
+%\begin{align*}
+%u_{i,j}^{l,k+1} &= \frac{1}{1 + 4\alpha}(\alpha \Delta_{i,j}^{l,k} - u_{i,j}^{l-1}) \, , \numberthis \label{eq:Jacobi_iteratation_diffusion_2D}
+%\end{align*} 
+
+%where $u_{i,j}^{l-1}$ is left as a constant during iteration, to find the solution in the next timestep. If the solution has converged so that $u_{i,j}^{l,k+1}$ is sufficiently close to $u_{i,j}^{l,k}$ for all $i$ and $j$, we stop the iteration. In the one-dimensional case, this solution converges if the spectral radius $\rho(D^{-1}(L+U)) < 1$. This is always the case if the matrix $A$ is diagonally dominant. In the two-dimensional case there are four elements equal to $\alpha$ off what equates to the diagonal. As the "diagonal" elements are $1 + 4\alpha$ (which is always larger than $4\alpha$ as $\alpha$ is positive), we have that what equates to $A$ is diagonally dominant. Because of this we know that the solution converges for any choice of timestep $\Delta t$ and steplength $h$.
 
 
 \clearpage
