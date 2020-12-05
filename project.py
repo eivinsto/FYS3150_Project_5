@@ -54,10 +54,13 @@ if __name__ == "__main__":
     # 1D sample run
     if runflag == "1d":
         Ns = [10, 100]
-        dts = [0.49*1/(N)**2 for N in Ns]
-        T = 100
-        Ms = [int(T/dt - 1) for dt in dts]
-        write_limit = [int(M/1e4) for M in Ms]
+        dts = np.asarray([0.5*0.5/(N)**2 for N in Ns])
+        T = 0.1
+        t1 = 0.04
+        n_t1 = np.asarray(t1/dts, dtype=np.int64)
+        n_T = np.asarray(T/dts, dtype=np.int64)
+        Ms = np.asarray([int(T/dt - 1) for dt in dts])
+        write_limit = 1
         methods = ["ForwardEuler", "BackwardEuler", "CrankNicholson"]
 
         output_files = []
@@ -71,7 +74,7 @@ if __name__ == "__main__":
             for i, method in enumerate(methods):
                 for j, N in enumerate(Ns):
                     run_1D(output_files[i][j], method, N, dts[j], Ms[j], u_b,
-                           l_b, write_limit[j])
+                           l_b, write_limit)
 
         data = {}
         for i, method in enumerate(methods):
@@ -82,11 +85,11 @@ if __name__ == "__main__":
             f, ax = plt.subplots(1, 2)
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
-                ax[j].plot(x, data[method, N][0, :],
-                           label=f"$t_{1} = $ {dts[j]*0}")
+                ax[j].plot(x, data[method, N][n_t1[j], :],
+                           label=f"$t_{1} = $ {dts[j]*n_t1[j]:.3f}")
                 ax[j].plot(x, data[method, N][-1, :],
-                           label=f"$t_{2} = $ {dts[j]*Ms[j]}")
-                ax[j].set_title(f"dx = {1/N}")
+                           label=f"$t_{2} = $ {dts[j]*n_T[j]:.3f}")
+                ax[j].set_title(r"$\Delta x = $ " f"{1/N}")
                 ax[j].legend()
                 ax[j].grid()
 
