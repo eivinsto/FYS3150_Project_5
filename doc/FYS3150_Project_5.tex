@@ -381,7 +381,7 @@ u_{i,j+1} &= u_{i,j} + \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} +
 u_{i,j+1} &= u_{i,j} + \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \, ,\numberthis \label{eq:forward_euler_method}
 \end{align*}
 
-where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. At this point we make the assumption that the boundary conditions are zero. By the arguments given in \ref{sec:formalism_1D_diff_eq_analytical} this can easily be extended to constant boundary conditions by use of the steady state solution of the problem. Implementing a numerical solution for other boundary conditions is not difficult, as the only requirement we must have is that the solver cannot modify the boundary values outside of the boundary condition specified. Assuming Dirichlet boundary conditions simplify the calculaton of the condition for convergence, and so we keep them in this section.
+where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. At this point we make the assumption that the boundary conditions are zero. By the arguments given in \ref{sec:formalism_1D_diff_eq_analytical} this can easily be extended to constant boundary conditions by use of the steady state solution of the problem. Implementing a numerical solution for other boundary conditions is not difficult either, as the only requirement we must have is that the solver cannot modify the boundary values outside to anything else than what is specified by the boundary conditions. Assuming Dirichlet boundary conditions simplify the calculaton of the condition for convergence, and so we keep them in this section.
 
 The equation above gives directly the solution in the next timestep, and thus this is an explicit scheme. This can also be rewritten as a matrix vector equation by using $U_j = [u_{1,j} \quad u_{1,j} \quad ... \quad u_{n,j} ] ^T$. And the matrix:
 
@@ -517,7 +517,7 @@ This is the case if:
 | \frac{2 - \alpha \mu_k}{2 + \alpha \mu_k} | < 1
 \end{align*}
 
-As $\mu_k = 2 - 2 \cos(k\pi/n + 1)$ is always positive this condition is always met, and thus the Crank-Nicholson scheme also converges for any $\alpha$. 
+As $\mu_k = 2 - 2 \cos(k\pi/n + 1)$ is always positive this condition is always met, and thus the Crank-Nicholson scheme also converges for any $\alpha$. Note that the numerical solution using this scheme can also easily be adapted to general boundary conditions in the same fashion as was discussed in the previous section.
 
 \subsubsection{Convergence and errors in numerical schemes} \label{sec:formalism_1D_diff_eq_numerical_conv_and_err}
 
@@ -759,7 +759,7 @@ b_{i,j} &= u_{i,j}^{l-1} \\
 We can then also add the iteration index $k$, in order to obtain the equation that we iterate:
 
 \begin{align*}
-u_{i,j}^{l,k+1} &= \frac{1}{1 + 4\alpha} (\alpha \Delta_{i,j}^{l,k} + u_{i,j}^l) \, ,
+u_{i,j}^{l,k+1} &= \frac{1}{1 + 4\alpha} (\alpha \Delta_{i,j}^{l,k} + u_{i,j}^{l-1}) \, , \numberthis \label{eq:2D_diff_eq_jacobi_iter}
 \end{align*}
 
 where $u_{i,j}^l$ is left as a constant during the iteration. If the solution has converged so that $u_{i,j}^{l,k+1}$ is sufficiently close to $u_{i,j}^{l,k}$ for all $i$ and $j$, we stop the iteration. In the one-dimensional case, this solution converges if the spectral radius $\rho(D^{-1}(L+U)) < 1$. This is always the case if the matrix $A$ is diagonally dominant. In the two-dimensional case, this equates to:
@@ -769,8 +769,9 @@ where $u_{i,j}^l$ is left as a constant during the iteration. If the solution ha
 |1 + 4 \alpha| > 4|\alpha| \, ,
 \end{align*}
 
-which is always the case, as $\alpha$ is a positive number. Thus this method converges to the correct answer for any choice of timestep $\Delta t$ and steplength $h$.
+which is always the case as $\alpha$ is a positive number. Thus this method converges to the correct answer for any choice of timestep $\Delta t$ and steplength $h$.
 
+Assuming boundary conditions that differ from the Dirichlet conditions is not difficult, as we only need to set them manually and make sure that the solver does not edit them. 
 
 %old argument in case needed:
 
@@ -792,6 +793,22 @@ which is always the case, as $\alpha$ is a positive number. Thus this method con
 
 %where $u_{i,j}^{l-1}$ is left as a constant during iteration, to find the solution in the next timestep. If the solution has converged so that $u_{i,j}^{l,k+1}$ is sufficiently close to $u_{i,j}^{l,k}$ for all $i$ and $j$, we stop the iteration. In the one-dimensional case, this solution converges if the spectral radius $\rho(D^{-1}(L+U)) < 1$. This is always the case if the matrix $A$ is diagonally dominant. In the two-dimensional case there are four elements equal to $\alpha$ off what equates to the diagonal. As the "diagonal" elements are $1 + 4\alpha$ (which is always larger than $4\alpha$ as $\alpha$ is positive), we have that what equates to $A$ is diagonally dominant. Because of this we know that the solution converges for any choice of timestep $\Delta t$ and steplength $h$.
 
+
+
+
+\subsection{Temperature distribution in the lithosphere} \label{sec:formalism_temp_dist_lithosphere}
+
+In order to show the functionality of the two-dimensional solver that we implement we wish to apply it to a real-world problem. This problem is originally outlined in \cite[p.~4-5]{Hjorth-Jensen2020-p5}, due to this there may be similarities between what is written here and that which is written there. 
+
+Based on geological evidence found at the surface, it has been proposed that there was an active subduction zone on the western coast of Norway about $1$ Gy ago. This causes a refertilization of the mantle wedge, which means that the oceanic lithosphere releases water and other chemical components that may be trapped in the mantle above the subducting slab. The concentration of radioactive elements in these chemical components is higher than what is regularly found in the mantle, and therefore it is expected that the mantle will be warmer than it would be if the refertilization hadn't occured. By simulating this model numerically in two dimensions we can give an estimate to what kind of temperature difference this might cause, which can later be compared with experimental results. In order to do this we need to solve heat equation with an added source term:
+
+\begin{align*}
+\nabla^2 T + \frac{Q}{k} &= \frac{k}{\rho c_p} \frac{\partial T}{\partial t} \, , \numberthis \label{eq:heat_eq_with_source_term}
+\end{align*} 
+
+where $Q$ is the source term and all other variables are as defined in equation \eqref{eq:heat_equation_general}. It is assumed that the boundary conditions are constant in time, and that the temperature at the surface is $8^\circ$ C, and at the bottom of the mantle is $1300^\circ$ C. We divide the lithosphere into three parts, the upper crust from $0$ to $20$ km depth, the lower crust from $20$ to $40$ km depth, and the mantle from $40$ to $120$ km depth. For the entire lithosphere we assume a constant density $\rho = 3510$ kg/m$^3$, thermal conductivity $k = 2.5$ W/m/$^\circ$C and specific heat $c_p = 1000$ J/kg/$^\circ$C.
+
+Before the fertilization some radioactive materials are already present, and they cause a heat production of about $1.4$ $\mu$W/m$^3$ in the upper crust, $0.35$ $\mu$W/m$^3$ in the lower crust and $0.05$ $\mu$W/m$^3$ in the mantle.
 
 \clearpage
 
