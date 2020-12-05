@@ -19,7 +19,7 @@ private:
   double (*m_x_lb)(double);
   double (*m_init_func)(double, double);
 
-  int m_t;
+  int m_t = 0;
   int m_N;
   double m_dt;
   int m_M;

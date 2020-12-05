@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     # 2D sample run
     if runflag == "2d":
-        N = 100
+        N = 20
         dt = 1e-4
         M = 10000
         write_limit = 1000
