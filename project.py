@@ -54,10 +54,10 @@ if __name__ == "__main__":
     # 1D sample run
     if runflag == "1d":
         Ns = [10, 100]
-        dt = [0.49*1/(N)**2 for N in Ns]
+        dts = [0.49*1/(N)**2 for N in Ns]
         T = 100
-        M = [int(T/dt[j] - 1) for j in range(len(Ns))]
-        write_limit = 100
+        Ms = [int(T/dt - 1) for dt in dts]
+        write_limit = [int(M/1e4) for M in Ms]
         methods = ["ForwardEuler", "BackwardEuler", "CrankNicholson"]
 
         output_files = []
@@ -70,8 +70,8 @@ if __name__ == "__main__":
         if genflag == "y":
             for i, method in enumerate(methods):
                 for j, N in enumerate(Ns):
-                    run_1D(output_files[i][j], method, N, dt[j], M[j], u_b,
-                           l_b, write_limit)
+                    run_1D(output_files[i][j], method, N, dts[j], Ms[j], u_b,
+                           l_b, write_limit[j])
 
         data = {}
         for i, method in enumerate(methods):
@@ -83,9 +83,9 @@ if __name__ == "__main__":
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
                 ax[j].plot(x, data[method, N][0, :],
-                           label=f"$t_{1} = $ {dt[j]*0}")
+                           label=f"$t_{1} = $ {dts[j]*0}")
                 ax[j].plot(x, data[method, N][-1, :],
-                           label=f"$t_{2} = $ {dt[j]*M[j]}")
+                           label=f"$t_{2} = $ {dts[j]*Ms[j]}")
                 ax[j].set_title(f"dx = {1/N}")
                 ax[j].legend()
                 ax[j].grid()
