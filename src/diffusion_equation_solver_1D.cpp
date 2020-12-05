@@ -27,7 +27,7 @@ DiffusionEquationSolver1D::DiffusionEquationSolver1D(int N, double dt, int M, in
                                                  std::string filename, double u_b, double l_b){
   m_N = N;                      // Amount of lengthsteps
   m_dt = dt;                    // Timestep
-  m_dx = 1.0/double(N+1);       // Lengthstep
+  m_dx = 1.0/double(N);       // Lengthstep
   m_M = M;                      // Amount of timesteps
   m_write_limit = write_limit;  // Write results every <write_limit> timesteps
   m_u = arma::zeros(m_N+1);     // Vector containing solution
@@ -98,23 +98,24 @@ void DiffusionEquationSolver1D::tridiag(){
 // M amount of timesteps
 void DiffusionEquationSolver1D::forward_euler_solve(){
   // Set boundary conditions
-  m_u(0) = m_lb;
-  m_u(m_N) = m_ub;
+  m_u(0) = m_y(0) = m_lb;
+  m_u(m_N) = m_y(m_N) = m_ub;
 
   // Set initial condition
   for (int i = 1; i<m_N; i++){
-    m_y(i) = m_init_func(m_dx*i);
+    m_u(i) = m_init_func(m_dx*i);
   }
+
   write_to_file();
 
   // Iterate over timesteps
   for (int j = 1; j <= m_M; j++){
     for (int i = 1; i < m_N; i++){
-      m_u(i) = m_coeff*m_y(i) + m_alpha*(m_y(i+1) + m_y(i-1));
+      m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i+1) + m_u(i-1));
     }
 
     // Update previous solution
-    m_y = m_u;
+    m_u = m_y;
 
     // Write to file
     if (j%m_write_limit==0){
