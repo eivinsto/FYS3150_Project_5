@@ -527,7 +527,7 @@ As $\mu_k = 2 - 2 \cos(k\pi/n + 1)$ is always positive this condition is always 
 The equation we wish to solve is to two-dimensional diffusion equation:
 
 \begin{align*}
-\frac{\partial^2 u(x,y,t)}{\partial x^2} + \frac{\partial^2 u(x,y,t)}{\partial y^2} &= \frac{\partial u(x,y,t)}{\partial t}
+\frac{\partial^2 u(x,y,t)}{\partial x^2} + \frac{\partial^2 u(x,y,t)}{\partial y^2} &= \frac{\partial u(x,y,t)}{\partial t} \numberthis \label{eq:2D_diffusion_equation}
 \end{align*}
 
 We wish to solve for a square system, with $x,y \in [0,L]$. We assume a general initial state $u(x,y,0) = g(x,y)$ and Dirichlet boundary conditions $u(0,y,t) = u(L,y,t) = u(x,0,t) = u(x,L,t) = 0$. We assume separation of variables:
@@ -654,6 +654,84 @@ constrained by the boundary conditions specified. As long as the Laplace equatio
 
 where we have used that the Laplace equation holds for $f(x,y)$ and that it is independent of time. Finding a general steady state solution is not as easy as in the one-dimensional case, however, as the boundaries need to be well defined at the corners. In order for this to be the case, the boundary conditions for at least one of the spatial coordinates has to depend on the other spatial coordinate if we assume the boundary values to be non-zero. 
 
+
+
+
+
+\subsection{Numerical solution of diffusion equation in two dimensions} \label{sec:formalism_2D_diff_eq_numerical}
+
+We wish to solve the two-dimensional diffusion equation \eqref{eq:2D_diffusion_equation} numerically. The scheme we want to find should be implicit, as that will converge for any choice of timestep $\Delta t$ and steplength $h$. First we will make some simplifications. We assume Dirichlet boundary conditions, a general initial configuration $u(x,y,0) = g(x,y)$, and $x,y\in[0,1]$. A discretization will also be necessary, and so we define:
+
+\begin{align*}
+x_i &= i h \,\,\,\quad 0 \leq i \leq n+1 \\
+y_j &= j h \,\,\,\quad 0 \leq j \leq n+1 \\
+t_l &= l \Delta t \quad 0 \leq l \, ,
+\end{align*}
+
+where $h = 1/(n+1)$, $n$ a selected integer, and $\Delta t$ a selected float. We denote a value of the solution $u$ by the indices $i$, $j$ and $l$ as follows:
+
+\begin{align*}
+u_{i,j}^l = u(x_i,y_j,t_l)
+\end{align*}
+
+Using this notation we can approximate the derivatives in the diffusion equation:
+
+\begin{align*}
+\frac{\partial^2 u}{\partial x^2} &= \frac{u_{i+1,j}^l - 2u_{i,j}^l + u_{i-1,j}^l}{h^2} + \mathcal{O}(h^2) \\
+\frac{\partial^2 u}{\partial y^2} &= \frac{u_{i,j+1}^l - 2u_{i,j}^l + u_{i,j-1}^l}{h^2} + \mathcal{O}(h^2)\\
+\frac{\partial u}{\partial t} &= \frac{u_{i,j}^l - u_{i,j}^{l-1} }{\Delta t} + \mathcal{O}(\Delta t)
+\end{align*}
+
+The diffusion equation can then be written using these approximations as:
+
+\begin{align*}
+\frac{u_{i,j}^l - u_{i,j}^{l-1} }{\Delta t}  &= \frac{u_{i+1,j}^l + u_{i-1,j}^l + u_{i,j+1}^l + u_{i,j-1}^l - 4u_{i,j}^l}{h^2} \\
+u_{i,j}^l - u_{i,j}^{l-1} &= \alpha(\Delta_{i,j}^l - 4u_{i,j}^l) \, , 
+\end{align*}
+
+where $\alpha = \Delta t /h^2$ and:
+
+\begin{align*}
+\Delta_{i,j}^l &= u_{i+1,j}^l + u_{i-1,j}^l + u_{i,j+1}^l + u_{i,j-1}^l
+\end{align*}
+
+We can write this in terms of $u_{i,j}^l$:
+
+\begin{align*}
+u_{i,j}^l &= \frac{1}{1 + 4\alpha} (\alpha \Delta_{i,j}^l + u_{i,j}^{l-1} ) \numberthis \label{eq:2D_diff_eq_numerical_solution}
+\end{align*}
+
+As we have now moved to two dimensions this cannot be represented as a matrix-vector equation as in the one-dimensional case. This makes it difficult to solve this with the methods we have used so far, and so we need to find an alternative way of solving this. For this purpose we choose to use Jacobi's iterative method. With a standard matrix-vector equation:
+
+\begin{align*}
+Ax = b \, ,
+\end{align*}
+
+this method can be formulated as:
+
+\begin{align*}
+x^{k+1} = D^{-1}(b - (L+U)x^k) \, , \numberthis \label{eq:jacobi_iterative_method}
+\end{align*}
+
+where $A = D + U + L$, $D$ is a diagonal matrix, $U$ an upper triangular matrix, $L$ a lower triangular matrix, and $k$ denotes the iteration. This is iterated until $x^k$ is sufficiently close to $x^{k+1}$, which is usually marked as the case when the sum of the square of the elements of $x^{k+1} - x^k$ is less than a specified tolerance limit. If we instead define the elements of each of these matrices as the $d^{-1}_{i,j}$ for $D^{-1}$, $v_{i,j}$ for $U$ and $l_{i,j}$ for $L$ we can rewrite this equation as:
+
+\begin{align*}
+x^{k+1}_i &= \sum\limits_j d^{-1}_{i,j} (b_i - (l_{i,j} + u_{i,j} ) x^k_i)
+\end{align*}
+
+This form of the method can easily be "adapted" to higher dimensions by adding more indices:
+
+\begin{align*}
+x^{k+1}_{i,j} &= \sum\limits_m \sum\limits_n d^{-1}_{i,j,m,n} (b_{i,j} - (l_{i,j,m,n} + v_{i,j,m,n})x^k_{i,j} 
+\end{align*}
+
+In order for this to have the same meaning as earlier we have to assume that $d^{-1}_{i,j,m,n}$ is zero whenever $m \neq i$ and $n \neq j$. Similarly $l_{i,j,m,n}$ and $v_{i,j,m,n}$ have to return elements where $m<i$ and $n<j$, or $m>i$ and $n>j$ respectively multiplied by some constant corresponding to the element. We wish to adopt an iterative scheme such as this to solve the 2D diffusion equation as it is given in equation \eqref{eq:2D_diff_eq_numerical_solution}. This equation is actually already on the form of Jacobi's iterative method as long as we add the iteration index $k$. The constraints on $m$ and $n$ for the different matrices make it clear that this is the case if we view $u_{i,j}^{l-1}$ as $b_{i,j}$, $\alpha \Delta_{i,j}^l$ as $(l_{i,j,m,n} + v_{i,j,m,n})x_{i,j}^k$, and set $d^{-1}_{i,j,m,n} = \delta_{i,m} \delta_{j,n} /(1+4\alpha)$. This means that we can iterate:
+
+\begin{align*}
+u_{i,j}^{l,k+1} &= \frac{1}{1 + 4\alpha}(\alpha \Delta_{i,j}^{l,k} - u_{i,j}^{l-1}) \, , \numberthis \label{eq:Jacobi_iteratation_diffusion_2D}
+\end{align*} 
+
+where $u_{i,j}^{l-1}$ is left as a constant during iteration, to find the solution in the next timestep. If the solution has converged so that $u_{i,j}^{l,k+1}$ is sufficiently close to $u_{i,j}^{l,k}$ for all $i$ and $j$, we stop the iteration. In the one-dimensional case, this solution converges if the spectral radius $\rho(D^{-1}(L+U)) < 1$. This is always the case if the matrix $A$ is diagonally dominant. In the two-dimensional case there are four elements equal to $\alpha$ off what equates to the diagonal. As the "diagonal" elements are $1 + 4\alpha$ (which is always larger than $4\alpha$ as $\alpha$ is positive), we have that what equates to $A$ is diagonally dominant. Because of this we know that the solution converges for any choice of timestep $\Delta t$ and steplength $h$.
 
 
 \clearpage
