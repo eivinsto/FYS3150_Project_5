@@ -519,6 +519,25 @@ This is the case if:
 
 As $\mu_k = 2 - 2 \cos(k\pi/n + 1)$ is always positive this condition is always met, and thus the Crank-Nicholson scheme also converges for any $\alpha$. 
 
+\subsubsection{Convergence and errors in numerical schemes} \label{sec:formalism_1D_diff_eq_numerical_conv_and_err}
+
+In order to easily refer to the errors and convergence requirements for each scheme later on in the report we list them in Table \ref{table:schemes_conv_and_err_1D}, which is nearly the same as a table found on page 312 in \citep{Hjorth-Jensen2015}.
+
+\begin{table}[H]
+\centering
+\caption{This table lists the truncation and errors and stability requirements in the three numerical schemes (see Section \ref{sec:formalism_numerical_1D}) used for solving the one-dimensional diffusion equation as they relate to the timestep $\Delta t$ and the steplength $\Delta x$.} \label{table:schemes_conv_and_err_1D}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Scheme: & Truncation error: & Stability requirements: \\
+\hline
+Forward Euler & $\mathcal{O}(\Delta t)$ and $\mathcal{O}(\Delta x^2)$ & $\Delta t < \frac{1}{2} \Delta x^2$ \\
+\hline
+Backward Euler & $\mathcal{O}(\Delta t)$ and $\mathcal{O}(\Delta x^2)$ & None on $\Delta t$ and $\Delta x$ \\\hline
+Crank-Nicholson & $\mathcal{O}(\Delta t^2)$ and $\mathcal{O}(\Delta x^2)$ & None on $\Delta t$ and $\Delta x$ \\
+\hline
+\end{tabular}
+\end{table}
+
 
 
 
@@ -732,7 +751,7 @@ x_{i,j}^{k+1} &= \frac{1}{a_{i,j,i,j}} (b_{i,j} - \sum\limits_i \sum\limits_j \s
 where $a_{i,j,i,j}$ equates to the "diagonal elements" in this case. We wish to adopt this iterative scheme to solve the 2D diffusion equation as it is given in \eqref{eq:2D_diff_eq_numerical_solution}. This equation is already nearly on the form of what we need for the iterative scheme if we set:
 
 \begin{align*}
-x_{i,j} &= u_{i,j}^l
+x_{i,j} &= u_{i,j}^l \\
 b_{i,j} &= u_{i,j}^{l-1} \\
 \alpha \Delta_{i,j}^l &= -\sum\limits_m \sum\limits_n a_{i,j,m,n}  u_{i,j}^l
 \end{align*} 
