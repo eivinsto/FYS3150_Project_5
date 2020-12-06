@@ -10,7 +10,8 @@ public:
                             double (*)(double), std::string);
   DiffusionEquationSolver2D(int, double, int, int, double (*)(double, double),
                             double (*)(double), double (*)(double), double (*)(double),
-                            double (*)(double), std::string, double(*)(double, double, double));
+                            double (*)(double), std::string, double(*)(double, double, double),
+                            double, double);
   void solve();
 
 private:
@@ -39,5 +40,5 @@ private:
   int m_write_limit;
   double m_alpha_coeff;
   bool m_use_source_term = false;
-
+  double m_relative_length_squared = 1;
 };

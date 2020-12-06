@@ -34,11 +34,15 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
                                                      double (*init_func)(double, double),
                                                      double (*y_ub)(double), double (*y_lb)(double),
                                                      double (*x_ub)(double), double (*x_lb)(double),
-                                                     std::string ofilename, double (*source_term)(double,double,double))
+                                                     std::string ofilename, double (*source_term)(double,double,double),
+                                                     double Lx, double Ly)
                          : DiffusionEquationSolver2D(N, dt, M, write_limit, init_func, y_ub, y_lb,
                                                      x_ub, x_lb, ofilename){
   m_use_source_term = true;
   m_source_term = source_term;
+
+  // Relation between squared length in y-direction Ly and in x-direction Lx squared
+  m_relative_length_squared = Lx*Lx/(Ly*Ly);
 }
 
 void DiffusionEquationSolver2D::jacobi(){
@@ -59,7 +63,8 @@ void DiffusionEquationSolver2D::jacobi(){
   for (int k = 0; k < m_maxiter; k++){
     for (int i = 1; i < m_N-1; i++){
       for (int j = 1; j < m_N-1; j++){
-        m_u(i,j) = m_alpha_coeff*(m_alpha*(old(i+1,j) + old(i-1,j) + old(i,j-1) + old(i,j+1)) + m_q(i,j));
+        m_u(i,j) = m_alpha_coeff*(m_alpha*(old(i+1,j) + old(i-1,j)
+                 + m_relative_length_squared*(old(i,j-1) + old(i,j+1))) + m_q(i,j));
       }
     }
 
