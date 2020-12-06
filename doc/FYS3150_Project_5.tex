@@ -803,12 +803,27 @@ In order to show the functionality of the two-dimensional solver that we impleme
 Based on geological evidence found at the surface, it has been proposed that there was an active subduction zone on the western coast of Norway about $1$ Gy ago. This causes a refertilization of the mantle wedge, which means that the oceanic lithosphere releases water and other chemical components that may be trapped in the mantle above the subducting slab. The concentration of radioactive elements in these chemical components is higher than what is regularly found in the mantle, and therefore it is expected that the mantle will be warmer than it would be if the refertilization hadn't occured. By simulating this model numerically in two dimensions we can give an estimate to what kind of temperature difference this might cause, which can later be compared with experimental results. In order to do this we need to solve heat equation with an added source term:
 
 \begin{align*}
-\nabla^2 T + \frac{Q}{k} &= \frac{k}{\rho c_p} \frac{\partial T}{\partial t} \, , \numberthis \label{eq:heat_eq_with_source_term}
+\nabla^2 T + \frac{Q(x,y,t)}{k} &= \frac{k}{\rho c_p} \frac{\partial T}{\partial t} \, , \numberthis \label{eq:heat_eq_with_source_term}
 \end{align*} 
 
-where $Q$ is the source term and all other variables are as defined in equation \eqref{eq:heat_equation_general}. It is assumed that the boundary conditions are constant in time, and that the temperature at the surface is $8^\circ$ C, and at the bottom of the mantle is $1300^\circ$ C. We divide the lithosphere into three parts, the upper crust from $0$ to $20$ km depth, the lower crust from $20$ to $40$ km depth, and the mantle from $40$ to $120$ km depth. For the entire lithosphere we assume a constant density $\rho = 3510$ kg/m$^3$, thermal conductivity $k = 2.5$ W/m/$^\circ$C and specific heat $c_p = 1000$ J/kg/$^\circ$C.
+where $Q$ is the source term and all other variables are as defined in equation \eqref{eq:heat_equation_general}. It is assumed that the boundary conditions are constant in time, and that the temperature at the surface is $8^\circ$ C, and at the bottom of the mantle is $1300^\circ$ C. We divide the lithosphere into three parts, the upper crust from $0$ to $20$ km depth, the lower crust from $20$ to $40$ km depth, and the mantle from $40$ to $120$ km depth. For the entire lithosphere we assume a constant density $\rho = 3510$ kg/m$^3$, thermal conductivity $k = 2.5$ W/m/K and specific heat $c_p = 1000$ J/kg/K.
 
-Before the fertilization some radioactive materials are already present, and they cause a heat production of about $1.4$ $\mu$W/m$^3$ in the upper crust, $0.35$ $\mu$W/m$^3$ in the lower crust and $0.05$ $\mu$W/m$^3$ in the mantle.
+Before the fertilization some radioactive materials are already present, and they cause a (assumed constant) heat production of about $1.4$ $\mu$W/m$^3$ in the upper crust, $0.35$ $\mu$W/m$^3$ in the lower crust and $0.05$ $\mu$W/m$^3$ in the mantle. After the fertilization a 150 km wide area above the subducting slab is enriched with Th, U and K such that an additional $0.5$ $\mu$W/m$^3$ is present in the mantle (not the crust). These elements have halflives of $4.47$ Gy, $14.0$ Gy and $1.25$ Gy respectively.
+
+As for the dimensionality of the model we decide to model the depth as the $y$-direction with then $y \in [0,120]$ km. The $x$-direction needs to be wider than the area that is enriched, and so we choose $x \in [0,300]$ km, with the enriched area of the mantle being $x \in [75,225]$ km. 
+
+
+\subsubsection{Modeling of the heat source} \label{sec:formalism_heat_source_model}
+
+Before the enrichment the heat source comes purely from the radioactive elements already present. The added heat source on a function form can be written as:
+
+\begin{align*}
+Q(x,y,t) = \begin{cases}
+\,\,\, 1.4 \text{ $\mu$W/m$^3$} \quad , \quad  y<20 \\
+0.35 \text{ $\mu$W/m$^3$} \quad , \quad 20<y<40 \\
+0.05 \text{ $\mu$W/m$^3$} \quad , \quad y>40
+\end{cases}
+\end{align*}
 
 \clearpage
 
