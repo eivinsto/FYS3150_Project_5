@@ -124,7 +124,7 @@ void DiffusionEquationSolver2D::set_source_term(){
   if (m_use_source_term){
     for (int i = 0; i < m_N; i++){
       for (int j = 0; j < m_N; j++){
-        m_q(i,j) = m_source_term(i*m_h,j*m_h,m_t*m_dt) + m_u(i,j);
+        m_q(i,j) = m_dt*m_source_term(i*m_h,j*m_h,m_t*m_dt) + m_u(i,j);
       }
     }
   } else {
