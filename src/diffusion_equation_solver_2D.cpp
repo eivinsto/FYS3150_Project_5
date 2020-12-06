@@ -30,6 +30,17 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   m_alpha_coeff = 1.0/(1.0+4.0*m_alpha);
 }
 
+DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, int write_limit,
+                                                     double (*init_func)(double, double),
+                                                     double (*y_ub)(double), double (*y_lb)(double),
+                                                     double (*x_ub)(double), double (*x_lb)(double),
+                                                     std::string ofilename, double (*source_term)(double,double,double))
+                         : DiffusionEquationSolver2D(N, dt, M, write_limit, init_func, y_ub, y_lb,
+                                                     x_ub, x_lb, ofilename){
+  m_use_source_term = true;
+  m_source_term = source_term;
+}
+
 void DiffusionEquationSolver2D::jacobi(){
   // Generate dense matrix to store previous solution
   arma::mat old = arma::ones<arma::mat>(m_N,m_N);
@@ -42,7 +53,7 @@ void DiffusionEquationSolver2D::jacobi(){
     m_u(i,0) = m_y_lb(i*m_h);
     m_u(i,m_N-1) = m_y_ub(i*m_h);
   }
-  
+
 
   // Iterative solver
   for (int k = 0; k < m_maxiter; k++){
@@ -86,7 +97,8 @@ void DiffusionEquationSolver2D::solve(){
 
   // Time iteration
   for (m_t = 0; m_t < m_M; m_t++){
-    m_q = m_u;
+    // Set source term
+    set_source_term();
 
     // Move one step in time
     jacobi();
@@ -105,4 +117,17 @@ void DiffusionEquationSolver2D::write_to_file(){
     }
   }
   m_ofile << std::setw(15) << std::setprecision(8) << m_t*m_dt << std::endl;
+}
+
+
+void DiffusionEquationSolver2D::set_source_term(){
+  if (m_use_source_term){
+    for (int i = 0; i < m_N; i++){
+      for (int j = 0; j < m_N; j++){
+        m_q(i,j) = m_source_term(i*m_h,j*m_h,m_t*m_dt) + m_u(i,j);
+      }
+    }
+  } else {
+    m_q = m_u;
+  }
 }
