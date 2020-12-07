@@ -25,8 +25,12 @@ def run_1D(filename, method, N, dt, M, u_b, l_b, write_limit):
 def run_2D(filename, N, dt, M, write_limit):
     build_cpp()
     run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
-         filename], cwd=src)
+         filename, "regular"], cwd=src)
 
+def run_heat(filename, N, dt, M, write_limit, ax, ay, source_type):
+    build_cpp()
+    run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
+         filename, "regular", "heat", f"{ax}", f"{ay}", source_type], cwd=src)
 
 def import_data_2D(file, tsteps, N):
     t_N = N+1
@@ -102,6 +106,33 @@ if __name__ == "__main__":
         N = 20
         dt = 1e-4
         M = 10000
+        write_limit = 1000
+        output_filename = datadir + "test2d.dat"
+
+        if genflag == "y":
+            run_2D(output_filename, N, dt, M, write_limit)
+
+        tsteps = int(M/write_limit)
+        t, data = import_data_2D(output_filename, tsteps, N)
+
+        f, (ax1, ax2) = plt.subplots(1, 2)
+        c1 = ax1.imshow(data[0, :, :], interpolation='none',
+                        origin="lower", aspect='auto', extent=[0, 1, 0, 1])
+        ax1.set_title(f"t = {t[0]}")
+        ax1.grid()
+        c2 = ax2.imshow(data[-1, :, :], interpolation='none',
+                        origin="lower", aspect='auto', extent=[0, 1, 0, 1])
+        ax2.set_title(f"t = {t[-1]}")
+        ax2.grid()
+        f.colorbar(c1, ax=ax1)
+        f.colorbar(c2, ax=ax2)
+        plt.show()
+
+    if runflag == "heat":
+        N = 20
+        dt = 1e-4
+        M = 10000
+        #a_x = 
         write_limit = 1000
         output_filename = datadir + "test2d.dat"
 

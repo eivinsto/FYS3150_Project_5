@@ -10,8 +10,13 @@ double x_ub2D(double);
 double x_lb2D(double);
 double y_ub2D(double);
 double y_lb2D(double);
+double init_func_heat(double, double);
 double unfertilized_source(double, double, double);
 double fertilized_source(double, double, double);
+double x_ub_heat(double);
+double x_lb_heat(double);
+double y_ub_heat(double);
+double y_lb_heat(double);
 
 
 int main(int argc, char** argv) {
@@ -37,9 +42,25 @@ int main(int argc, char** argv) {
     int write_limit = atoi(argv[5]);
     std::string output_filename = argv[6];
 
-    DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func2D,y_ub2D,y_lb2D,x_ub2D,x_lb2D,output_filename);
-    system.solve();
+    std::string sim = argv[7];
+    if (sim=="heat"){
+      double ax = atof(argv[8]);
+      double ay = atof(argv[9]);
+      std::string sim2 = argv[10];
+      if (sim2=="enriched"){
+        DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
+                                         x_ub_heat,x_lb_heat,output_filename, fertilized_source, ax, ay);
+      } else {
+        DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
+                                         x_ub_heat,x_lb_heat,output_filename, unfertilized_source, ax, ay);
+      }
+    } else {
+      DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func2D,y_ub2D,y_lb2D,x_ub2D,x_lb2D,output_filename);
+      system.solve();
+    }
   }
+
+
 
   return 0;
 }
@@ -68,6 +89,22 @@ double y_lb2D(double x){
   return x;
 }
 
+double x_ub_heat(double y){
+  return y*(1300-8) + 8;
+}
+
+double x_lb_heat(double y){
+  return y*(1300-8) + 8;
+}
+
+double y_ub_heat(double x){
+  return 1300;
+}
+
+double y_lb_heat(double x){
+  return 8;
+}
+
 double unfertilized_source(double x, double y, double t){
   // Returned heat is in units K Gy^-1
   if (y <= 80/120){
@@ -88,4 +125,8 @@ double fertilized_source(double x, double y, double t){
   } else {
     return 12.578;
   }
+}
+
+double init_func_heat(double x, double y){
+  return y*(1300-8) + 8;
 }
