@@ -155,10 +155,10 @@ By scaling variables, we can write the general diffusion equation as follows:
 where $\nabla$ is the spatial derivative, $\vec{r}$ a vector containing spatial coordinates, $t$ is time, and what $u$ is depends on which system we are looking it in particular. This equation can be used to model several physical phenomena, such as mixing of particles, and perhaps most famously heat conductance through the heat equation:
 
 \begin{align*}
-\frac{\kappa}{C \rho} \nabla^2 T(\vec{r},t) = \frac{\partial T (\vec{r},t)}{\partial t} \, , \numberthis \label{eq:heat_equation_general}
+\frac{k}{c_p \rho} \nabla^2 T(\vec{r},t) = \frac{\partial T (\vec{r},t)}{\partial t} \, , \numberthis \label{eq:heat_equation_general}
 \end{align*}
 
-where $\kappa$ is the thermal conductivity, $C$ is the specific heat, $\rho$ is the density of the material, and $T$ is the temperature gradient. This is an equation that we will use, and so we need to scale it. Firstly we can define the diffusion constant $D = C\rho/\kappa$. This means we can write the heat equation as:
+where $k$ is the thermal conductivity, $c_p$ is the specific heat, $\rho$ is the density of the material, and $T$ is the temperature gradient. This is an equation that we will use, and so we need to scale it. Firstly we can define the diffusion constant $D = c_p \rho / k$. This means we can write the heat equation as:
 
 \begin{align*}
 \nabla^2 T(\vec{r},t) &= D \frac{\partial T(\vec{r},t)}{\partial t}
@@ -800,15 +800,15 @@ Assuming boundary conditions that differ from the Dirichlet conditions is not di
 
 In order to show the functionality of the two-dimensional solver that we implement we wish to apply it to a real-world problem. This problem is originally outlined in \cite[p.~4-5]{Hjorth-Jensen2020-p5}, due to this there may be similarities between what is written here and that which is written there. 
 
-Based on geological evidence found at the surface, it has been proposed that there was an active subduction zone on the western coast of Norway about $1$ Gy ago. This causes a refertilization of the mantle wedge, which means that the oceanic lithosphere releases water and other chemical components that may be trapped in the mantle above the subducting slab. The concentration of radioactive elements in these chemical components is higher than what is regularly found in the mantle, and therefore it is expected that the mantle will be warmer than it would be if the refertilization hadn't occured. By simulating this model numerically in two dimensions we can give an estimate to what kind of temperature difference this might cause, which can later be compared with experimental results. In order to do this we need to solve heat equation with an added source term:
+Based on geological evidence found at the surface, it has been proposed that there was an active subduction zone on the western coast of Norway about $1$ Gy ago. This causes a refertilization of the mantle wedge, which means that the oceanic lithosphere releases water and other chemical components that may be trapped in the mantle above the subducting slab. The concentration of radioactive elements in these chemical components is higher than what is regularly found in the mantle, and therefore it is expected that the mantle will be warmer than it would be if the refertilization hadn't occured. By simulating this model numerically in two dimensions we can give an estimate to what kind of temperature difference this might cause, which can later be compared with experimental results. In order to do this we need to solve the heat equation in two dimensions with an added source term:
 
 \begin{align*}
-\nabla^2 T + \frac{Q(x,y,t)}{k} &= \frac{k}{\rho c_p} \frac{\partial T}{\partial t} \, , \numberthis \label{eq:heat_eq_with_source_term}
+\frac{\partial^2 T(x,y,t)}{\partial x^2} + \frac{\partial^2 T(x,y,t)}{\partial y^2} + \frac{Q(x,y,t)}{k} &= \frac{\rho c_p}{k} \frac{\partial T(x,y,t)}{\partial t} \, , \numberthis \label{eq:heat_eq_with_source_term}
 \end{align*} 
 
-where $Q$ is the source term and all other variables are as defined in equation \eqref{eq:heat_equation_general}. It is assumed that the boundary conditions are constant in time, and that the temperature at the surface is $8^\circ$ C, and at the bottom of the mantle is $1300^\circ$ C. We divide the lithosphere into three parts, the upper crust from $0$ to $20$ km depth, the lower crust from $20$ to $40$ km depth, and the mantle from $40$ to $120$ km depth. For the entire lithosphere we assume a constant density $\rho = 3510$ kg/m$^3$, thermal conductivity $k = 2.5$ W/m/K and specific heat $c_p = 1000$ J/kg/K.
+where $Q$ is the source term and all other variables are as defined in equation \eqref{eq:heat_equation_general}. It is assumed that the boundary conditions are constant in time, and that the temperature at the surface is $8^\circ$ C, and at the bottom of the mantle is $1300^\circ$ C. We divide the lithosphere into three parts, the upper crust from $0$ to $20$ km depth, the lower crust from $20$ to $40$ km depth, and the mantle from $40$ to $120$ km depth. For the entire lithosphere we assume a constant density $\rho = \num{3.5e3}$ kg/m$^3$, thermal conductivity $k = 2.5$ W/m/K and specific heat $c_p = 1000$ J/kg/K.
 
-Before the fertilization some radioactive materials are already present, and they cause a (assumed constant) heat production of about $1.4$ $\mu$W/m$^3$ in the upper crust, $0.35$ $\mu$W/m$^3$ in the lower crust and $0.05$ $\mu$W/m$^3$ in the mantle. After the fertilization a 150 km wide area above the subducting slab is enriched with Th, U and K such that an additional $0.5$ $\mu$W/m$^3$ is present in the mantle (not the crust). These elements have halflives of $4.47$ Gy, $14.0$ Gy and $1.25$ Gy respectively.
+Before the fertilization some radioactive materials are already present, and they cause a (assumed constant) heat production of about $1.4$ $\mu$W/m$^3$ in the upper crust, $0.35$ $\mu$W/m$^3$ in the lower crust and $0.05$ $\mu$W/m$^3$ in the mantle. After the fertilization a 150 km wide area above the subducting slab is enriched with Uranium, Thorium and Potassium such that an additional $0.5$ $\mu$W/m$^3$ is present in the mantle (not the crust). These elements have halflives of $4.47$ Gy, $14.0$ Gy and $1.25$ Gy respectively.
 
 As for the dimensionality of the model we decide to model the depth as the $y$-direction with then $y \in [0,120]$ km. The $x$-direction needs to be wider than the area that is enriched, and so we choose $x \in [0,300]$ km, with the enriched area of the mantle being $x \in [75,225]$ km. 
 
@@ -818,12 +818,155 @@ As for the dimensionality of the model we decide to model the depth as the $y$-d
 Before the enrichment the heat source comes purely from the radioactive elements already present. The added heat source on a function form can be written as:
 
 \begin{align*}
-Q(x,y,t) = \begin{cases}
-\,\,\, 1.4 \text{ $\mu$W/m$^3$} \quad , \quad  y<20 \\
-0.35 \text{ $\mu$W/m$^3$} \quad , \quad 20<y<40 \\
-0.05 \text{ $\mu$W/m$^3$} \quad , \quad y>40
-\end{cases}
+Q_\text{before}(x,y,t) = \begin{cases}
+\,\,\, 1.4 \text{ $\mu$W/m$^3$} \quad  \quad  &\text{upper crust} \\
+0.35 \text{ $\mu$W/m$^3$} \quad  \quad &\text{lower crust} \\
+0.05 \text{ $\mu$W/m$^3$} \quad  \quad &\text{mantle}
+\end{cases} \, , \numberthis \label{eq:unfertilized_heat}
 \end{align*}
+
+where the upper crust corresponds to $y<20$ km, the lower crust to $20 \text{ km } < y < 40$ km and the mantle corresponds to $y > 40$ km. When the mantle is refertilized a term is added to the heat generated in the mantle. This term is $0.5$ $\mu$W/m$^3$ initially at $t=0$, but decays with the decay of the radioactive elements. The rate of decay can be expressed as an exponential:
+
+\begin{align*}
+D(t) &= e^{-\frac{\ln(2)}{T_{1/2}} t} \, ,
+\end{align*}
+
+where $T_{1/2}$ is the halflife of the radioactive element. We assume that the composition of the radioactive elements is $40$ \% Thorium, $40$ \% Uranium, and $20$ \% Potassium. We define the additional term as:
+
+\begin{align*}
+Q_\text{add}(t) &= (0.4e^{-t(\ln(2)/(4.47  \text{ Gy}))   } + 0.4e^{-t(\ln(2)/(14.0  \text{ Gy}))   } \\
+&\,\,\,+ 0.2e^{-t(\ln(2)/(1.25  \text{ Gy}))   }) \cdot 0.5 \text{ $\mu$W/m$^3$} 
+\end{align*}
+
+This means that the heat source can be written on function form as:
+
+\begin{align*}
+Q_\text{after}(x,y,t) = \begin{cases}
+\,\,\, 1.4 \text{ $\mu$W/m$^3$} \quad \quad  &\text{upper crust} \\
+0.35 \text{ $\mu$W/m$^3$} \quad \quad &\text{lower crust} \\
+0.05 \text{ $\mu$W/m$^3$} + Q_\text{add}(t) \quad \quad &\text{enriched mantle} \\
+0.05 \text{ $\mu$W/m$^3$} \quad \quad & \text{regular mantle}
+\end{cases} \, , \numberthis \label{eq:refertilized_heat}
+\end{align*}
+
+where the enriched mantle corresponds to $y>40$ km and $75 \text{ km } < x < 225$ km, and the regular mantle corresponds to $y> 40$ km, $x<75$ km and $x>225$ km.
+ 
+
+
+
+\subsubsection{Numerical solution} \label{sec:formalism_heat_eq_with_source_numerical_sol}
+
+We need to formulate a numerical solution to the heat equation with an added source term \eqref{eq:heat_eq_with_source_term}. First we note that we wish to have $x \in [0,300]$ km and $y \in [0,120]$ km, or in other words a non-square grid. We can define a set of parameters $\alpha$, $a_x$ and $a_y$ such that:
+
+\begin{align*}
+x &= \alpha a_x \hat{x} \\
+y &= \alpha a_y \hat{y} \, ,
+\end{align*}
+
+where $\hat{x},\hat{y} \in [0,1]$ are dimensionless parameters. This implies that $\alpha a_x$ and $\alpha a_y$ has units of length. The heat equation in two dimensions can then be written as:
+
+\begin{align*}
+\frac{1}{\alpha^2 a_x^2}\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{1}{\alpha^2 a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &= D\frac{\partial T}{\partial t} - \frac{Q}{k} \, ,
+\end{align*} 
+
+where $D = k/(\rho c_p)$. We can multiply by $\alpha^2 a_x^2$ on both sides:
+
+\begin{align*}
+\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{a_x^2}{a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &= \alpha^2 a_x^2 D \frac{\partial T}{\partial t} - \frac{Q}{k}\alpha^2 a_x^2
+\end{align*}
+
+We now wish to make $\alpha^2 a_x^2 D = 1$, which means that $\alpha^2 = 1/(D\alpha^2)$. Inserting this gives:
+
+\begin{align*}
+\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{a_x^2}{a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &=  \frac{\partial T}{\partial t} - \frac{Q}{\rho c_p}
+\end{align*}
+
+Here we note that by this choice of $\alpha^2 a_x^2$ that $\alpha^2 a_x^2$ has the units as the constant $1/D$, which has units of m$^2$/s. This is not the unit that we originally defined this constant to have, but we can "fix" this by making time a dimensionless parameter. In order to that we can simply scale it against the unit we choose for time. By doing this $\alpha a_x$ has units of length as we originally defined. In order to simplify the notation we define:
+
+\begin{align*}
+A &= \frac{a_x^2}{a_y^2} \\
+Q' &= \frac{Q}{\rho c_p}
+\end{align*}
+
+The equation can then be written as:
+
+\begin{align*}
+\frac{\partial^2 T}{\partial \hat{x}^2} + A \frac{\partial^2 T}{\partial \hat{y}^2} &=  \frac{\partial T}{\partial t} - Q'
+\end{align*}
+
+To proceed we need to define a discretization of the coordinates. To this end we set:
+
+\begin{align*}
+\hat{x}_i &= i h \quad \,\,\, 0 \leq i \leq n \\
+\hat{y} &= j h \quad \,\,\, 0 \leq j \leq n \\
+t_l &= l \Delta t \quad 0 \leq l \, ,
+\end{align*}
+
+where $i$, $j$ and $l$ are integers, $h = 1/n$ and $\Delta t$ is a timestep that we can choose. We use the notation:
+
+\begin{align*}
+T(\hat{x},\hat{y},t_l) &= T_{i,j}^l 
+\end{align*}
+
+We can approximate the spatial derivatives in the heat equation as we have earlier:
+
+\begin{align*}
+\frac{\partial^2 T}{\partial \hat{x}^2} &= \frac{T_{i+1,j}^l - 2 T_{i,j}^l + T_{i-1,j}^l}{h^2} + \mathcal{O}(h^2) \\
+\frac{\partial^2 T}{\partial \hat{y}^2} &= \frac{T_{i,j+1}^l - 2 T_{i,j}^l + T_{i,j-1}^l}{h^2} + \mathcal{O}(h^2) \, ,
+\end{align*}
+
+and the time derivative using the backwards Euler approximation:
+
+\begin{align*}
+\frac{\partial T}{\partial t} &= \frac{T_{i,j}^l - T_{i,j}^{l-1}}{\Delta t} + \mathcal{O}(\Delta t)
+\end{align*}
+
+By defining:
+
+\begin{align*}
+\beta &= \frac{\Delta t}{h^2} \, ,
+\end{align*}
+
+and:
+
+\begin{align*}
+\delta_{i,j}^l &= T_{i+1}^l + T_{i-1,j}^l + A(T_{i,j+1} + T_{i,j-1}) \, ,
+\end{align*}
+
+we can write the discretized heat equation as:
+
+\begin{align*}
+\frac{\Delta_{i,j}^l - 2(1+A)T_{i,j}^l}{h^2} &= \frac{T_{i,j}^l - T_{i,j}^{l-1}}{\Delta t} - Q' \\
+\beta (\Delta_{i,j}^l - 2(1+A)T_{i,j}^l) &= T_{i,j}^l - T_{i,j}^{l-1} - \Delta t Q' \\
+T_{i,j}^l &= \frac{1}{1 + 2\beta (1+A) } (\beta \Delta_{i,j}^l + T_{i,j}^{l-1} + \Delta t Q') \numberthis \label{eq:heat_eq_with_source_term_numerical_solution}
+\end{align*}
+
+This is similar to what we found in equation \eqref{eq:2D_diff_eq_numerical_solution}, and can be solved in the same fashion (see Section \ref{sec:formalism_2D_diff_eq_numerical}) by setting the components of the matrix $b$ to be:
+
+\begin{align*}
+b_{i,j} &= T_{i,j}^{l-1} + \Delta t Q' \, ,
+\end{align*} 
+
+the "diagonal" elements to be $1 + 2\beta(1+A)$ and the "off-diagonal" elements to be either $-\beta$ or $-\beta A$ (two elements of each value). The solution still converges, as the absolute of the "diagonal" elements are still larger than the absolute of the "off-diagonal" elements added together:
+
+\begin{align*}
+|1 + 2\beta(1+A)| > |-2\beta| + |-2\beta A|
+\end{align*}
+
+This equality always holds true, as both $A$ and $\beta$ are positive numbers. This means that we can use the same iterative solver as we did earlier, assuming that it is sufficiently generalized.
+
+
+
+
+\subsubsection{Analytical solution} \label{sec:formalism_heat_eq_with_source_term_analytical_sol}
+
+
+
+
+
+
+
+
 
 \clearpage
 
