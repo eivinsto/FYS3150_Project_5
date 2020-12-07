@@ -49,13 +49,15 @@ def import_data_2D(file, tsteps, N):
 
 runflag = "start"
 if __name__ == "__main__":
-    print("Runs: 1D, 2D.")
-    while (runflag != "1d" and runflag != "2d"):
+    print("Runs: 1D, 2D, heat, test")
+    while (runflag != "1d" and runflag != "2d" and
+           runflag != "heat" and runflag != "test"):
         runflag = input("Choose run: ").lower()
         if runflag == "q" or runflag == "quit":
             sys.exit(0)
 
-    genflag = input("Generate data? y/n: ").lower()
+    if runflag != "test":
+        genflag = input("Generate data? y/n: ").lower()
 
     # 1D sample run
     if runflag == "1d":
@@ -156,3 +158,7 @@ if __name__ == "__main__":
         f.colorbar(c1, ax=ax1)
         f.colorbar(c2, ax=ax2)
         plt.show()
+
+if runflag == "test":
+    run(["make", "test"], cwd=src)
+    run(["./test_main.exe"], cwd=src)
