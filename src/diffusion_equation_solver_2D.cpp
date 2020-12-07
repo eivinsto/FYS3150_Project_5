@@ -35,14 +35,14 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
                                                      double (*y_ub)(double), double (*y_lb)(double),
                                                      double (*x_ub)(double), double (*x_lb)(double),
                                                      std::string ofilename, double (*source_term)(double,double,double),
-                                                     double Lx, double Ly)
+                                                     double ax, double ay)
                          : DiffusionEquationSolver2D(N, dt, M, write_limit, init_func, y_ub, y_lb,
                                                      x_ub, x_lb, ofilename){
   m_use_source_term = true;
   m_source_term = source_term;
 
-  // Relation between squared length in y-direction Ly and in x-direction Lx squared
-  m_relative_length_squared = Lx*Lx/(Ly*Ly);
+  // Relation between squared "extra" constant in x- and y-direction
+  m_relative_length_squared = ax*ax/(ay*ay);
 }
 
 void DiffusionEquationSolver2D::jacobi(){
