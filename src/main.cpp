@@ -10,6 +10,8 @@ double x_ub2D(double);
 double x_lb2D(double);
 double y_ub2D(double);
 double y_lb2D(double);
+double unfertilized_source(double, double, double);
+double fertilized_source(double, double, double);
 
 
 int main(int argc, char** argv) {

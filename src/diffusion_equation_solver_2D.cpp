@@ -27,7 +27,8 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   m_u = arma::zeros<arma::mat>(m_N,m_N);                            // Solution matrix
   m_q = arma::zeros<arma::mat>(m_N,m_N);                            // Source term
   m_write_limit = write_limit;                           // Write every <write_limit> timesteps
-  m_alpha_coeff = 1.0/(1.0+4.0*m_alpha);
+  m_diag_element = 1.0/(1.0+4.0*m_alpha);
+  std::cout << "hi from first constructor" << std::endl;
 }
 
 DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, int write_limit,
@@ -40,9 +41,10 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
                                                      x_ub, x_lb, ofilename){
   m_use_source_term = true;
   m_source_term = source_term;
-
   // Relation between squared "extra" constant in x- and y-direction
-  m_relative_length_squared = ax*ax/(ay*ay);
+  m_A = ax*ax/(ay*ay);
+  m_diag_element = 1.0/(1.0 + 2*m_alpha*(1 + m_A));
+  std::cout << "hi from second constructor" << std::endl;
 }
 
 void DiffusionEquationSolver2D::jacobi(){
@@ -63,8 +65,8 @@ void DiffusionEquationSolver2D::jacobi(){
   for (int k = 0; k < m_maxiter; k++){
     for (int i = 1; i < m_N-1; i++){
       for (int j = 1; j < m_N-1; j++){
-        m_u(i,j) = m_alpha_coeff*(m_alpha*(old(i+1,j) + old(i-1,j)
-                 + m_relative_length_squared*(old(i,j-1) + old(i,j+1))) + m_q(i,j));
+        m_u(i,j) = m_diag_element*(m_alpha*(old(i+1,j) + old(i-1,j)
+                 + m_A*(old(i,j-1) + old(i,j+1))) + m_q(i,j));
       }
     }
 

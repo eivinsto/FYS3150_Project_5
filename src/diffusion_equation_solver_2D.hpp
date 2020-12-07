@@ -38,7 +38,7 @@ private:
   double m_maxiter = 100000;
   double m_abstol = 1e-14;
   int m_write_limit;
-  double m_alpha_coeff;
+  double m_diag_element;
   bool m_use_source_term = false;
-  double m_relative_length_squared = 1;
+  double m_A = 1;
 };
