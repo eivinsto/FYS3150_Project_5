@@ -28,7 +28,6 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   m_q = arma::zeros<arma::mat>(m_N,m_N);                            // Source term
   m_write_limit = write_limit;                           // Write every <write_limit> timesteps
   m_diag_element = 1.0/(1.0+4.0*m_alpha);
-  std::cout << "hi from first constructor" << std::endl;
 }
 
 DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, int write_limit,
@@ -44,7 +43,6 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   // Relation between squared "extra" constant in x- and y-direction
   m_A = ax*ax/(ay*ay);
   m_diag_element = 1.0/(1.0 + 2*m_alpha*(1 + m_A));
-  std::cout << "hi from second constructor" << std::endl;
 }
 
 void DiffusionEquationSolver2D::jacobi(){
