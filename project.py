@@ -116,7 +116,7 @@ if __name__ == "__main__":
         if genflag == "y":
             run_2D(output_filename, N, dt, M, write_limit)
 
-        tsteps = int(M/write_limit)
+        tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
 
         f, (ax1, ax2) = plt.subplots(1, 2)
@@ -133,7 +133,7 @@ if __name__ == "__main__":
         plt.show()
 
     if runflag == "heat":
-        N = 20
+        N = 100
         dt = 1e-4
         M = 10000
         a_x = 3.55e8
@@ -144,7 +144,7 @@ if __name__ == "__main__":
         if genflag == "y":
             run_heat(output_filename, N, dt, M, write_limit,a_x,a_y,"enriched")
 
-        tsteps = int(M/write_limit)
+        tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
 
         f, (ax1, ax2) = plt.subplots(1, 2)
