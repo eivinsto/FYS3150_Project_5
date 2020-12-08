@@ -136,8 +136,8 @@ if __name__ == "__main__":
         N = 100
         dt = 1e-4
         M = 10000
-        a_x = 3.55e8
-        a_y = 1.42e8
+        a_x = 1.999
+        a_y = 0.7996
         write_limit = 1000
         output_filename = datadir + "testheat.dat"
 
