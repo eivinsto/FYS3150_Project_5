@@ -134,7 +134,6 @@ TEST_CASE("Test DiffusionEquationSolver2D CrankNicholson solver.") {
   double dx_square = 0.5*0.5;
   double dt = 0.49*dx_square;
   int write_limit = 1;
-  std::string method = "CrankNicholson";
 
   DiffusionEquationSolver2D system(N, dt, M, write_limit, init_func2D, y_ub2D, y_lb2D, x_ub2D, x_lb2D, filename);
   system.solve();
