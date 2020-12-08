@@ -929,6 +929,12 @@ and the time derivative using the backwards Euler approximation:
 \frac{\partial T}{\partial t} &= \frac{T_{i,j}^l - T_{i,j}^{l-1}}{\Delta t} + \mathcal{O}(\Delta t)
 \end{align*}
 
+Note that the added source term $Q'$ is also a function of $\hat{x}$, $\hat{y}$ and $t$, and so it too needs to be discretized. As there is no approximation involved, however, we decide to not include indices on $Q'$ and generally it is assumed that:
+
+\begin{align*}
+Q' &= {Q'}_{i,j}^l = Q'(\hat{x}_i,\hat{y}_j,t_l) \, .
+\end{align*} 
+
 By defining:
 
 \begin{align*}
@@ -938,7 +944,7 @@ By defining:
 and:
 
 \begin{align*}
-\delta_{i,j}^l &= A_x(T_{i+1}^l + T_{i-1,j}^l) + A_y(T_{i,j+1} + T_{i,j-1}) \, ,
+\Delta_{i,j}^l &= A_x(T_{i+1}^l + T_{i-1,j}^l) + A_y(T_{i,j+1} + T_{i,j-1}) \, ,
 \end{align*}
 
 we can write the discretized heat equation as:
