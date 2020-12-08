@@ -972,11 +972,31 @@ This equality always holds true, as $A_x$, $A_y$ and $\beta$ are all positive nu
 
 
 
-\subsubsection{Analytical solution} \label{sec:formalism_heat_eq_with_source_term_analytical_sol}
+\subsubsection{Analytical discussion} \label{sec:formalism_heat_eq_with_source_term_analytical_sol}
 
+First we wish to find the steady-state solution without considering the effects of the radioactive elements. In order to do this, we need to solve Laplace's equation:
 
+\begin{align*}
+\frac{\partial^2 T_s(x,y)}{\partial x^2} + \frac{\partial^2 T_s(x,y)}{\partial y^2} &= 0 \, ,
+\end{align*}
 
+where the subscript $s$ is used to mark this as the steady-state solution. We know only the boundary conditions at $T_s(x,0 \text{ km}) = 8$ $^\circ$C and $T_s(x,120 \text{ km}) = 1300$ $^\circ$C, and not the boundaries in the $x$-direction. That does not mean we cannot progress beyond this point, however, as we expect the temperature to depend only on depth, as there are no other sources of heat at this point. This means that we expect the temperature gradient to be only dependent on $y$ ($T_s(x,y) \to T_s(y)$). Laplace's equation is then reduced to only one dimension:
 
+\begin{align*}
+\frac{\partial^2 T_s(y)}{\partial y^2} = 0 \, ,
+\end{align*}  
+
+which results in the steady-state being a first-order polynomial of $y$, depending on the boundary conditions:
+
+\begin{align*}
+T_s(y) &= \frac{1300\text{ $^\circ$C }-8 \text{ $^\circ$C} }{120 \text{ km} } y + 8 \text{ $^\circ$C}\, . \numberthis \label{eq:steady_state_heat} 
+\end{align*} 
+
+Now, when we introduce the radioactive elements we expect the steady-state solution to differ from this. We will not attempt to calculate the analytical solution in this case, but we can say something about how we expect it to behave with the source terms as given in equations \eqref{eq:unfertilized_heat} and \eqref{eq:refertilized_heat}. Before the enrichment the source term is constant in each of the three region. The lowest region has the least heat added, and the highest region the most. This causes the change in the temperature as a function of depth to be affected. As there is an additional source term, we also expect the temperatures to be higher everywhere in the system (still approaching the boundary values in the limits however). 
+
+%From this we can expect the the tempature as a function of depth will change faster in the higher regions than in the lower ones, as there is more heat being produced there. As there is additional heat being produced all over, it is also reasonable to expect that this leads to an increase in the temperature across all regions. Compared the steady-state solution we found earlier, we thus expect that the actual steady-state solution in this case will have slightly higher temperatures (but not exceeding the boundary values), with the change in temperature as a function of depth being larger for upper regions and lower for the lower regions compared to the constant change we found earlier.
+
+Similarly after the enrichment we expect the temperature to be slightly higher all across the board (still approaching the boundary values in the limits of course). The steady-state solution in this case is the same as when there are no additional radioactive materials, as the additional heat reaches zero when $t \to \infty$. We can still discuss qualitative expectations on how the system will look like after some time. In the region along the $x$-direction where the mantle is enriched, there is now more heat being produced from the radioactive elements than there is in the lower crust in the same region. This means that we expect the change in the temperature to be largest in the upper crust, least in the lower crust, and second largest in the mantle. 
 
 
 
