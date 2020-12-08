@@ -5,6 +5,7 @@
 #include <fstream>
 #include <armadillo>
 #include <cmath>
+#include <omp.h>
 
 DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, int write_limit,
                                                      double (*init_func)(double, double),
@@ -49,7 +50,7 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
 void DiffusionEquationSolver2D::jacobi(){
   // Generate dense matrix to store previous solution
   arma::mat old = arma::ones<arma::mat>(m_N,m_N);
-  double s = 0;
+  double s = 1;
 
   // Boundary conditions
   for (int i = 0; i < m_N; i++){
@@ -59,36 +60,59 @@ void DiffusionEquationSolver2D::jacobi(){
     m_u(i,m_N-1) = m_y_ub(i*m_h);
   }
 
-
+  int k = 0;
+  int i, j;
+  int thrds = 0.5*omp_get_max_threads();
   // Iterative solver
-  for (int k = 0; k < m_maxiter; k++){
-    for (int i = 1; i < m_N-1; i++){
-      for (int j = 1; j < m_N-1; j++){
-        m_u(i,j) = m_diag_element*(m_alpha*(m_Ax*(old(i+1,j) + old(i-1,j))
-                 + m_Ay*(old(i,j-1) + old(i,j+1))) + m_q(i,j));
+  while (std::sqrt(s) > m_abstol && k < m_maxiter){
+    #pragma omp parallel default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay) num_threads(thrds) reduction(+:s)
+    {
+      double u10;
+      double u20;
+      double u01;
+      double u02;
+      double q;
+
+      #pragma omp for
+      for (i = 1; i < m_N-1; i++){
+        for (j = 1; j < m_N-1; j++){
+          #pragma omp atomic read
+          u10 = old(i+1,j);
+          #pragma omp atomic read
+          u20 = old(i-1,j);
+          #pragma omp atomic read
+          u01 = old(i,j+1);
+          #pragma omp atomic read
+          u02 = old(i,j-1);
+
+          q = m_q(i,j);
+
+          #pragma omp atomic write
+          m_u(i,j) = m_diag_element*(m_alpha*(m_Ax*(u10 + u20)
+          + m_Ay*(u02 + u01)) + q);
+        }
+      }
+
+      // Check convergence
+      s = 0;
+      double term = 0;
+
+      #pragma omp for
+      for (i = 0; i < m_N; i++){
+        for (j = 0; j < m_N; j++){
+          term = old(i,j) - m_u(i,j);
+          s += term*term;
+
+          // Overwrite old solution
+          old(i,j) = m_u(i,j);
+        }
       }
     }
-
-    // Check convergence
-    s = 0;
-    double term = 0;
-    for (int i = 0; i < m_N; i++){
-      for (int j = 0; j < m_N; j++){
-        term = old(i,j) - m_u(i,j);
-        s += term*term;
-
-        // Overwrite old solution
-        old(i,j) = m_u(i,j);
-      }
-    }
-    if (std::sqrt(s) < m_abstol){
-      // Return if solution has converged
-      return;
-    }
+    k++;
   }
-  // Output error/warning if solution did not converge within set number of max iterations
-  std::cerr << "Solution using Jacobi iterative method did not converge properly within set limit of maximum iterations." << std::endl;
-  std::cout << "Final sum: " << s << std::endl;
+  // // Output error/warning if solution did not converge within set number of max iterations
+  // std::cerr << "Solution using Jacobi iterative method did not converge properly within set limit of maximum iterations." << std::endl;
+  // std::cout << "Final sum: " << s << std::endl;
 }
 
 void DiffusionEquationSolver2D::solve(){
