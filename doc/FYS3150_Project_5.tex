@@ -863,35 +863,43 @@ x &= \alpha a_x \hat{x} \\
 y &= \alpha a_y \hat{y} \, ,
 \end{align*}
 
-where $\hat{x},\hat{y} \in [0,1]$ are dimensionless parameters. This implies that $\alpha a_x$ and $\alpha a_y$ has units of length. The heat equation in two dimensions can then be written as:
+where $\hat{x},\hat{y} \in [0,1]$ are dimensionless parameters. This implies that $\alpha a_x$ and $\alpha a_y$ have units of length, and that $\alpha a_x = 300$ km, and $\alpha a_y = 120$ km. The heat equation in two dimensions can then be written as:
 
 \begin{align*}
 \frac{1}{\alpha^2 a_x^2}\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{1}{\alpha^2 a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &= D\frac{\partial T}{\partial t} - \frac{Q}{k} \, ,
 \end{align*} 
 
-where $D = k/(\rho c_p)$. We can multiply by $\alpha^2 a_x^2$ on both sides:
+where $D = k/(\rho c_p)$. We can multiply by $\alpha^2$ on both sides:
 
 \begin{align*}
-\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{a_x^2}{a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &= \alpha^2 a_x^2 D \frac{\partial T}{\partial t} - \frac{Q}{k}\alpha^2 a_x^2
+\frac{1}{a_x^2}\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{1}{a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &= \alpha^2 D \frac{\partial T}{\partial t} - \frac{Q}{k}\alpha^2 
 \end{align*}
 
-We now wish to make $\alpha^2 a_x^2 D = 1$, which means that $\alpha^2 = 1/(D\alpha^2)$. Inserting this gives:
+We now wish to set $\alpha$ such that $\alpha^2 D = 1$, which means that $\alpha^2 = 1/D$. Inserting this gives:
 
 \begin{align*}
-\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{a_x^2}{a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &=  \frac{\partial T}{\partial t} - \frac{Q}{\rho c_p}
+\frac{1}{a_x^2} \frac{\partial^2 T}{\partial \hat{x}^2} + \frac{1}{a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &=  \frac{\partial T}{\partial t} - \frac{Q}{\rho c_p}
 \end{align*}
 
-Here we note that by this choice of $\alpha^2 a_x^2$ that $\alpha^2 a_x^2$ has the units as the constant $1/D$, which has units of m$^2$/s. This is not the unit that we originally defined this constant to have, but we can "fix" this by making time a dimensionless parameter. In order to that we can simply scale it against the unit we choose for time. By doing this $\alpha a_x$ has units of length as we originally defined. In order to simplify the notation we define:
+Here we note that by this choice of $\alpha^2 $ that $\alpha^2$ has the units as the constant $1/D$, which has units of m$^2$/s (if we use the values given earlier for the parameters that make up $D$). As we wish that $\alpha a_x$ and $\alpha a_y$ has units of length, this implies that $a_x$ and $a_y$ have units of s$^{1/2}$. We can then determine $a_x$ and $a_y$:
 
 \begin{align*}
-A &= \frac{a_x^2}{a_y^2} \\
+a_x &= \frac{\num{300e3} \text{ m}}{\alpha} = \num{300e3}\text{ m} \cdot \sqrt{D} \approx \num{3.55e8} \text{ s}^{1/2} \\
+a_y &= \frac{\num{120e3} \text{ m}}{\alpha} = \num{120e3}\text{ m} \cdot \sqrt{D} \approx \num{1.42e8} \text{ s}^{1/2}
+\end{align*}
+
+In order to simplify the notation we define:
+
+\begin{align*}
+A_x &= \frac{1}{a_x^2} \\
+A_y &= \frac{1}{a_y^2} \\
 Q' &= \frac{Q}{\rho c_p}
 \end{align*}
 
 The equation can then be written as:
 
 \begin{align*}
-\frac{\partial^2 T}{\partial \hat{x}^2} + A \frac{\partial^2 T}{\partial \hat{y}^2} &=  \frac{\partial T}{\partial t} - Q'
+A_x \frac{\partial^2 T}{\partial \hat{x}^2} + A_y \frac{\partial^2 T}{\partial \hat{y}^2} &=  \frac{\partial T}{\partial t} - Q'
 \end{align*}
 
 To proceed we need to define a discretization of the coordinates. To this end we set:
@@ -930,15 +938,15 @@ By defining:
 and:
 
 \begin{align*}
-\delta_{i,j}^l &= T_{i+1}^l + T_{i-1,j}^l + A(T_{i,j+1} + T_{i,j-1}) \, ,
+\delta_{i,j}^l &= A_x(T_{i+1}^l + T_{i-1,j}^l) + A_y(T_{i,j+1} + T_{i,j-1}) \, ,
 \end{align*}
 
 we can write the discretized heat equation as:
 
 \begin{align*}
-\frac{\Delta_{i,j}^l - 2(1+A)T_{i,j}^l}{h^2} &= \frac{T_{i,j}^l - T_{i,j}^{l-1}}{\Delta t} - Q' \\
-\beta (\Delta_{i,j}^l - 2(1+A)T_{i,j}^l) &= T_{i,j}^l - T_{i,j}^{l-1} - \Delta t Q' \\
-T_{i,j}^l &= \frac{1}{1 + 2\beta (1+A) } (\beta \Delta_{i,j}^l + T_{i,j}^{l-1} + \Delta t Q') \numberthis \label{eq:heat_eq_with_source_term_numerical_solution}
+\frac{T_{i,j}^l - T_{i,j}^{l-1}}{\Delta t} &= \frac{\Delta_{i,j}^l - 2(A_x+A_y)T_{i,j}^l}{h^2} + Q' \\
+T_{i,j}^l - T_{i,j}^{l-1} &= \beta (\Delta_{i,j}^l - 2(A_x+A_y)T_{i,j}^l) + \Delta t Q' \\
+T_{i,j}^l &= \frac{1}{1 + 2\beta (A_x+A_y) } (\beta \Delta_{i,j}^l + T_{i,j}^{l-1} + \Delta t Q') \numberthis \label{eq:heat_eq_with_source_term_numerical_solution}
 \end{align*}
 
 This is similar to what we found in equation \eqref{eq:2D_diff_eq_numerical_solution}, and can be solved in the same fashion (see Section \ref{sec:formalism_2D_diff_eq_numerical}) by setting the components of the matrix $b$ to be:
@@ -947,13 +955,13 @@ This is similar to what we found in equation \eqref{eq:2D_diff_eq_numerical_solu
 b_{i,j} &= T_{i,j}^{l-1} + \Delta t Q' \, ,
 \end{align*} 
 
-the "diagonal" elements to be $1 + 2\beta(1+A)$ and the "off-diagonal" elements to be either $-\beta$ or $-\beta A$ (two elements of each value). The solution still converges, as the absolute of the "diagonal" elements are still larger than the absolute of the "off-diagonal" elements added together:
+the "diagonal" elements to be $1 + 2\beta(A_x+A_y)$ and the "off-diagonal" elements to be either $-A_x\beta$ or $-A_y\beta $ (two elements of each value for each diagonal element). The solution still converges, as the absolute of the "diagonal" elements are still larger than the absolute of the "off-diagonal" elements added together:
 
 \begin{align*}
-|1 + 2\beta(1+A)| > |-2\beta| + |-2\beta A|
+|1 + 2\beta(A_x + A_y)| > |-2A_x \beta| + |-2A_y \beta |
 \end{align*}
 
-This equality always holds true, as both $A$ and $\beta$ are positive numbers. This means that we can use the same iterative solver as we did earlier, assuming that it is sufficiently generalized.
+This equality always holds true, as $A_x$, $A_y$ and $\beta$ are all positive numbers. This means that we can use the same iterative solver as we did earlier, assuming that it is sufficiently generalized.
 
 
 

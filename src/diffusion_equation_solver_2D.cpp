@@ -41,8 +41,9 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
   m_use_source_term = true;
   m_source_term = source_term;
   // Relation between squared "extra" constant in x- and y-direction
-  m_A = ax*ax/(ay*ay);
-  m_diag_element = 1.0/(1.0 + 2*m_alpha*(1 + m_A));
+  m_Ax = 1.0/(ax*ax);
+  m_Ay = 1.0/(ay*ay);
+  m_diag_element = 1.0/(1.0 + 2*m_alpha*(m_Ax + m_Ay));
 }
 
 void DiffusionEquationSolver2D::jacobi(){
@@ -63,8 +64,8 @@ void DiffusionEquationSolver2D::jacobi(){
   for (int k = 0; k < m_maxiter; k++){
     for (int i = 1; i < m_N-1; i++){
       for (int j = 1; j < m_N-1; j++){
-        m_u(i,j) = m_diag_element*(m_alpha*(old(i+1,j) + old(i-1,j)
-                 + m_A*(old(i,j-1) + old(i,j+1))) + m_q(i,j));
+        m_u(i,j) = m_diag_element*(m_alpha*(m_Ax*(old(i+1,j) + old(i-1,j))
+                 + m_Ay*(old(i,j-1) + old(i,j+1))) + m_q(i,j));
       }
     }
 

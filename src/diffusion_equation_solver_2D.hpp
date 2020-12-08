@@ -40,5 +40,6 @@ private:
   int m_write_limit;
   double m_diag_element;
   bool m_use_source_term = false;
-  double m_A = 1;
+  double m_Ax = 1;
+  double m_Ay = 1;
 };

@@ -41,18 +41,20 @@ int main(int argc, char** argv) {
     int M = atoi(argv[4]);
     int write_limit = atoi(argv[5]);
     std::string output_filename = argv[6];
-
     std::string sim = argv[7];
+
     if (sim=="heat"){
       double ax = atof(argv[8]);
       double ay = atof(argv[9]);
-      std::string sim2 = argv[10];
-      if (sim2=="enriched"){
+      std::string source_type = argv[10];
+      if (source_type=="enriched"){
         DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
                                          x_ub_heat,x_lb_heat,output_filename, fertilized_source, ax, ay);
+        system.solve();
       } else {
         DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
                                          x_ub_heat,x_lb_heat,output_filename, unfertilized_source, ax, ay);
+        system.solve();
       }
     } else {
       DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func2D,y_ub2D,y_lb2D,x_ub2D,x_lb2D,output_filename);
@@ -95,7 +97,7 @@ double x_ub_heat(double y){
 
 double x_lb_heat(double y){
   return y*(1300-8) + 8;
-}
+};
 
 double y_ub_heat(double x){
   return 1300;
@@ -107,9 +109,9 @@ double y_lb_heat(double x){
 
 double unfertilized_source(double x, double y, double t){
   // Returned heat is in units K Gy^-1
-  if (y <= 80/120){
+  if (y >= (80.0/120.0)){
     return 0.44923;
-  } else if ((y > 80/120) && (y <= 100/120)) {
+  } else if ((y < (80.0/120.0)) && (y >= (100.0/120.0))) {
     return 3.1446;
   } else {
     return 12.578;
@@ -118,9 +120,13 @@ double unfertilized_source(double x, double y, double t){
 
 double fertilized_source(double x, double y, double t){
   // Returned heat is in units K Gy^-1
-  if (y <= 80/120){
-    return 0.44923 + 4.4923*(0.4*std::exp(-0.155*t) + 0.4*std::exp(-0.0495*t) + 0.2*std::exp(-0.555*t));
-  } else if ((y > 80/120) && (y <= 100/120)) {
+  if (y >= (40.0/120.0)){
+    double Q = 0.44923;
+    if ( (x>=(75.0/300.0)) && (x<=(225.0/300.0)) ){
+      Q += 4.4923*(0.4*std::exp(-0.155*t) + 0.4*std::exp(-0.0495*t) + 0.2*std::exp(-0.555*t));
+    }
+    return Q;
+  } else if ((y < (40.0/120.0)) && (y >= (20.0/120.0))) {
     return 3.1446;
   } else {
     return 12.578;

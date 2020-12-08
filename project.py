@@ -31,7 +31,7 @@ def run_2D(filename, N, dt, M, write_limit):
 def run_heat(filename, N, dt, M, write_limit, ax, ay, source_type):
     build_cpp()
     run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
-         filename, "regular", "heat", f"{ax}", f"{ay}", source_type], cwd=src)
+         filename, "heat", f"{ax}", f"{ay}", source_type], cwd=src)
 
 
 def import_data_2D(file, tsteps, N):
@@ -107,10 +107,10 @@ if __name__ == "__main__":
 
     # 2D sample run
     if runflag == "2d":
-        N = 2
+        N = 20
         dt = 1e-4
-        M = 10
-        write_limit = 1
+        M = 10000
+        write_limit = 1000
         output_filename = datadir + "test2d.dat"
 
         if genflag == "y":
@@ -136,25 +136,32 @@ if __name__ == "__main__":
         N = 20
         dt = 1e-4
         M = 10000
-        # a_x =
+        a_x = 3.55e8
+        a_y = 1.42e8
         write_limit = 1000
-        output_filename = datadir + "test2d.dat"
+        output_filename = datadir + "testheat.dat"
 
         if genflag == "y":
-            run_2D(output_filename, N, dt, M, write_limit)
+            run_heat(output_filename, N, dt, M, write_limit,a_x,a_y,"enriched")
 
         tsteps = int(M/write_limit)
         t, data = import_data_2D(output_filename, tsteps, N)
 
         f, (ax1, ax2) = plt.subplots(1, 2)
         c1 = ax1.imshow(data[0, :, :], interpolation='none',
-                        origin="lower", aspect='auto', extent=[0, 1, 0, 1])
+                        origin="lower", aspect='auto', extent=[0, 300, 0, 120])
         ax1.set_title(f"t = {t[0]}")
         ax1.grid()
+        ax1.set_xlabel("Width [km]")
+        ax1.set_ylabel("Depth [km]")
+        ax1.set_ylim(ax1.get_ylim()[::-1])
         c2 = ax2.imshow(data[-1, :, :], interpolation='none',
-                        origin="lower", aspect='auto', extent=[0, 1, 0, 1])
+                        origin="lower", aspect='auto', extent=[0, 300, 0, 120])
         ax2.set_title(f"t = {t[-1]}")
         ax2.grid()
+        ax2.set_xlabel("Width [km]")
+        ax2.set_ylabel("Depth [km]")
+        ax2.set_ylim(ax2.get_ylim()[::-1])
         f.colorbar(c1, ax=ax1)
         f.colorbar(c2, ax=ax2)
         plt.show()
