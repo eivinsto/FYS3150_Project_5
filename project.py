@@ -136,8 +136,8 @@ if __name__ == "__main__":
         N = 100
         dt = 1e-4
         M = 10000
-        a_x = 1.999
-        a_y = 0.7996
+        a_x = 1.999             # Gy^1/2
+        a_y = 0.7996            # Gy^1/2
         write_limit = 1000
         output_filename = datadir + "testheat.dat"
 
@@ -150,14 +150,14 @@ if __name__ == "__main__":
         f, (ax1, ax2) = plt.subplots(1, 2)
         c1 = ax1.imshow(data[0, :, :], interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 300, 0, 120])
-        ax1.set_title(f"t = {t[0]}")
+        ax1.set_title(f"t = {t[0]} Gy")
         ax1.grid()
         ax1.set_xlabel("Width [km]")
         ax1.set_ylabel("Depth [km]")
         ax1.set_ylim(ax1.get_ylim()[::-1])
         c2 = ax2.imshow(data[-1, :, :], interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 300, 0, 120])
-        ax2.set_title(f"t = {t[-1]}")
+        ax2.set_title(f"t = {t[-1]} Gy")
         ax2.grid()
         ax2.set_xlabel("Width [km]")
         ax2.set_ylabel("Depth [km]")
