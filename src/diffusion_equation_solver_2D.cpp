@@ -102,7 +102,7 @@ void DiffusionEquationSolver2D::solve(){
   write_to_file();
 
   // Time iteration
-  for (m_t = 1; m_t < m_M; m_t++){
+  for (m_t = 1; m_t <= m_M; m_t++){
     // Set source term
     set_source_term();
 
