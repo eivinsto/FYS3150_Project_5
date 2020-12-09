@@ -136,8 +136,8 @@ if __name__ == "__main__":
         N = 100
         dt = 1e-4
         M = 10000
-        a_x = 1.999             # Gy^1/2
-        a_y = 0.7996            # Gy^1/2
+        a_x = 2.0            # Gy^1/2
+        a_y = 0.8            # Gy^1/2
         write_limit = 1000
         output_filename = datadir + "testheat.dat"
 

@@ -110,26 +110,26 @@ double y_lb_heat(double x){
 double unfertilized_source(double x, double y, double t){
   // Returned heat is in units K Gy^-1
   if (y >= (80.0/120.0)){
-    return 449.23;
+    return 450.0;
   } else if ((y < (80.0/120.0)) && (y >= (100.0/120.0))) {
-    return 3144.6;
+    return 3150.0;
   } else {
-    return 12578.0;
+    return 12600.0;
   }
 }
 
 double fertilized_source(double x, double y, double t){
   // Returned heat is in units K Gy^-1
   if (y >= (40.0/120.0)){
-    double Q = 449.23;
+    double Q = 450.0;
     if ( (x>=(75.0/300.0)) && (x<=(225.0/300.0)) ){
-      Q += 4492.3*(0.4*std::exp(-0.155*t) + 0.4*std::exp(-0.0495*t) + 0.2*std::exp(-0.555*t));
+      Q += 4500.0*(0.4*std::exp(-0.155*t) + 0.4*std::exp(-0.0495*t) + 0.2*std::exp(-0.555*t));
     }
     return Q;
   } else if ((y < (40.0/120.0)) && (y >= (20.0/120.0))) {
-    return 3144.6;
+    return 3150.0;
   } else {
-    return 12578.0;
+    return 12600.0;
   }
 }
 
