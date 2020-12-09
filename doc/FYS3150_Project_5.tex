@@ -550,7 +550,7 @@ a & b & c &   \cdots & 0 \\
 \vdots & \ddots & \ddots & \ddots & \vdots \\
 0 & \cdots  & a & b & c \\
 0 & \cdots & \cdots  & a & b \\
-\end{bmatrix}
+\end{bmatrix} \numberthis \label{eq:tridiag_matrix}
 \end{align*}
 
 If the matrix-vector equation is:
@@ -563,13 +563,13 @@ where $u$ and $f$ are vectors. Assuming that we know $f$ as well, we can find th
 
 \begin{align*}
 \tilde{b}_i = b - \frac{ac}{\tilde{b}_{i-1}} \\
-\tilde{f}_i = f_i - \frac{\tilde{f}_{i-1} a}{\tilde{b}_{i-1}} \, ,
+\tilde{f}_i = f_i - \frac{\tilde{f}_{i-1} a}{\tilde{b}_{i-1}} \, , \numberthis \label{eq:tridiag_forward}
 \end{align*}
 
 where the subscript $i$ indicates component $i$. We can then find the components of $u$ as:
 
 \begin{align*}
-u_i &= \frac{\tilde{f}_i - c u_{i+1}}{\tilde{b}_{i-1}}
+u_i &= \frac{\tilde{f}_i - c u_{i+1}}{\tilde{b}_{i-1}} \, . \numberthis \label{eq:tridiag_backward}
 \end{align*}
 
 This can be performed as first a forward iteration to find $\tilde{b}_i$ and $\tilde{f}_i$, and a backwards iteration to find $u_i$. This iterative solver is discussed in more detail in \citep{Project1}.
@@ -1105,9 +1105,92 @@ Q' &\approx Q \cdot 9000 \text{ } \frac{\text{K m}^3}{\text{J}} \, , \numberthis
 which makes it so that $Q'$ is in units of K/Gy as we wish. 
 
 
+
+
+
+
+
 \clearpage
 
 \section{Method} \label{sec:method}
+
+\subsection{One-dimensional solver} \label{sec:method_1D_solver}
+
+We have implemented an object-oriented solver in C++ for the one-dimensional diffusion equation \eqref{eq:1D_diff_eq} using the schemes outlined in Section \ref{sec:formalism_numerical_1D}. 
+
+The forward Euler based explicit scheme is implemented as follows:
+
+\begin{cpp}
+for (int j = 1; j <= m_M; j++){
+  for (int i = 1; i < m_N; i++){
+    m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i+1) + m_u(i-1));
+  }
+
+  // Update previous solution
+  m_u = m_y;
+  }
+}
+\end{cpp}
+
+This uses a double for loop. The first outer loop iterates over the amount of timesteps, and the inner loop iterates over all the components of the Armadillo \citep{Armadillo} vector \verb+m_y+. This is the solution in the next timestep, and thus to continue the iteration, the solution in the previous timestep \verb+m_u+ (also an Armadillo vector) is overwritten so that the iteration continues. This expression inside the inner for loop is a fairly simple implementation of equation \eqref{eq:forward_euler_method}, with \verb+m_alpha+ being $\alpha$, and \verb+m_coeff+ being $1 - 2\alpha$.
+
+In order to discuss the implementation of the two other schemes, we need to first discuss the implementation of the tridiagonal solver:
+
+\begin{cpp}
+// Precalculate factors to reduce necessary FLOPs
+double ac = m_a*m_c;
+
+// Initialize temporary vector for modified RHS of equation
+arma::vec f_tilde = m_y;
+f_tilde(1) -= m_a*m_u(0);
+
+// Initialize temporary vector for reduced diagonal elements
+arma::vec d_tilde = arma::zeros(m_N);
+d_tilde(1) = m_b;
+
+// Update RHS elements
+for (int i = 2; i < m_N; i++){
+  d_tilde(i) = m_b - ac/d_tilde(i-1);
+  f_tilde(i) -= f_tilde(i-1)*m_a/d_tilde(i-1);
+}
+
+// Find m_u (boundaries m_u(N) and m_u(0) are set manually outside
+// of the tridiag function)
+for (int i = m_N; i >= 2; i--){
+  m_u(i-1) = (f_tilde(i-1) - m_c*m_u(i))/d_tilde(i-1);
+}
+\end{cpp} 
+
+This an implementation of the method discussed in Section \ref{sec:formalism_tridiagonal_solver}. The vector $f$ in that section equates to the vector \verb+m_y+ in the code snippet, and similarly for $\tilde{b}$ and \verb+d_tilde+, and $\tilde{f}$ and \verb+f_tilde+. The elements of the matrix $A$ are stored in the doubles \verb+m_a+, \verb+m_b+ and \verb+m_c+, and correspond to $a$, $b$, and $c$ in equation \eqref{eq:tridiag_matrix}. The first components of \verb+d_tilde+ and \verb+f_tilde+ has to be set manually. We then proceed with a for loop calculating the rest of the components of \verb+d_tilde+ and \verb+f_tilde+. This is the forward part of the iteration as we generate the next values of the vectors based on the previous ones starting with the first components. Following this we perform a loop calculating the components of the solution vector \verb+m_u+. This is the backwards part of the iteration as we use the next element in the solution vector to find the previous element, starting with the last element. The equations used in the forward and backwards part of the iteration are equations \eqref{eq:tridiag_forward} and \eqref{eq:tridiag_backward}.
+
+The backwards Euler based implicit scheme is implemented as follows:
+
+\begin{cpp}
+// Iterate over timesteps
+for (int j = 1; j <= m_M; j++){
+  // Use tridiagonal solver to move one step
+  tridiag();
+
+  // Set boundary conditions
+  m_u(0) = m_lb;
+  m_u(m_N) = m_ub;
+
+  // Update previous solution
+  m_y = m_u;
+  }
+}
+\end{cpp}  
+
+As all the calculations happen within the tridiagonal solver function (\verb+tridiag()+) there is only a loop over the amount of timesteps. As this is a set of object-oriented code, all the variables used in the tridiagonal solver are stored as class variables, meaning that no arguments are passed. The solver uses the solution in the previous timestep \verb+m_y+ to find the solution in the current timestep \verb+m_u+. After this the solution in the previous timestep is overwritten and the iteration continues. As for the variables used in the tridiagonal solver, and relating them to the constants in equation \eqref{eq:backward_euler_method}, \verb+m_a+ and \verb+m_c+ are set to $-\alpha$ and \verb+m_b+ is set to $1 + 2\alpha$. 
+
+
+\subsection{Two-dimensional solver} \label{sec:method_2D_solver}
+
+
+\subsection{Solver for the heat equation with a source term} \label{sec:method_heat_solver}
+
+
+
 
 \clearpage
 
