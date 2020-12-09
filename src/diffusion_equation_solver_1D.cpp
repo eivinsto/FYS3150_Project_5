@@ -77,14 +77,16 @@ void DiffusionEquationSolver1D::tridiag(){
   // Precalculate factors to reduce necessary FLOPs
   double ac = m_a*m_c;
 
-  // Initialize temporary vector for RHS of equation
+  // Initialize temporary vector for modified RHS of equation
   arma::vec f_tilde = m_y;
 
+  // Initialize temporary vector for reduced diagonal elements
   arma::vec d_tilde = arma::zeros(m_N);
-  d_tilde(0) = m_b;
+  d_tilde(1) = m_b;
+  f_tilde(1) -= m_a*m_u(0); 
 
   // Update RHS elements
-  for (int i = 1; i < m_N; i++){
+  for (int i = 2; i < m_N; i++){
     d_tilde(i) = m_b - ac/d_tilde(i-1);
     f_tilde(i) -= f_tilde(i-1)*m_a/d_tilde(i-1);
   }
