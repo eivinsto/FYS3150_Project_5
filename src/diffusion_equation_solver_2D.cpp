@@ -65,7 +65,7 @@ void DiffusionEquationSolver2D::jacobi(){
   int thrds = 0.5*omp_get_max_threads();
   // Iterative solver
   while (std::sqrt(s) > m_abstol && k < m_maxiter){
-    #pragma omp parallel default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay) num_threads(thrds) reduction(+:s)
+    // #pragma omp parallel if(m_N > 1000) num_threads(2) default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay) reduction(+:s)
     {
       double u10;
       double u20;
@@ -73,21 +73,20 @@ void DiffusionEquationSolver2D::jacobi(){
       double u02;
       double q;
 
-      #pragma omp for
+      // #pragma omp for
       for (i = 1; i < m_N-1; i++){
         for (j = 1; j < m_N-1; j++){
-          #pragma omp atomic read
+          // #pragma omp atomic read
           u10 = old(i+1,j);
-          #pragma omp atomic read
+          // #pragma omp atomic read
           u20 = old(i-1,j);
-          #pragma omp atomic read
+          // #pragma omp atomic read
           u01 = old(i,j+1);
-          #pragma omp atomic read
+          // #pragma omp atomic read
           u02 = old(i,j-1);
 
           q = m_q(i,j);
 
-          #pragma omp atomic write
           m_u(i,j) = m_diag_element*(m_alpha*(m_Ax*(u10 + u20)
           + m_Ay*(u02 + u01)) + q);
         }
@@ -97,7 +96,7 @@ void DiffusionEquationSolver2D::jacobi(){
       s = 0;
       double term = 0;
 
-      #pragma omp for
+      // #pragma omp for
       for (i = 0; i < m_N; i++){
         for (j = 0; j < m_N; j++){
           term = old(i,j) - m_u(i,j);
