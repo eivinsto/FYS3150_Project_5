@@ -84,6 +84,10 @@ if __name__ == "__main__":
                     run_1D(output_files[i][j], method, N, dts[j], Ms[j], u_b,
                            l_b, write_limit)
 
+        def anal_1d(x, t):
+            """Analytic solution for 1D example"""
+            return (np.sin(2*np.pi*x)*np.exp(-4*t*np.pi**2) + x)
+
         data = {}
         for i, method in enumerate(methods):
             for j, N in enumerate(Ns):
@@ -94,9 +98,16 @@ if __name__ == "__main__":
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
                 ax[j].plot(x, data[method, N][n_t1[j], :],
-                           label=f"$t_{1} = $ {dts[j]*n_t1[j]:.3f}")
+                           label=f"Numeric $t_{1} = $ {dts[j]*n_t1[j]:.3f}")
                 ax[j].plot(x, data[method, N][-1, :],
-                           label=f"$t_{2} = $ {dts[j]*n_T[j]:.3f}")
+                           label=f"Numeric $t_{2} = $ {dts[j]*n_T[j]:.3f}")
+
+                x = np.linspace(0, 1, 100)
+                ax[j].plot(x, anal_1d(x, dts[j]*n_t1[j]), '--',
+                           label=f"Analytic $t_{1} = $ {dts[j]*n_t1[j]:.3f}")
+                ax[j].plot(x, anal_1d(x, dts[j]*n_T[j]), '--',
+                           label="Analytic " +
+                           f"$t_{1} = $ {dts[j]*n_T[j]:.3f}")
                 ax[j].set_title(r"$\Delta x = $ " f"{1/N}")
                 ax[j].legend()
                 ax[j].grid()
