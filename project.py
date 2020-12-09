@@ -1,5 +1,5 @@
-from subprocess import run, Popen, PIPE
-import multiprocessing as mp
+from subprocess import run  # , Popen, PIPE
+# import multiprocessing as mp
 import os
 import sys
 import numpy as np
@@ -102,15 +102,17 @@ if __name__ == "__main__":
                 ax[j].grid()
 
             f.suptitle(method)
+            f.tight_layout()
+            f.savefig(datadir + method + ".pdf")
 
         plt.show()
 
     # 2D sample run
     if runflag == "2d":
-        N = 20
-        dt = 1e-4
+        N = 100
         M = 10000
-        write_limit = 1000
+        dt = 1/M
+        write_limit = M
         output_filename = datadir + "test2d.dat"
 
         if genflag == "y":
@@ -130,19 +132,30 @@ if __name__ == "__main__":
         ax2.grid()
         f.colorbar(c1, ax=ax1)
         f.colorbar(c2, ax=ax2)
+        f.tight_layout()
+        f.savefig(datadir + "2Dtest.pdf")
         plt.show()
 
     if runflag == "heat":
         N = 100
-        dt = 1e-4
         M = 10000
+        dt = 1/M
         a_x = 2.0            # Gy^1/2
         a_y = 0.8            # Gy^1/2
-        write_limit = 1000
-        output_filename = datadir + "testheat.dat"
+        write_limit = M
+
+        source_type = input("Used enriched source? y/n: ").lower()
+        if source_type == "y":
+            source_type = "enriched"
+        else:
+            source_type = "unenriched"
+
+        output_filename = datadir + source_type + "-heat.dat"
 
         if genflag == "y":
-            run_heat(output_filename, N, dt, M, write_limit,a_x,a_y,"enriched")
+
+            run_heat(output_filename, N, dt, M, write_limit, a_x, a_y,
+                     source_type)
 
         tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
@@ -164,6 +177,9 @@ if __name__ == "__main__":
         ax2.set_ylim(ax2.get_ylim()[::-1])
         f.colorbar(c1, ax=ax1)
         f.colorbar(c2, ax=ax2)
+        f.suptitle(source_type)
+        f.tight_layout()
+        f.savefig(datadir + source_type + "2Dheat.pdf")
         plt.show()
 
 if runflag == "test":
