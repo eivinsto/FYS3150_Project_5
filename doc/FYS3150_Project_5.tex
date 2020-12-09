@@ -539,6 +539,49 @@ Crank-Nicholson & $\mathcal{O}(\Delta t^2)$ and $\mathcal{O}(\Delta x^2)$ & None
 \end{table}
 
 
+\subsubsection{Tridiagonal solver} \label{sec:formalism_tridiagonal_solver}
+
+In the previous sections we have mentioned that we can use a tridiagonal solver to solve the matrix-vector equations we get. Given a tridiagonal matrix where the elements are constant along the diagonal bands, except for the first and last rows:
+
+\begin{align*}
+A &= \begin{bmatrix}
+b & c & 0  & \cdots & 0 \\
+a & b & c &   \cdots & 0 \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+0 & \cdots  & a & b & c \\
+0 & \cdots & \cdots  & a & b \\
+\end{bmatrix}
+\end{align*}
+
+If the matrix-vector equation is:
+
+\begin{align*}
+Au = f \, ,
+\end{align*}
+
+where $u$ and $f$ are vectors. Assuming that we know $f$ as well, we can find the components of $u$ by first finding:
+
+\begin{align*}
+\tilde{b}_i = b - \frac{ac}{\tilde{b}_{i-1}} \\
+\tilde{f}_i = f_i - \frac{\tilde{f}_{i-1} a}{\tilde{b}_{i-1}} \, ,
+\end{align*}
+
+where the subscript $i$ indicates component $i$. We can then find the components of $u$ as:
+
+\begin{align*}
+u_i &= \frac{\tilde{f}_i - c u_{i+1}}{\tilde{b}_{i-1}}
+\end{align*}
+
+This can be performed as first a forward iteration to find $\tilde{b}_i$ and $\tilde{f}_i$, and a backwards iteration to find $u_i$. This iterative solver is discussed in more detail in \citep{Project1}.
+
+This assumes that the boundary conditions are zero, but if they are not a simple adaptation can be made to accommodate this. If we assume that the boundary values $u_0$ and $u_{n+1}$ are known, non-zero values (which also means we have to exclude these indices from the iterations above), we need to use that:
+
+\begin{align*}
+\tilde{f}_1 = f_1 - au_0 \, .
+\end{align*} 
+
+By this simple adaptation the solver now works for non-zero boundary conditions.
+
 
 
 \subsection{Analytical solution of diffusion equation in two dimensions} \label{sec:formalism_2D_diff_eq_analytical}
