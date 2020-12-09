@@ -79,11 +79,11 @@ void DiffusionEquationSolver1D::tridiag(){
 
   // Initialize temporary vector for modified RHS of equation
   arma::vec f_tilde = m_y;
+  f_tilde(1) -= m_a*m_u(0);
 
   // Initialize temporary vector for reduced diagonal elements
   arma::vec d_tilde = arma::zeros(m_N);
   d_tilde(1) = m_b;
-  f_tilde(1) -= m_a*m_u(0);
 
   // Update RHS elements
   for (int i = 2; i < m_N; i++){
