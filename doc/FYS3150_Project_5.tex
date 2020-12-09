@@ -835,7 +835,7 @@ where $T_{1/2}$ is the halflife of the radioactive element. We assume that the c
 
 \begin{align*}
 Q_\text{add}(t) &= (0.4e^{-t(\ln(2)/(4.47  \text{ Gy}))   } + 0.4e^{-t(\ln(2)/(14.0  \text{ Gy}))   } \\
-&\,\,\,+ 0.2e^{-t(\ln(2)/(1.25  \text{ Gy}))   }) \cdot 0.5 \text{ $\mu$W/m$^3$} 
+&\,\,\,+ 0.2e^{-t(\ln(2)/(1.25  \text{ Gy}))   }) \cdot 0.5 \text{ $\mu$W/m$^3$} \numberthis \label{eq:additional_heat}
 \end{align*}
 
 This means that the heat source can be written on function form as:
@@ -992,15 +992,60 @@ which results in the steady-state being a first-order polynomial of $y$, dependi
 T_s(y) &= \frac{1300\text{ $^\circ$C }-8 \text{ $^\circ$C} }{120 \text{ km} } y + 8 \text{ $^\circ$C}\, . \numberthis \label{eq:steady_state_heat} 
 \end{align*} 
 
-Now, when we introduce the radioactive elements we expect the steady-state solution to differ from this. We will not attempt to calculate the analytical solution in this case, but we can say something about how we expect it to behave with the source terms as given in equations \eqref{eq:unfertilized_heat} and \eqref{eq:refertilized_heat}. Before the enrichment the source term is constant in each of the three region. The lowest region has the least heat added, and the highest region the most. This causes the change in the temperature as a function of depth to be affected. As there is an additional source term, we also expect the temperatures to be higher everywhere in the system (still approaching the boundary values in the limits however). 
+Now, when we introduce the radioactive elements we expect the steady-state solution to differ from this, as we would need to add the source term when solving for the steady state as well. The steady state is defined as when the system reaches an equillibrium where it is constant in time. Before the enrichment the additional source term is independent of time and the $x$-coordinate, meaning that the steady-state solution can be found by solving Poisson's equation:
+
+\begin{align*}
+\frac{\partial^2 T_{s,\text{before}}}{\partial y^2} &= -\frac{Q_{\text{before}}(y)}{k} \, , 
+\end{align*} 
+
+This is not an equation that is easily solved, and thus we will not do so. However, this allows us to say something about how we expect the numerically calculated steady-state solution to look like. Generally we expect the added heat to result in an increase in the temperature for all depths, except in the limits where the boundary values still reign. This can be seen from the fact that the right-hand side in the above equation is negative, meaning that the change in temperature as a function of depth is larger in the crust than in the mantle. Thus we expect a departure from the pure linear behaviour that is expected if there was no radioactive materials, with the temperatures at all points being higher than in the case when there are no additional heat sources.
+
+After the mantle is enriched further we expect some of the same differences. It is quite easy to see that the additional heat $Q_{\text{add}}(y,t)$ (see equation \eqref{eq:additional_heat}) tends to zero as $t\to \infty$. This means that the steady state solution remains the same as before the further enrichment. It is still interesting however, to discuss how we expect the temperature gradient to look like after an amount of time such that the additional heat term has not disappeared. The source term is still positive for all depths, and so the temperatures should be higher compared to the steady state with no radioactive materials. The temperatures should also be higher than before the further enrichment, as the only change is that there is more heat being produced in the upper mantle. The temperature will in this case also not be linear in terms of the depth, but as an added complication it will also not be constant along the $x$-axis, as only a portion of the upper mantle is further enriched in radioactive materials. As we have positioned this region in the middle of our $x$-axis we expect the temperature to vary along the $x$-axis, reaching a peak around the middle of the $x$-axis. The temperatures should gradually increase as we move from one of the edges of the system towards the middle along the $x$-axis. 
+
+
+
+ %We will not attempt to calculate the analytical solution in this case, but we can say something about how we expect it to behave with the source terms as given in equations \eqref{eq:unfertilized_heat} and \eqref{eq:refertilized_heat}. When additional heat sources are introduced are introduced we expect the temperature to rise throughout the system, but still approach the boundary values in the limits on the spatial coordinates. 
+
+
+
+
+%Before the enrichment the source term is constant in each of the three region. The lowest region has the least heat added, and the highest region the most. This causes the change in the temperature as a function of depth to be affected. As there is an additional source term, we also expect the temperatures to be higher everywhere in the system (still approaching the boundary values in the limits however). Compared to the steady-state solution we found earlier, we thus expect the  
 
 %From this we can expect the the tempature as a function of depth will change faster in the higher regions than in the lower ones, as there is more heat being produced there. As there is additional heat being produced all over, it is also reasonable to expect that this leads to an increase in the temperature across all regions. Compared the steady-state solution we found earlier, we thus expect that the actual steady-state solution in this case will have slightly higher temperatures (but not exceeding the boundary values), with the change in temperature as a function of depth being larger for upper regions and lower for the lower regions compared to the constant change we found earlier.
 
-Similarly after the enrichment we expect the temperature to be slightly higher all across the board (still approaching the boundary values in the limits of course). The steady-state solution in this case is the same as when there are no additional radioactive materials, as the additional heat reaches zero when $t \to \infty$. We can still discuss qualitative expectations on how the system will look like after some time. In the region along the $x$-direction where the mantle is enriched, there is now more heat being produced from the radioactive elements than there is in the lower crust in the same region. This means that we expect the change in the temperature to be largest in the upper crust, least in the lower crust, and second largest in the mantle. 
+%Similarly after the enrichment we expect the temperature to be slightly higher all across the board (still approaching the boundary values in the limits of course). The steady-state solution in this case is the same as when there are no additional radioactive materials, as the additional heat reaches zero when $t \to \infty$. We can still discuss qualitative expectations on how the system will look like after some time. In the region along the $x$-direction where the mantle is enriched, there is now more heat being produced from the radioactive elements than there is in the lower crust in the same region. This means that we expect the change in the temperature to be largest in the upper crust, least in the lower crust, and second largest in the mantle. 
 
 
 
+\subsubsection{Choices of units and parameter values} \label{sec:formalism_heat_units_parameters}
 
+We need to decide on which units that are to be used for the parameters in the simulation. In general we use SI units, but as we are interested in looking at the results on a geological timescale, we decide to use gigayears as the unit of time. This has some implications. Particularly, the values calculated for the parameters $a_x$ and $a_y$ in Section \ref{sec:formalism_heat_eq_with_source_numerical_sol} are instead:
+
+\begin{align*}
+a_x &\approx \num{3.55e8} \text{ s}^{1/2} \approx 2.00 \text{ Gy}^{1/2} \\
+a_y &\approx \num{1.42e8} \text{ s}^{1/2} \approx 0.80 \text{ Gy}^{1/2} \numberthis \label{eq:parameters_xyscale}
+\end{align*}
+
+We also need the value that we should multiply the heat source terms $Q$ with in order to get $Q'$ in units of K/Gy. The heat source terms $Q$ are in units $\mu$W/m$^3$, where W is J/s. We have that:
+
+\begin{align*}
+\frac{1}{\text{s}} \approx \num{3.15e16} \text{ }\frac{1}{\text{Gy}} \, .
+\end{align*} 
+
+We also need to find the value of $1/(\rho c_p)$ as $Q' = Q/(\rho c_p)$. This value is:
+
+\begin{align*}
+\frac{1}{\rho c_p} &= \frac{1}{3500 \text{ } \frac{\text{kg}}{\text{m}^3} \text{ } \cdot 1000 \text{ } \frac{\text{J}}{\text{kg K}}} = \num{2.86e-7} \text{ } \frac{\text{K m}^3}{\text{J}}
+\end{align*}
+
+Lastly we also need a factor $10^{-6}$ as we divide $\mu$J by J. Tallying up all the factors gives us:
+
+\begin{align*}
+Q' &\approx Q \cdot \num{3.15e16} \cdot \num{2.86e-7} \text{ } \frac{\text{K m}^3}{\text{J}} \cdot 10^{-6} \\
+Q' &\approx Q \cdot 9000 \text{ } \frac{\text{K m}^3}{\text{J}} \, , \numberthis \label{eq:parameters_heat_transform}
+\end{align*}
+
+which makes it so that $Q'$ is in units of K/Gy as we wish. 
 
 \clearpage
 
