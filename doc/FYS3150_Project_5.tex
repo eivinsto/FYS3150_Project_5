@@ -980,7 +980,14 @@ First we wish to find the steady-state solution without considering the effects 
 \frac{\partial^2 T_s(x,y)}{\partial x^2} + \frac{\partial^2 T_s(x,y)}{\partial y^2} &= 0 \, ,
 \end{align*}
 
-where the subscript $s$ is used to mark this as the steady-state solution. We know only the boundary conditions at $T_s(x,0 \text{ km}) = 8$ $^\circ$C and $T_s(x,120 \text{ km}) = 1300$ $^\circ$C, and not the boundaries in the $x$-direction. That does not mean we cannot progress beyond this point, however, as we expect the temperature to depend only on depth, as there are no other sources of heat at this point. This means that we expect the temperature gradient to be only dependent on $y$ ($T_s(x,y) \to T_s(y)$). Laplace's equation is then reduced to only one dimension:
+where the subscript $s$ is used to mark this as the steady-state solution. We know only the boundary conditions:
+
+\begin{align*}
+T_s(x,0 \text{ km}) &= 8 \text{ } ^\circ\text{C} \\
+T_s(x,120 \text{ km}) &= 1300 \text{ } ^\circ\text{C} \, , \numberthis \label{eq:heat_boundary_conditions_y}
+\end{align*} 
+
+and not the boundaries in the $x$-direction. That does not mean we cannot progress beyond this point, however, as we expect the temperature to depend only on depth, as there are no other sources of heat at this point. This means that we expect the temperature gradient to be only dependent on $y$ ($T_s(x,y) \to T_s(y)$). Laplace's equation is then reduced to only one dimension:
 
 \begin{align*}
 \frac{\partial^2 T_s(y)}{\partial y^2} = 0 \, ,
@@ -991,6 +998,13 @@ which results in the steady-state being a first-order polynomial of $y$, dependi
 \begin{align*}
 T_s(y) &= \frac{1300\text{ $^\circ$C }-8 \text{ $^\circ$C} }{120 \text{ km} } y + 8 \text{ $^\circ$C}\, . \numberthis \label{eq:steady_state_heat} 
 \end{align*} 
+
+We will also use this result as the boundary conditions in the $x$-direction, so that:
+
+\begin{align*}
+T(0 \text{ km},y) = T(300 \text{ km},y) = T_s(y) \, . \numberthis \label{eq:heat_boundary_conditions_x}
+\end{align*}
+
 
 Now, when we introduce the radioactive elements we expect the steady-state solution to differ from this, as we would need to add the source term when solving for the steady state as well. The steady state is defined as when the system reaches an equillibrium where it is constant in time. Before the enrichment the additional source term is independent of time and the $x$-coordinate, meaning that the steady-state solution can be found by solving Poisson's equation:
 
@@ -1046,6 +1060,7 @@ Q' &\approx Q \cdot 9000 \text{ } \frac{\text{K m}^3}{\text{J}} \, , \numberthis
 \end{align*}
 
 which makes it so that $Q'$ is in units of K/Gy as we wish. 
+
 
 \clearpage
 
