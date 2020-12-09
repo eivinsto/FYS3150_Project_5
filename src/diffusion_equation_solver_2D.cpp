@@ -62,7 +62,7 @@ void DiffusionEquationSolver2D::jacobi(){
 
   int k = 0;
   int i, j;
-  int thrds = 0.5*omp_get_max_threads();
+  // int thrds = 0.5*omp_get_max_threads();
   // Iterative solver
   while (std::sqrt(s) > m_abstol && k < m_maxiter){
     // #pragma omp parallel if(m_N > 1000) num_threads(2) default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay) reduction(+:s)
@@ -124,6 +124,7 @@ void DiffusionEquationSolver2D::solve(){
 
   write_to_file();
 
+  double wtime = omp_get_wtime();
   // Time iteration
   for (m_t = 1; m_t <= m_M; m_t++){
     // Set source term
@@ -137,6 +138,8 @@ void DiffusionEquationSolver2D::solve(){
       write_to_file();
     }
   }
+  wtime = omp_get_wtime() - wtime;
+  std::cout << "Finished simulating." << "\nElapsed time in seconds = " << wtime << std::endl;
 
 }
 
