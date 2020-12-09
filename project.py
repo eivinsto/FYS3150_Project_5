@@ -86,17 +86,29 @@ if __name__ == "__main__":
 
         def anal_1d(x, t):
             """Analytic solution for 1D example"""
-            return (np.sin(2*np.pi*x)*np.exp(-4*t*np.pi**2) + x)
+            if isinstance(t, np.ndarray):
+                arr = np.empty((len(t), len(x)))
+                for i in range(len(t)):
+                    arr[i, :] = (np.sin(2*np.pi*x)*np.exp(-4*t[i]*np.pi**2) +
+                                 x)
+                return arr
+            else:
+                return (np.sin(2*np.pi*x)*np.exp(-4*t*np.pi**2) + x)
 
         data = {}
         for i, method in enumerate(methods):
             for j, N in enumerate(Ns):
                 data[method, N] = np.genfromtxt(output_files[i][j])
 
+        errordata = {}
         for i, method in enumerate(methods):
             f, ax = plt.subplots(1, 2)
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
+                t = np.linspace(0, 1, n_T[j])
+
+                errordata[method, N] = np.abs(data[method, N] - anal_1d(x, t))
+
                 ax[j].plot(x, data[method, N][n_t1[j], :],
                            label=f"Numeric $t_{1} = $ {dts[j]*n_t1[j]:.3f}")
                 ax[j].plot(x, data[method, N][-1, :],
