@@ -109,9 +109,9 @@ double y_lb_heat(double x){
 
 double unfertilized_source(double x, double y, double t){
   // Returned heat is in units K Gy^-1
-  if (y >= (80.0/120.0)){
+  if (y >= (40.0/120.0)){
     return 450.0;
-  } else if ((y < (80.0/120.0)) && (y >= (100.0/120.0))) {
+  } else if ((y < (40.0/120.0)) && (y >= (20.0/120.0))) {
     return 3150.0;
   } else {
     return 12600.0;
