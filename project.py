@@ -134,15 +134,22 @@ if __name__ == "__main__":
 
     if runflag == "heat":
         N = 100
-        dt = 1e-4
-        M = 10000
+        M = 1000
+        dt = 1/M
         a_x = 2.0            # Gy^1/2
         a_y = 0.8            # Gy^1/2
-        write_limit = 1000
+        write_limit = 1
         output_filename = datadir + "testheat.dat"
 
         if genflag == "y":
-            run_heat(output_filename, N, dt, M, write_limit,a_x,a_y,"enriched")
+            source_type = input("Used enriched source? y/n: ").lower()
+            if source_type == "y":
+                source_type = "enriched"
+            else:
+                source_type = "unenriched"
+
+            run_heat(output_filename, N, dt, M, write_limit, a_x, a_y,
+                     source_type)
 
         tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
