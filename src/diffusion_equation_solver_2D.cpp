@@ -39,12 +39,11 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
                                                      double ax, double ay)
                          : DiffusionEquationSolver2D(N, dt, M, write_limit, init_func, y_ub, y_lb,
                                                      x_ub, x_lb, ofilename){
-  m_use_source_term = true;
-  m_source_term = source_term;
-  // Relation between squared "extra" constant in x- and y-direction
-  m_Ax = 1.0/(ax*ax);
-  m_Ay = 1.0/(ay*ay);
-  m_diag_element = 1.0/(1.0 + 2*m_alpha*(m_Ax + m_Ay));
+  m_use_source_term = true;                             // Specify that source term function has been provided
+  m_source_term = source_term;                          // Store source term function
+  m_Ax = 1.0/(ax*ax);                                   // Calculate constant for x-direction used for non-rectangular grid
+  m_Ay = 1.0/(ay*ay);                                   // Calculate constant for y-direction used for non-rectangular grid
+  m_diag_element = 1.0/(1.0 + 2*m_alpha*(m_Ax + m_Ay)); // Specify diagonal elements in terms of Ax and Ay
 }
 
 void DiffusionEquationSolver2D::jacobi(){
@@ -67,6 +66,7 @@ void DiffusionEquationSolver2D::jacobi(){
   while (std::sqrt(s) > m_abstol && k < m_maxiter){
     // #pragma omp parallel if(m_N > 1000) num_threads(2) default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay) reduction(+:s)
     {
+      // Define elements used for extraction
       double u10;
       double u20;
       double u01;
@@ -76,6 +76,8 @@ void DiffusionEquationSolver2D::jacobi(){
       // #pragma omp for
       for (i = 1; i < m_N-1; i++){
         for (j = 1; j < m_N-1; j++){
+          // Extract elements
+
           // #pragma omp atomic read
           u10 = old(i+1,j);
           // #pragma omp atomic read
@@ -87,12 +89,13 @@ void DiffusionEquationSolver2D::jacobi(){
 
           q = m_q(i,j);
 
+          // Find next approximation to solution
           m_u(i,j) = m_diag_element*(m_alpha*(m_Ax*(u10 + u20)
           + m_Ay*(u02 + u01)) + q);
         }
       }
 
-      // Check convergence
+      // Check convergence, loop exits if s is less than the tolerance specified 
       s = 0;
       double term = 0;
 
@@ -122,6 +125,7 @@ void DiffusionEquationSolver2D::solve(){
     }
   }
 
+  // Write initial state to file
   write_to_file();
 
   double wtime = omp_get_wtime();
@@ -138,6 +142,7 @@ void DiffusionEquationSolver2D::solve(){
       write_to_file();
     }
 
+    // Write errors to file
     if (m_write_errors){
       calculate_and_output_errors();
     }
@@ -147,44 +152,54 @@ void DiffusionEquationSolver2D::solve(){
 }
 
 void DiffusionEquationSolver2D::write_to_file(){
+  // Write flattened matrix to file
   for (int i = 0; i < m_N; i++){
     for (int j = 0; j < m_N; j++){
       m_ofile << std::setw(15) << std::setprecision(8) << m_u(i,j) << ' ';
     }
   }
+  // Write time to same line
   m_ofile << std::setw(15) << std::setprecision(8) << m_t*m_dt << std::endl;
 }
 
 
 void DiffusionEquationSolver2D::set_source_term(){
+  // Calculate source term used in jacobi solver
   if (m_use_source_term){
+    // Use source term function if specified and previous timestep
     for (int i = 0; i < m_N; i++){
       for (int j = 0; j < m_N; j++){
         m_q(i,j) = m_dt*m_source_term(i*m_h,j*m_h,m_t*m_dt) + m_u(i,j);
       }
     }
   } else {
+    // Use only the previous timestep if no source function is specified
     m_q = m_u;
   }
 }
 
 void DiffusionEquationSolver2D::compare_with_analytic(double (*analytic)(double, double, double), std::string error_filename){
-  m_analytic = analytic;
-  m_u_analytic = arma::zeros<arma::mat>(m_N,m_N);
-  m_error_filename = error_filename;
+  m_analytic = analytic;                                            // Function that returns analytic solution
+  m_u_analytic = arma::zeros<arma::mat>(m_N,m_N);                   // Matrix to store analytic solution
+  m_error_filename = error_filename;                                // Name of error output file
   m_error_ofile.open(m_error_filename.c_str(), std::ofstream::out); // Ofstream object of error output file
-  m_write_errors = true;
+  m_write_errors = true;                                            // Bool used to tell the solver to write errors
 }
 
 void DiffusionEquationSolver2D::calculate_and_output_errors(){
+  // Calculate analytic solution
   for (int i = 0; i <= m_N; i++){
     for (int j = 0; j <= m_N; j++){
       m_u_analytic(i,j) = m_analytic(i*m_h,j*m_h,m_t*m_dt);
     }
   }
 
-  arma::mat diff = arma::abs(m_u - m_u_analytic);
-  double rel_err_sum = arma::accu(diff/m_u_analytic);
+  // Get relative error matrix
+  arma::mat diff = arma::abs((m_u - m_u_analytic)/m_u_analytic);
+  // Calculate sum of relative errors
+  double rel_err_sum = arma::accu(diff);
+  // Average errors per element and write to file
   m_error_ofile << std::setw(15) << std::setprecision(8) << rel_err_sum/((m_N+1)*(m_N+1)) << ' ';
+  // Also write the current time to file
   m_error_ofile << std::setw(15) << std::setprecision(8) << m_t*m_dt << std::endl;
 }
