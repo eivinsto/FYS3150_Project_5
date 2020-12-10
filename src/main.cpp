@@ -10,6 +10,7 @@ double x_ub2D(double);
 double x_lb2D(double);
 double y_ub2D(double);
 double y_lb2D(double);
+double analytic_2D(double, double, double);
 double init_func_heat(double, double);
 double unfertilized_source(double, double, double);
 double fertilized_source(double, double, double);
@@ -17,6 +18,7 @@ double x_ub_heat(double);
 double x_lb_heat(double);
 double y_ub_heat(double);
 double y_lb_heat(double);
+double analytic_heat(double, double, double);
 
 
 int main(int argc, char** argv) {
@@ -54,10 +56,18 @@ int main(int argc, char** argv) {
       } else {
         DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
                                          x_ub_heat,x_lb_heat,output_filename, unfertilized_source, ax, ay);
+        if (argc>11){
+          std::string error_filename = argv[11];
+          system.compare_with_analytic(analytic_heat, error_filename);
+        }
         system.solve();
       }
     } else {
       DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func2D,y_ub2D,y_lb2D,x_ub2D,x_lb2D,output_filename);
+      if (argc>11){
+        std::string error_filename = argv[11];
+        system.compare_with_analytic(analytic_2D, error_filename);
+      }
       system.solve();
     }
   }
@@ -89,6 +99,11 @@ double y_ub2D(double x){
 
 double y_lb2D(double x){
   return x;
+}
+
+// TODO: find analytic solution
+double analytic_2D(double x, double y, double t){
+  return 0;
 }
 
 double x_ub_heat(double y){
@@ -135,4 +150,8 @@ double fertilized_source(double x, double y, double t){
 
 double init_func_heat(double x, double y){
   return y*(1300-8) + 8;
+}
+
+double analytic_heat(double x, double y, double t){
+  return init_func_heat(x,y);
 }
