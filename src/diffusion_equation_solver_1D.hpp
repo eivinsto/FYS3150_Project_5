@@ -23,7 +23,7 @@ private:
   void crank_nicholson_solve();
   void tridiag();
   void write_to_file();
-  double (*m_init_func)(double); // Function pointer used to generate initial state of system 
+  double (*m_init_func)(double); // Function pointer used to generate initial state of system
 
   // Private variables
   int m_N;
@@ -43,4 +43,5 @@ private:
   int m_write_limit;
   double m_lb;
   double m_ub;
+  int m_j = 0;
 };

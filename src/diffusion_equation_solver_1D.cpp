@@ -116,7 +116,7 @@ void DiffusionEquationSolver1D::forward_euler_solve(){
   write_to_file();
 
   // Iterate over timesteps
-  for (int j = 1; j <= m_M; j++){
+  for (int m_j = 1; m_j <= m_M; m_j++){
     // Matrix multiplication with tridiagonal matrix
     for (int i = 1; i < m_N; i++){
       m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i+1) + m_u(i-1));
@@ -126,7 +126,7 @@ void DiffusionEquationSolver1D::forward_euler_solve(){
     m_u = m_y;
 
     // Write to file
-    if (j%m_write_limit==0){
+    if (m_j%m_write_limit==0){
       write_to_file();
     }
   }
@@ -153,7 +153,7 @@ void DiffusionEquationSolver1D::backward_euler_solve(){
   write_to_file();
 
   // Iterate over timesteps
-  for (int j = 1; j <= m_M; j++){
+  for (int m_j = 1; m_j <= m_M; m_j++){
     // Use tridiagonal solver to move one step
     tridiag();
 
@@ -165,7 +165,7 @@ void DiffusionEquationSolver1D::backward_euler_solve(){
     m_y = m_u;
 
     // Write to file
-    if (j%m_write_limit==0){
+    if (m_j%m_write_limit==0){
       write_to_file();
     }
   }
@@ -190,7 +190,7 @@ void DiffusionEquationSolver1D::crank_nicholson_solve(){
   write_to_file();
 
   // Iterate over timesteps
-  for (int j = 1; j <= m_M; j++){
+  for (int m_j = 1; m_j <= m_M; m_j++){
     // Set correct y
     for (int i = 1; i < m_N; i++){
       m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i-1) + m_u(i+1));
@@ -208,7 +208,7 @@ void DiffusionEquationSolver1D::crank_nicholson_solve(){
     m_u(m_N) = m_ub;
 
     // Write to file
-    if (j%m_write_limit==0){
+    if (m_j%m_write_limit==0){
       write_to_file();
     }
   }
@@ -240,9 +240,10 @@ void DiffusionEquationSolver1D::solve(){
 * and thus the time is not explicitly written to file.
 */
 void DiffusionEquationSolver1D::write_to_file(){
-  // Write components of solution vector to file 
+  // Write components of solution vector to file
   for (int i = 0; i<=m_N; i++){
     m_ofile << std::setw(15) << std::setprecision(8) << m_u(i) << ' ';
   }
+  m_ofile << std::setw(15) << std::setprecision(8) << m_j*m_dt;
   m_ofile << std::endl;
 }
