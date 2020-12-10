@@ -487,16 +487,16 @@ The two schemes outlined above can be combined into a single scheme using a para
 - 2u_{i,j-1} + u_{i-1,j-1} \bigg) &= \frac{1}{\Delta t} \bigg( u_{i,j} - u_{i,j-1} \bigg) \numberthis \label{eq:theta_rule}
 \end{align*}
 
-We recognize that by setting $\theta=0$ this returns the explicit scheme, and that it returns the implicit scheme when $\theta = 1$. If we set $\theta = 1/2$, however, we get what is called the Crank-Nicholson scheme. By using $\alpha = \Delta t / \Delta x^2$ we can in this case rewrite the equation above as:
+We recognize that by setting $\theta=0$ this returns the explicit scheme, and that it returns the implicit scheme when $\theta = 1$. If we set $\theta = 1/2$, however, we get what is called the Crank-Nicolson scheme. By using $\alpha = \Delta t / \Delta x^2$ we can in this case rewrite the equation above as:
 
 \begin{align*}
 &-\alpha u_{i-1,j} + (2 + 2 \alpha) u_{i,j} - \alpha u_{i+1,j} \\
-&= \alpha u_{i-1,j-1} + (2-2\alpha) u_{i,j-1} + \alpha u_{i+1,j-1} \numberthis \label{eq:crank_nicholson}
+&= \alpha u_{i-1,j-1} + (2-2\alpha) u_{i,j-1} + \alpha u_{i+1,j-1} \numberthis \label{eq:crank_nicolson}
 \end{align*}
 
 For the full derivation of this scheme we refer to \cite[p.~311]{Hjorth-Jensen2015}. It is derived from approximating around a midpoint $t' = t + \Delta t/2$, which gives that the error from the time approximation goes as $\mathcal{O}(\Delta t^2)$ instead of $\mathcal{O}(\Delta t)$. The spatial approximation still results in an error $\mathcal{O}(\Delta x^2)$, however.
 
-Equation \eqref{eq:crank_nicholson} can be rewritten as a matrix-vector equation using the identity matrix $I$, the matrix $B$ and the vector $U_j$ as defined in the previous section, and by assuming Dirichlet boundary conditions:
+Equation \eqref{eq:crank_nicolson} can be rewritten as a matrix-vector equation using the identity matrix $I$, the matrix $B$ and the vector $U_j$ as defined in the previous section, and by assuming Dirichlet boundary conditions:
 
 \begin{align*}
 (2I + \alpha B ) U_j &= (2I - \alpha B) U_{j-1} \\
@@ -505,7 +505,7 @@ U_j &= (2I + \alpha B)^{-1} (2I - \alpha B) U_{j-1} \numberthis \label{eq:crank_
 
 In other words a matrix inversion is required in order to find the solution in the next timestep. This means that this scheme is an implicit one. First we need to multiply the previous solution with the matrix $(2I - \alpha B)$, which is straightforward. After that we need to find the inverse of $(2I + \alpha B)$ and apply this. As this matrix is tridiagonal we can use a tridiagonal solver for this operation. Thus the numerical solution of this scheme can be split into two parts, one which functions similar to the way in which the solver for the forward Euler based explicit scheme, and a second part that functions similarly to the solver for the backwards Euler based implicit scheme.
 
-The solution with the Crank-Nicholson scheme converges if the spectral radius:
+The solution with the Crank-Nicolson scheme converges if the spectral radius:
 
 \begin{align*}
 \rho\bigg( (2I + \alpha B)^{-1} (2I - \alpha B) \bigg) < 1 \, .
@@ -517,7 +517,7 @@ This is the case if:
 | \frac{2 - \alpha \mu_k}{2 + \alpha \mu_k} | < 1
 \end{align*}
 
-As $\mu_k = 2 - 2 \cos(k\pi/n + 1)$ is always positive this condition is always met, and thus the Crank-Nicholson scheme also converges for any $\alpha$. Note that the numerical solution using this scheme can also easily be adapted to general boundary conditions in the same fashion as was discussed in the previous section.
+As $\mu_k = 2 - 2 \cos(k\pi/n + 1)$ is always positive this condition is always met, and thus the Crank-Nicolson scheme also converges for any $\alpha$. Note that the numerical solution using this scheme can also easily be adapted to general boundary conditions in the same fashion as was discussed in the previous section.
 
 \subsubsection{Convergence and errors in numerical schemes} \label{sec:formalism_1D_diff_eq_numerical_conv_and_err}
 
@@ -533,7 +533,7 @@ Scheme: & Truncation error: & Stability requirements: \\
 Forward Euler & $\mathcal{O}(\Delta t)$ and $\mathcal{O}(\Delta x^2)$ & $\Delta t < \frac{1}{2} \Delta x^2$ \\
 \hline
 Backward Euler & $\mathcal{O}(\Delta t)$ and $\mathcal{O}(\Delta x^2)$ & None on $\Delta t$ and $\Delta x$ \\\hline
-Crank-Nicholson & $\mathcal{O}(\Delta t^2)$ and $\mathcal{O}(\Delta x^2)$ & None on $\Delta t$ and $\Delta x$ \\
+Crank-Nicolson & $\mathcal{O}(\Delta t^2)$ and $\mathcal{O}(\Delta x^2)$ & None on $\Delta t$ and $\Delta x$ \\
 \hline
 \end{tabular}
 \end{table}
@@ -1134,7 +1134,7 @@ for (int j = 1; j <= m_M; j++){
 }
 \end{cpp}
 
-This uses a double for loop. The first outer loop iterates over the amount of timesteps \verb+m_M+, and the inner loop iterates over all the components of the Armadillo \citep{Armadillo} vector \verb+m_y+. This is the solution in the next timestep, and thus to continue the iteration, the solution in the previous timestep \verb+m_u+ (also an Armadillo vector) is overwritten so that the iteration continues. This expression inside the inner for loop is a fairly simple implementation of equation \eqref{eq:forward_euler_method}, with \verb+m_alpha+ being $\alpha$, and \verb+m_coeff+ being $1 - 2\alpha$. The variable \verb+m_N+ is the amount of elements in the solution vector minus one.
+This uses a double for loop. The first outer loop iterates over the amount of timesteps \verb+m_M+, and the inner loop iterates over all the components of the Armadillo \citep{Armadillo} vector \verb+m_y+. This is the solution in the next timestep, and thus to continue the iteration, the solution in the previous timestep \verb+m_u+ (also an Armadillo vector) is overwritten so that the iteration continues. This expression inside the inner for loop is a fairly simple implementation of equation \eqref{eq:forward_euler_method}, with \verb+m_alpha+ being $\alpha$, and \verb+m_coeff+ being $1 - 2\alpha$. The variable \verb+m_N+ is the amount of elements in the solution vector minus one. This implementation takes $4(N-1)M \approx 4NM$ FLOPs (floating point operations), where $N$ is the amount of spatial points (\verb+m_N+ in the code snippet) minus one, and $M$ is the amount of timesteps (\verb+m_M+ in the code snippet).
 
 In order to discuss the implementation of the two other schemes, we need to first discuss the implementation of the tridiagonal solver:
 
@@ -1163,7 +1163,7 @@ for (int i = m_N; i >= 2; i--){
 }
 \end{cpp} 
 
-This an implementation of the method discussed in Section \ref{sec:formalism_tridiagonal_solver}. The vector $f$ in that section equates to the vector \verb+m_y+ in the code snippet, and similarly for $\tilde{b}$ and \verb+d_tilde+, and $\tilde{f}$ and \verb+f_tilde+. The elements of the matrix $A$ are stored in the doubles \verb+m_a+, \verb+m_b+ and \verb+m_c+, and correspond to $a$, $b$, and $c$ in equation \eqref{eq:tridiag_matrix}. The first components of \verb+d_tilde+ and \verb+f_tilde+ has to be set manually. We then proceed with a for loop calculating the rest of the components of \verb+d_tilde+ and \verb+f_tilde+. This is the forward part of the iteration as we generate the next values of the vectors based on the previous ones starting with the first components. Following this we perform a loop calculating the components of the solution vector \verb+m_u+. This is the backwards part of the iteration as we use the next element in the solution vector to find the previous element, starting with the last element. The equations used in the forward and backwards part of the iteration are equations \eqref{eq:tridiag_forward} and \eqref{eq:tridiag_backward}.
+This an implementation of the method discussed in Section \ref{sec:formalism_tridiagonal_solver}. The vector $f$ in that section equates to the vector \verb+m_y+ in the code snippet, and similarly for $\tilde{b}$ and \verb+d_tilde+, and $\tilde{f}$ and \verb+f_tilde+. The elements of the matrix $A$ are stored in the doubles \verb+m_a+, \verb+m_b+ and \verb+m_c+, and correspond to $a$, $b$, and $c$ in equation \eqref{eq:tridiag_matrix}. The first components of \verb+d_tilde+ and \verb+f_tilde+ has to be set manually. We then proceed with a for loop calculating the rest of the components of \verb+d_tilde+ and \verb+f_tilde+. This is the forward part of the iteration as we generate the next values of the vectors based on the previous ones starting with the first components. Following this we perform a loop calculating the components of the solution vector \verb+m_u+. This is the backwards part of the iteration as we use the next element in the solution vector to find the previous element, starting with the last element. The equations used in the forward and backwards part of the iteration are equations \eqref{eq:tridiag_forward} and \eqref{eq:tridiag_backward}. This solver takes about $2 + 5(N-2) + 3(N-1) \approx 8N$ FLOPs to complete. 
 
 The backwards Euler based implicit scheme is implemented as follows:
 
@@ -1183,7 +1183,7 @@ for (int j = 1; j <= m_M; j++){
 }
 \end{cpp}  
 
-As all the calculations happen within the tridiagonal solver function (\verb+tridiag()+) there is only a loop over the amount of timesteps. As this is a set of object-oriented code, all the variables used in the tridiagonal solver are stored as class variables, meaning that no arguments are passed. The solver uses the solution in the previous timestep \verb+m_y+ to find the solution in the current timestep \verb+m_u+. After this the solution in the previous timestep is overwritten and the iteration continues. As for the variables used in the tridiagonal solver, and relating them to the constants in equation \eqref{eq:backward_euler_method}, \verb+m_a+ and \verb+m_c+ are set to $-\alpha$ and \verb+m_b+ is set to $1 + 2\alpha$. 
+As all the calculations happen within the tridiagonal solver function (\verb+tridiag()+) there is only a loop over the amount of timesteps. As this is a set of object-oriented code, all the variables used in the tridiagonal solver are stored as class variables, meaning that no arguments are passed. The solver uses the solution in the previous timestep \verb+m_y+ to find the solution in the current timestep \verb+m_u+. After this the solution in the previous timestep is overwritten and the iteration continues. As for the variables used in the tridiagonal solver, and relating them to the constants in equation \eqref{eq:backward_euler_method}, \verb+m_a+ and \verb+m_c+ are set to $-\alpha$ and \verb+m_b+ is set to $1 + 2\alpha$. This solver calls the tridiagonal solver in every timestep, and thus takes about $8NM$ FLOPs to complete.
 
 The Crank-Nicolson (implicit) scheme is implemented as follows:
 
@@ -1208,7 +1208,25 @@ for (int j = 1; j <= m_M; j++){
 }
 \end{cpp}
 
-This is an amalgamation of the methods used to solve with the forward Euler based and the backward Euler based schemes. Finding the solution in the next timestep using the Crank-Nicolson scheme (see Section \ref{sec:formalism_crank_nicolson}) is a two-part process. First we multiply the solution vector in the previous timestep $U_{j-1}$ with a matrix $2I - \alpha B$ (see equation \eqref{eq:crank_nicolson_matrix}), which is done in the first for loop. The result is stored in the vector \verb+m_y+. Following this we need to perform a matrix inversion with the tridiagonal matrix $2I + \alpha B$ in order to proceed. As this matrix is tridiagonal, we use the tridiagonal solver discussed earlier, where we now solve for the solution in the next timestep \verb+m_u+ using the right-hand side vector \verb+m_y+. In terms of the tridiagonal solver, \verb+m_a+ and \verb+m_b+ are set to $-\alpha$ and \verb+m_c+ is set to $2 + 2\alpha$, which is as dictated by the definition of the matrix as $2I + \alpha B$ where $B$ is defined in equation \eqref{eq:matrix_B} and $I$ is the identity matrix.  
+This is an amalgamation of the methods used to solve with the forward Euler based and the backward Euler based schemes. Finding the solution in the next timestep using the Crank-Nicolson scheme (see Section \ref{sec:formalism_crank_nicolson}) is a two-part process. First we multiply the solution vector in the previous timestep $U_{j-1}$ with a matrix $2I - \alpha B$ (see equation \eqref{eq:crank_nicolson_matrix}), which is done in the first for loop. The result is stored in the vector \verb+m_y+. Following this we need to perform a matrix inversion with the tridiagonal matrix $2I + \alpha B$ in order to proceed. As this matrix is tridiagonal, we use the tridiagonal solver discussed earlier, where we now solve for the solution in the next timestep \verb+m_u+ using the right-hand side vector \verb+m_y+. In terms of the tridiagonal solver, \verb+m_a+ and \verb+m_b+ are set to $-\alpha$ and \verb+m_c+ is set to $2 + 2\alpha$, which is as dictated by the definition of the matrix as $2I + \alpha B$ where $B$ is defined in equation \eqref{eq:matrix_B} and $I$ is the identity matrix. 
+
+The inner for loop takes $4(N-1) \approx 4N$ FLOPs to complete. In every timestep the tridiag solver is called which adds another $8N$ FLOPs. In total this solver takes about $12NM$ FLOPs to complete. For ease of access, the amount of FLOPs needed to use each solver is listed in Table \ref{table:FLOPs_1D}.
+
+\begin{table}[H]
+\centering
+\caption{This table lists the amount of FLOPs (floating point operations) needed for the three one-dimensional schemes we have adopted to complete. $N$ is the amount of spatial points minus one, and $M$ is the amount of timesteps. The schemes can be read about in Section \ref{sec:formalism_numerical_1D} and their implementations can be read about in \ref{sec:method_1D_solver}.} \label{table:FLOPs_1D}
+\begin{tabular}{|c|c|}
+\hline 
+Scheme: & FLOPs \\
+\hline
+Forward Euler & $4NM$ \\
+\hline
+Backward Euler & $8NM$ \\
+\hline
+Crank-Nicolson & $12NM$ \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Two-dimensional solver} \label{sec:method_2D_solver}
 
@@ -1372,9 +1390,40 @@ which we will compare with the numerical result.
 
 \subsection{One-dimensional simulations} \label{sec:results_1D}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/ForwardEuler.pdf}
+\caption{•} \label{fig:forward_euler_solution}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/BackwardEuler.pdf}
+\caption{•} \label{fig:backward_euler_solution}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/CrankNicholson.pdf}
+\caption{•} \label{fig:crank_nicolson_solution}
+\end{figure}
+
 \subsection{Two-dimensional simulation} \label{sec:results_2D}
 
 \subsection{Temperature gradient of lithosphere} \label{sec:results_lithosphere}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/unenriched2Dheat.pdf}
+\caption{•} \label{fig:lithosphere_before_enrichment}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/enriched2Dheat.pdf}
+\caption{•} \label{fig:lithosphere_after_enrichment}
+\end{figure}
+
 
 \clearpage
 
