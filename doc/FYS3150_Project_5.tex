@@ -1335,7 +1335,21 @@ u(x,t) = \sin(2\pi x)e^{-4\pi^2 t} + x \, ,
 according to the results we found in Section \ref{sec:formalism_1D_diff_eq_analytical}.
 
 
+\subsection{Notes on 2D simulation} \label{sec:method_2D_sim}
 
+When testing the two-dimensional solver we have implemented and used the error as defined in equation \eqref{eq:error_2D}. The initial state is given by a product of sinusoidals:
+
+\begin{align*}
+g(x,y) &= \sin(2\pi x) \sin (2\pi y) \, ,
+\end{align*}
+
+where we also assume Dirichlet boundary conditions. In this case, according to the results in Section \ref{sec:formalism_2D_diff_eq_analytical}, the analytical solution is:
+
+\begin{align*}
+u(x,y,t) &= \sin(2\pi x) \sin(2\pi y) e^{-8\pi^2 t} \, ,
+\end{align*}
+
+which we will compare with the numerical result.
 
 
 
@@ -1354,9 +1368,25 @@ according to the results we found in Section \ref{sec:formalism_1D_diff_eq_analy
 
 \section{Results} \label{sec:results}
 
+\subsection{Benchmark} \label{sec:results_benchmark}
+
+\subsection{One-dimensional simulations} \label{sec:results_1D}
+
+\subsection{Two-dimensional simulation} \label{sec:results_2D}
+
+\subsection{Temperature gradient of lithosphere} \label{sec:results_lithosphere}
+
 \clearpage
 
 \section{Discussion} \label{sec:discussion}
+
+\subsection{Benchmark} \label{sec:discussion_benchmark}
+
+\subsection{One-dimensional simulations} \label{sec:discussion_1D}
+
+\subsection{Two-dimensional simulation} \label{sec:discussion_2D}
+
+\subsection{Temperature gradient of lithosphere} \label{sec:discussion_lithosphere}
 
 \clearpage
 
