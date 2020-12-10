@@ -112,9 +112,11 @@ void DiffusionEquationSolver2D::jacobi(){
     }
     k++;
   }
-  // // Output error/warning if solution did not converge within set number of max iterations
-  // std::cerr << "Solution using Jacobi iterative method did not converge properly within set limit of maximum iterations." << std::endl;
-  // std::cout << "Final sum: " << s << std::endl;
+  if (k==m_maxiter){
+    // Output error/warning if solution did not converge within set number of max iterations
+    std::cerr << "Solution using Jacobi iterative method did not converge properly within set limit of maximum iterations." << std::endl;
+    std::cout << "Final sum: " << s << std::endl;
+  }
 }
 
 void DiffusionEquationSolver2D::solve(){
