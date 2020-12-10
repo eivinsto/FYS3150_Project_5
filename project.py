@@ -155,9 +155,9 @@ if __name__ == "__main__":
 
     # 2D sample run
     if runflag == "2d":
-        N = 100
+        N = 50
         M = 10000
-        dt = 1/M
+        dt = 1e-4
         write_limit = M
         output_filename = datadir + "test2d.dat"
 
@@ -168,11 +168,11 @@ if __name__ == "__main__":
         t, data = import_data_2D(output_filename, tsteps, N)
 
         f, (ax1, ax2) = plt.subplots(1, 2)
-        c1 = ax1.imshow(data[0, :, :], interpolation='none',
+        c1 = ax1.imshow(data[0, :, :], vmin=0, vmax=1, interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 1, 0, 1])
         ax1.set_title(f"t = {t[0]}")
         ax1.grid()
-        c2 = ax2.imshow(data[-1, :, :], interpolation='none',
+        c2 = ax2.imshow(data[-1, :, :], vmin=0, vmax=1, interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 1, 0, 1])
         ax2.set_title(f"t = {t[-1]}")
         ax2.grid()
