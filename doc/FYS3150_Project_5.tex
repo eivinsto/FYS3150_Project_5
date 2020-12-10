@@ -443,7 +443,7 @@ B &= \begin{bmatrix}
 \vdots & \ddots & \ddots & \ddots & \vdots \\
 \vdots & \vdots & \ddots & \ddots & -1 \\
 0 & 0 & \cdots & -1 & 2 
-\end{bmatrix} \, ,
+\end{bmatrix} \, , \numberthis \label{eq:matrix_B}
 \end{align*}
 
 we can rewrite $A_\text{f} = I - 2B$ and $A_\text{b} = I + 2B$. First we look at the explicit scheme.
@@ -500,7 +500,7 @@ Equation \eqref{eq:crank_nicholson} can be rewritten as a matrix-vector equation
 
 \begin{align*}
 (2I + \alpha B ) U_j &= (2I - \alpha B) U_{j-1} \\
-U_j &= (2I + \alpha B)^{-1} (2I - \alpha B) u_{j-1}
+U_j &= (2I + \alpha B)^{-1} (2I - \alpha B) U_{j-1} \numberthis \label{eq:crank_nicolson_matrix}
 \end{align*}
 
 In other words a matrix inversion is required in order to find the solution in the next timestep. This means that this scheme is an implicit one. First we need to multiply the previous solution with the matrix $(2I - \alpha B)$, which is straightforward. After that we need to find the inverse of $(2I + \alpha B)$ and apply this. As this matrix is tridiagonal we can use a tridiagonal solver for this operation. Thus the numerical solution of this scheme can be split into two parts, one which functions similar to the way in which the solver for the forward Euler based explicit scheme, and a second part that functions similarly to the solver for the backwards Euler based implicit scheme.
@@ -1116,12 +1116,14 @@ which makes it so that $Q'$ is in units of K/Gy as we wish.
 
 \subsection{One-dimensional solver} \label{sec:method_1D_solver}
 
-We have implemented an object-oriented solver in C++ for the one-dimensional diffusion equation \eqref{eq:1D_diff_eq} using the schemes outlined in Section \ref{sec:formalism_numerical_1D}. 
+We have implemented an object-oriented solver in C++ for the one-dimensional diffusion equation \eqref{eq:1D_diff_eq} using the schemes outlined in Section \ref{sec:formalism_numerical_1D}. For the full code used, see Appendix \ref{A}.
 
 The forward Euler based explicit scheme is implemented as follows:
 
 \begin{cpp}
+// Iterate over timesteps
 for (int j = 1; j <= m_M; j++){
+  // Matrix multiplication with tridiagonal matrix
   for (int i = 1; i < m_N; i++){
     m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i+1) + m_u(i-1));
   }
@@ -1132,7 +1134,7 @@ for (int j = 1; j <= m_M; j++){
 }
 \end{cpp}
 
-This uses a double for loop. The first outer loop iterates over the amount of timesteps, and the inner loop iterates over all the components of the Armadillo \citep{Armadillo} vector \verb+m_y+. This is the solution in the next timestep, and thus to continue the iteration, the solution in the previous timestep \verb+m_u+ (also an Armadillo vector) is overwritten so that the iteration continues. This expression inside the inner for loop is a fairly simple implementation of equation \eqref{eq:forward_euler_method}, with \verb+m_alpha+ being $\alpha$, and \verb+m_coeff+ being $1 - 2\alpha$.
+This uses a double for loop. The first outer loop iterates over the amount of timesteps \verb+m_M+, and the inner loop iterates over all the components of the Armadillo \citep{Armadillo} vector \verb+m_y+. This is the solution in the next timestep, and thus to continue the iteration, the solution in the previous timestep \verb+m_u+ (also an Armadillo vector) is overwritten so that the iteration continues. This expression inside the inner for loop is a fairly simple implementation of equation \eqref{eq:forward_euler_method}, with \verb+m_alpha+ being $\alpha$, and \verb+m_coeff+ being $1 - 2\alpha$. The variable \verb+m_N+ is the amount of elements in the solution vector minus one.
 
 In order to discuss the implementation of the two other schemes, we need to first discuss the implementation of the tridiagonal solver:
 
@@ -1183,6 +1185,30 @@ for (int j = 1; j <= m_M; j++){
 
 As all the calculations happen within the tridiagonal solver function (\verb+tridiag()+) there is only a loop over the amount of timesteps. As this is a set of object-oriented code, all the variables used in the tridiagonal solver are stored as class variables, meaning that no arguments are passed. The solver uses the solution in the previous timestep \verb+m_y+ to find the solution in the current timestep \verb+m_u+. After this the solution in the previous timestep is overwritten and the iteration continues. As for the variables used in the tridiagonal solver, and relating them to the constants in equation \eqref{eq:backward_euler_method}, \verb+m_a+ and \verb+m_c+ are set to $-\alpha$ and \verb+m_b+ is set to $1 + 2\alpha$. 
 
+The Crank-Nicolson (implicit) scheme is implemented as follows:
+
+\begin{cpp}
+// Iterate over timesteps
+for (int j = 1; j <= m_M; j++){
+  // Set correct y
+  for (int i = 1; i < m_N; i++){
+    m_y(i) = m_coeff*m_u(i) + m_alpha*(m_u(i-1) + m_u(i+1));
+  }
+
+  // Set boundary conditions
+  m_y(0) = m_lb;
+  m_y(m_N) = m_ub;
+
+  // Use tridiagonal solver to move one step
+  tridiag();
+
+  // Set boundary conditions
+  m_u(0) = m_lb;
+  m_u(m_N) = m_ub;
+}
+\end{cpp}
+
+This is an amalgamation of the methods used to solve with the forward Euler based and the backward Euler based schemes. Finding the solution in the next timestep using the Crank-Nicolson scheme (see Section \ref{sec:formalism_crank_nicolson}) is a two-part process. First we multiply the solution vector in the previous timestep $U_{j-1}$ with a matrix $2I - \alpha B$ (see equation \eqref{eq:crank_nicolson_matrix}), which is done in the first for loop. The result is stored in the vector \verb+m_y+. Following this we need to perform a matrix inversion with the tridiagonal matrix $2I + \alpha B$ in order to proceed. As this matrix is tridiagonal, we use the tridiagonal solver discussed earlier, where we now solve for the solution in the next timestep \verb+m_u+ using the right-hand side vector \verb+m_y+. In terms of the tridiagonal solver, \verb+m_a+ and \verb+m_b+ are set to $-\alpha$ and \verb+m_c+ is set to $2 + 2\alpha$, which is as dictated by the definition of the matrix as $2I + \alpha B$ where $B$ is defined in equation \eqref{eq:matrix_B} and $I$ is the identity matrix.  
 
 \subsection{Two-dimensional solver} \label{sec:method_2D_solver}
 
