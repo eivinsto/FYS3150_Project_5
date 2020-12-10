@@ -41,8 +41,8 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
                                                      x_ub, x_lb, ofilename){
   m_use_source_term = true;                             // Specify that source term function has been provided
   m_source_term = source_term;                          // Store source term function
-  m_Ax = 1.0/(ax*ax);                                   // Calculate constant for x-direction used for non-rectangular grid
-  m_Ay = 1.0/(ay*ay);                                   // Calculate constant for y-direction used for non-rectangular grid
+  m_Ax = 1.0/(ax*ax);                                   // Calculate constant for x-direction used for rectangular grid
+  m_Ay = 1.0/(ay*ay);                                   // Calculate constant for y-direction used for rectangular grid
   m_diag_element = 1.0/(1.0 + 2*m_alpha*(m_Ax + m_Ay)); // Specify diagonal elements in terms of Ax and Ay
 }
 
