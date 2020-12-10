@@ -137,10 +137,13 @@ void DiffusionEquationSolver2D::solve(){
     if (m_t%m_write_limit == 0){
       write_to_file();
     }
-  }
-  wtime = omp_get_wtime() - wtime;
-  std::cout << "Finished simulating." << "\nElapsed time in seconds = " << wtime << std::endl;
 
+    if (m_write_errors){
+      calculate_and_output_errors();
+    }
+  }
+  wtime = omp_get_wtime() - wtime;  m_ofile.open(m_ofilename.c_str(), std::ofstream::out); // Ofstream object of output file
+  std::cout << "Finished simulating." << "\nElapsed time in seconds = " << wtime << std::endl;
 }
 
 void DiffusionEquationSolver2D::write_to_file(){
@@ -163,4 +166,25 @@ void DiffusionEquationSolver2D::set_source_term(){
   } else {
     m_q = m_u;
   }
+}
+
+void DiffusionEquationSolver2D::compare_with_analytic(double (*analytic)(double, double, double), std::string error_filename){
+  m_analytic = analytic;
+  m_u_analytic = arma::zeros<arma::mat>(m_N,m_N);
+  m_error_filename = error_filename;
+  m_error_ofile.open(m_error_filename.c_str(), std::ofstream::out); // Ofstream object of error output file
+  m_write_errors = true;
+}
+
+void DiffusionEquationSolver2D::calculate_and_output_errors(){
+  for (int i = 0; i <= m_N; i++){
+    for (int j = 0; j <= m_N; j++){
+      m_u_analytic(i,j) = m_analytic(i*m_h,j*m_h,m_t*m_dt);
+    }
+  }
+
+  arma::mat diff = arma::abs(m_u - m_u_analytic);
+  double rel_err_sum = arma::accu(diff/m_u_analytic);
+  m_error_ofile << std::setw(15) << std::setprecision(8) << rel_err_sum/((m_N+1)*(m_N+1)) << ' ';
+  m_error_ofile << std::setw(15) << std::setprecision(8) << m_t*m_dt << std::endl;
 }

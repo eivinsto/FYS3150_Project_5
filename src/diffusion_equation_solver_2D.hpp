@@ -13,11 +13,14 @@ public:
                             double (*)(double), std::string, double(*)(double, double, double),
                             double, double);
   void solve();
+  void compare_with_analytic(double (*)(double,double,double), std::string);
 
 private:
   void jacobi();
   void write_to_file();
   void set_source_term();
+  void calculate_and_output_errors();
+  double (*m_analytic)(double, double, double);
   double (*m_y_ub)(double);
   double (*m_y_lb)(double);
   double (*m_x_ub)(double);
@@ -42,4 +45,8 @@ private:
   bool m_use_source_term = false;
   double m_Ax = 1;
   double m_Ay = 1;
+  arma::mat m_u_analytic;
+  std::string m_error_filename;
+  std::ofstream m_error_ofile;
+  bool m_write_errors = false;
 };
