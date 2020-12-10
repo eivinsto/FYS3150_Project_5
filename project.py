@@ -67,7 +67,7 @@ if __name__ == "__main__":
         t1 = 0.04
         n_t1 = np.asarray(t1/dts, dtype=np.int64)
         n_T = np.asarray(T/dts, dtype=np.int64)
-        Ms = np.asarray([int(T/dt - 1) for dt in dts])
+        Ms = np.asarray([int(T/dt) for dt in dts])
         write_limit = 1
         methods = ["ForwardEuler", "BackwardEuler", "CrankNicholson"]
 
@@ -96,9 +96,13 @@ if __name__ == "__main__":
                 return (np.sin(2*np.pi*x)*np.exp(-4*t*np.pi**2) + x)
 
         data = {}
+        tdict = {}
         for i, method in enumerate(methods):
             for j, N in enumerate(Ns):
-                data[method, N] = np.genfromtxt(output_files[i][j])
+                data[method, N] = np.genfromtxt(output_files[i][j])[:, :-1]
+                tdict[method, N] = np.genfromtxt(
+                    output_files[i][j]
+                )[:, -1:].flatten()
 
         errordata = {}
         for i, method in enumerate(methods):
@@ -106,32 +110,34 @@ if __name__ == "__main__":
             f, ax = plt.subplots(1, 2)
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
-                t = np.linspace(0, 1, n_T[j])
+                t1 = tdict[method, N][n_t1[j]]
+                t2 = tdict[method, N][-1]
 
                 errordata[method, N] = np.sqrt(np.sum(
-                    (data[method, N] - anal_1d(x, t))**2, axis=1) /
-                    np.sqrt(np.sum(anal_1d(x, t)**2, axis=1))
+                    (data[method, N] -
+                     anal_1d(x, tdict[method, N]))**2, axis=1) /
+                    np.sqrt(np.sum(anal_1d(x, tdict[method, N])**2, axis=1))
                 )
-                idx = np.argmax(errordata[method, N])
-                print(idx)
 
-                ax[j].plot(x, data[method, N][idx, :],
-                           label=f"Numeric $t_{1} = $ {dts[j]*t[idx]:.3f}")
+                ax[j].plot(x, data[method, N][n_t1[j], :],
+                           label=f"Numeric $t_{1} = $ {t1:.3f}")
                 ax[j].plot(x, data[method, N][-1, :],
-                           label=f"Numeric $t_{2} = $ {dts[j]*n_T[j]:.3f}")
+                           label=f"Numeric $t_{2} = $ {t2:.3f}")
 
                 x = np.linspace(0, 1, 100)
-                ax[j].plot(x, anal_1d(x, dts[j]*t[idx]), '--',
-                           label=f"Analytic $t_{1} = $ {dts[j]*t[idx]:.3f}")
-                ax[j].plot(x, anal_1d(x, dts[j]*n_T[j]), '--',
+                ax[j].plot(x, anal_1d(x, t1), '--',
+                           label=f"Analytic $t_{1} = $ {t1:.3f}")
+                ax[j].plot(x, anal_1d(x, t2), '--',
                            label="Analytic " +
-                           f"$t_{1} = $ {dts[j]*n_T[j]:.3f}")
-                ax[j].set_title(r"$\Delta x = $ " f"{1/N}")
+                           f"$t_{1} = $ {t2:.3f}")
+                ax[j].set_title(r"$\Delta x = $" + f"{1/N}" +
+                                r" $\Delta t = $" + f"{dts[j]}")
                 ax[j].legend()
                 ax[j].grid()
 
-                axerr[j].plot(errordata[method, N], '.')
-                axerr[j].set_title(r"$\Delta x = $ " f"{1/N}")
+                axerr[j].loglog(errordata[method, N], ':')
+                axerr[j].set_title(r"$\Delta x = $" + f"{1/N}" +
+                                   r" $\Delta t = $" + f"{dts[j]}")
                 axerr[j].set_xlabel("Time steps $M$")
                 # axerr[j].legend()
                 axerr[j].grid()
@@ -140,8 +146,9 @@ if __name__ == "__main__":
             f.tight_layout()
             f.savefig(datadir + method + ".pdf")
 
-            ferr.suptitle("Mean absolute error " + method)
+            ferr.suptitle("Relative RMS error for " + method)
             ferr.tight_layout()
+            ferr.savefig(datadir + method + "-RMS.pdf")
 
         # print(errordata)
         plt.show()
