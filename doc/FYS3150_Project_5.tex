@@ -1291,6 +1291,43 @@ for (int i = 0; i < m_N; i++){
 
 We iterate over the elements of \verb+m_q+ setting them equal to the elements of the solution in the previous timestep \verb+m_u+ plus the timestep \verb+m_dt+ multiplied with a function that corresponds to $Q'$ (\verb+m_source_term()+) which is specified upon instantiating an object of the solver class.
 
+
+\subsection{Source of errors and error calculation} \label{sec:method_errors}
+
+We need a way to quantify the errors produced by our solvers. For this purpose we adopt the following expression:
+
+\begin{align*}
+\epsilon (t) &= \frac{\sqrt{\sum\limits_{i=0}^N (u_n(x_i,t) - u_a(x_i,t))^2}}{\sqrt{\sum\limits_{i=0}^N u_a(x_i,t)^2}} \, , \numberthis \label{eq:error_1D}
+\end{align*}
+
+where $u_n$ is the numerically calculated solution and $u_a$ is the analytically calculated solution. As we have a finite discretization of the spatial points $x_i$ a sum is used (and not a integral), where it is assumed that there are $N+1$ such points. The expression above is the root-mean-square of the difference between the analytic and numerical solution divided by the root-mean-square of the analytical solution, and as such represents a kind of relative error in the solution. 
+
+We can also extend this to the two-dimensional case:
+
+\begin{align*}
+\epsilon(t) &= \frac{\sqrt{\sum\limits_{i=0}^N \sum\limits_{j=0}^N (u_n(x_i,y_j,t) - u_a(x_i,t))^2}}{\sqrt{\sum\limits_{i=0}^N \sum\limits_{j=0}^N u_a(x_i,t)^2}} \, , \numberthis \label{eq:error_2D}
+\end{align*}
+
+where we have changed the single sums to a double sum such that we sum over all the spatial points $(x_i,y_j)$ of the solutions. It is assumed that there are $N+1$ points $y_j$ as well in this case.
+
+Generally we expect that the errors in the solutions are the products of truncation error from the schemes used, and of machine precision. In the two-dimensional case there is an added error from the fact that we are using an iterative method to move the system a step in time. As this is only an approximation to the solution of the scheme itself, this can cause an additional increase of the error. Note that we do check that this has converged properly, and the program outputs an error if this is not the case, and so we assume that this will not be a main contributor to the errors in the results.
+
+There are several floating point operations performed with each solver, and thus it is not unexpected that this might cause a sizeable contribution. The multiplications and divisions performed do not cause a sizeable contribution, but there are also several additions and subtractions performed that might cause larger errors. Generally we expect that this effect will make itself known if we set the timestep or steplength to be too short. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 \clearpage
 
 \section{Results} \label{sec:results}
