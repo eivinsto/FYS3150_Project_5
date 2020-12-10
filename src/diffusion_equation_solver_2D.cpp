@@ -95,7 +95,7 @@ void DiffusionEquationSolver2D::jacobi(){
         }
       }
 
-      // Check convergence, loop exits if s is less than the tolerance specified 
+      // Check convergence, loop exits if s is less than the tolerance specified
       s = 0;
       double term = 0;
 
@@ -195,11 +195,11 @@ void DiffusionEquationSolver2D::calculate_and_output_errors(){
   }
 
   // Get relative error matrix
-  arma::mat diff = arma::abs((m_u - m_u_analytic)/m_u_analytic);
-  // Calculate sum of relative errors
-  double rel_err_sum = arma::accu(diff);
+  arma::mat diff = arma::abs(m_u - m_u_analytic);
+  // Calculate sum of absolute errors
+  double err_sum = arma::accu(diff);
   // Average errors per element and write to file
-  m_error_ofile << std::setw(15) << std::setprecision(8) << rel_err_sum/((m_N+1)*(m_N+1)) << ' ';
+  m_error_ofile << std::setw(15) << std::setprecision(8) << err_sum/((m_N+1)*(m_N+1)) << ' ';
   // Also write the current time to file
   m_error_ofile << std::setw(15) << std::setprecision(8) << m_t*m_dt << std::endl;
 }
