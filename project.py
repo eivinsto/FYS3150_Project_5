@@ -102,21 +102,27 @@ if __name__ == "__main__":
 
         errordata = {}
         for i, method in enumerate(methods):
+            ferr, axerr = plt.subplots(1, 2)
             f, ax = plt.subplots(1, 2)
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
                 t = np.linspace(0, 1, n_T[j])
 
-                errordata[method, N] = np.abs(data[method, N] - anal_1d(x, t))
+                errordata[method, N] = np.sqrt(np.sum(
+                    (data[method, N] - anal_1d(x, t))**2, axis=1) /
+                    np.sqrt(np.sum(anal_1d(x, t)**2, axis=1))
+                )
+                idx = np.argmax(errordata[method, N])
+                print(idx)
 
-                ax[j].plot(x, data[method, N][n_t1[j], :],
-                           label=f"Numeric $t_{1} = $ {dts[j]*n_t1[j]:.3f}")
+                ax[j].plot(x, data[method, N][idx, :],
+                           label=f"Numeric $t_{1} = $ {dts[j]*t[idx]:.3f}")
                 ax[j].plot(x, data[method, N][-1, :],
                            label=f"Numeric $t_{2} = $ {dts[j]*n_T[j]:.3f}")
 
                 x = np.linspace(0, 1, 100)
-                ax[j].plot(x, anal_1d(x, dts[j]*n_t1[j]), '--',
-                           label=f"Analytic $t_{1} = $ {dts[j]*n_t1[j]:.3f}")
+                ax[j].plot(x, anal_1d(x, dts[j]*t[idx]), '--',
+                           label=f"Analytic $t_{1} = $ {dts[j]*t[idx]:.3f}")
                 ax[j].plot(x, anal_1d(x, dts[j]*n_T[j]), '--',
                            label="Analytic " +
                            f"$t_{1} = $ {dts[j]*n_T[j]:.3f}")
@@ -124,10 +130,20 @@ if __name__ == "__main__":
                 ax[j].legend()
                 ax[j].grid()
 
+                axerr[j].plot(errordata[method, N], '.')
+                axerr[j].set_title(r"$\Delta x = $ " f"{1/N}")
+                axerr[j].set_xlabel("Time steps $M$")
+                # axerr[j].legend()
+                axerr[j].grid()
+
             f.suptitle(method)
             f.tight_layout()
             f.savefig(datadir + method + ".pdf")
 
+            ferr.suptitle("Mean absolute error " + method)
+            ferr.tight_layout()
+
+        # print(errordata)
         plt.show()
 
     # 2D sample run
