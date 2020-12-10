@@ -1312,7 +1312,29 @@ where we have changed the single sums to a double sum such that we sum over all 
 
 Generally we expect that the errors in the solutions are the products of truncation error from the schemes used, and of machine precision. In the two-dimensional case there is an added error from the fact that we are using an iterative method to move the system a step in time. As this is only an approximation to the solution of the scheme itself, this can cause an additional increase of the error. Note that we do check that this has converged properly, and the program outputs an error if this is not the case, and so we assume that this will not be a main contributor to the errors in the results.
 
-There are several floating point operations performed with each solver, and thus it is not unexpected that this might cause a sizeable contribution. The multiplications and divisions performed do not cause a sizeable contribution, but there are also several additions and subtractions performed that might cause larger errors. Generally we expect that this effect will make itself known if we set the timestep or steplength to be too short. 
+There are several floating point operations performed with each solver, and thus it is not unexpected that this might cause a sizeable contribution. The multiplications and divisions performed do not cause a sizeable contribution, but there are also several additions and subtractions performed that might cause larger errors. Generally we expect that this effect will make itself known if we set the timestep or steplength to be too short.
+
+
+
+
+
+\subsection{Notes on one-dimensional simulations} \label{sec:method_1D_sims}
+
+When testing the one-dimensional solvers we have implemented we use the error as defined in equation \eqref{eq:error_1D}. The initial state we set is given by a sinusoidal plus a linear term:
+
+\begin{align*}
+g(x) &= \sin ( 2\pi x) + x \, ,
+\end{align*}
+
+where we have set the boundary conditions to be $u(0,t) = 0$ and $u(1,t) = 1$. With this set of boundary conditions the steady-state solution is $x$, which means that the analytical solution is:
+
+\begin{align*}
+u(x,t) = \sin(2\pi x)e^{-4\pi^2 t} + x \, ,
+\end{align*} 
+
+according to the results we found in Section \ref{sec:formalism_1D_diff_eq_analytical}.
+
+
 
 
 
