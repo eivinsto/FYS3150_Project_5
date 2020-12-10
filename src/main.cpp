@@ -82,11 +82,11 @@ double init_func(double x){
 }
 
 double init_func2D(double x, double y){
-  return x*y;
+  return sin(2*M_PI*x)*sin(2*M_PI*y);
 }
 
 double x_ub2D(double y){
-  return 1;
+  return 0;
 }
 
 double x_lb2D(double y){
@@ -94,11 +94,11 @@ double x_lb2D(double y){
 }
 
 double y_ub2D(double x){
-  return x;
+  return 0;
 }
 
 double y_lb2D(double x){
-  return x;
+  return 0;
 }
 
 // TODO: find analytic solution
