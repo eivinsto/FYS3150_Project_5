@@ -47,8 +47,7 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
 }
 
 void DiffusionEquationSolver2D::jacobi(){
-  // Generate dense matrix to store previous solution
-  arma::mat old = arma::ones<arma::mat>(m_N,m_N);
+  // Define sum variable
   double s = 1;
 
   // Boundary conditions
@@ -58,6 +57,9 @@ void DiffusionEquationSolver2D::jacobi(){
     m_u(i,0) = m_y_lb(i*m_h);
     m_u(i,m_N-1) = m_y_ub(i*m_h);
   }
+
+  // Generate dense matrix to store previous solution
+  arma::mat old = m_u; // Initial guess is value in previous timestep
 
   int k = 0;
   int i, j;
