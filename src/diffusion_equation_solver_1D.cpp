@@ -27,7 +27,7 @@ DiffusionEquationSolver1D::DiffusionEquationSolver1D(int N, double dt, int M, in
                                                  std::string filename, double u_b, double l_b){
   m_N = N;                      // Amount of lengthsteps
   m_dt = dt;                    // Timestep
-  m_dx = 1.0/double(N);       // Lengthstep
+  m_dx = 1.0/double(N);         // Lengthstep
   m_M = M;                      // Amount of timesteps
   m_write_limit = write_limit;  // Write results every <write_limit> timesteps
   m_u = arma::zeros(m_N+1);     // Vector containing solution
@@ -97,7 +97,11 @@ void DiffusionEquationSolver1D::tridiag(){
   }
 }
 
-// M amount of timesteps
+/**
+* Solves dimensionless diffusion equation in one dimension using a forward
+* Euler based explicit scheme. The iterative part is a matrix multiplication where
+* the matrix is tridiagonal, and with constant elements along the diagonal bands.
+*/
 void DiffusionEquationSolver1D::forward_euler_solve(){
   // Set boundary conditions
   m_u(0) = m_y(0) = m_lb;
@@ -108,6 +112,7 @@ void DiffusionEquationSolver1D::forward_euler_solve(){
     m_u(i) = m_init_func(m_dx*i);
   }
 
+  // Write initial state to file
   write_to_file();
 
   // Iterate over timesteps
@@ -127,7 +132,12 @@ void DiffusionEquationSolver1D::forward_euler_solve(){
   }
 }
 
-// M amount of timesteps
+/**
+* Solves dimensionless diffusion equation in one dimension using a backward
+* Euler based implicit scheme. This iterative part is a matrix-vector equation
+* that requires the inversion of a tridiagonal matrix with constant elements
+* along the diagonal bands. This calculation is performed in the tridiag() function.
+*/
 void DiffusionEquationSolver1D::backward_euler_solve(){
 
   // Set initial condition
@@ -138,6 +148,8 @@ void DiffusionEquationSolver1D::backward_euler_solve(){
   // Set boundary conditions
   m_u(0) = m_lb;
   m_u(m_N) = m_ub;
+
+  // Write first timeste to file
   write_to_file();
 
   // Iterate over timesteps
@@ -159,6 +171,13 @@ void DiffusionEquationSolver1D::backward_euler_solve(){
   }
 }
 
+/**
+* Solves dimensionless diffusion equation in one dimension using the Crank-CrankNicolson
+* scheme. This iterative part consists of a matrix-vector multiplication and a
+* matrix inversion (used to solve a matrix-vector equation). The first part is
+* performed directly in this function, and the second part is performed by the
+* tridiag() function.
+*/
 void DiffusionEquationSolver1D::crank_nicholson_solve(){
   // Set initial condition
   for (int i = 1; i < m_N; i++){
@@ -195,17 +214,33 @@ void DiffusionEquationSolver1D::crank_nicholson_solve(){
   }
 }
 
+/**
+* Function that solves the system with the specified parameters. This calls
+* the function corresponding to the scheme selected in the constructor, and is
+* thus purely a wrapper function. If the specified method does not match any
+* of those defined in this function, an error gets printed to the terminal
+* before the program exits.
+*/
 void DiffusionEquationSolver1D::solve(){
+  // Calls the appropriate solver for scheme specified in constructor
   if (m_method=="ForwardEuler"){ forward_euler_solve(); }
   else if (m_method=="BackwardEuler"){ backward_euler_solve(); }
   else if (m_method=="CrankNicholson"){ crank_nicholson_solve(); }
   else {
+    // Output error if invalid method is specified.
+    // Note that this is also done in the constructor, and is thus more
+    // telling of an error in the implementation, and not on the users part.
     std::cerr << "Method specification does not match any implemented methods. Error occured during call to solve()." << std::endl;
     std::exit(0);
   }
 }
 
+/**
+* Function that write solution vector to file. This is done in every timestep,
+* and thus the time is not explicitly written to file.
+*/
 void DiffusionEquationSolver1D::write_to_file(){
+  // Write components of solution vector to file 
   for (int i = 0; i<=m_N; i++){
     m_ofile << std::setw(15) << std::setprecision(8) << m_u(i) << ' ';
   }
