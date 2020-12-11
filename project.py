@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
         f, (ax1, ax2) = plt.subplots(2, 1)
         min, max = np.min(data[0, :, :]), np.max(data[0, :, :])
-        c1 = ax1.imshow(data[0, :, :], vmin=min, vmax=max, cmap='jet',
+        c1 = ax1.imshow(data[0, :, :], vmin=min, vmax=max, cmap='inferno',
                         interpolation='none', origin="lower", aspect='auto',
                         extent=[0, 1, 0, 1])
         ax1.set_title(f"t = {t[0]}")
@@ -190,7 +190,7 @@ if __name__ == "__main__":
         ax1.set_ylabel("$y$")
         ax1.grid()
 
-        c2 = ax2.imshow(data[-1, :, :], vmin=min, vmax=max, cmap='jet',
+        c2 = ax2.imshow(data[-1, :, :], vmin=min, vmax=max, cmap='inferno',
                         interpolation='none', origin="lower", aspect='auto',
                         extent=[0, 1, 0, 1])
         ax2.set_title(f"t = {t[-1]}")
@@ -241,14 +241,14 @@ if __name__ == "__main__":
         t, data = import_data_2D(output_filename, tsteps, N)
 
         f, (ax1, ax2) = plt.subplots(2, 1)
-        c1 = ax1.imshow(data[0, :, :], cmap='jet', interpolation='none',
+        c1 = ax1.imshow(data[0, :, :], cmap='inferno', interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 300, 0, 120])
         ax1.set_title(f"t = {t[0]} Gy")
         ax1.grid()
         ax1.set_xlabel("Width [km]")
         ax1.set_ylabel("Depth [km]")
         ax1.set_ylim(ax1.get_ylim()[::-1])
-        c2 = ax2.imshow(data[-1, :, :], cmap='jet', interpolation='none',
+        c2 = ax2.imshow(data[-1, :, :], cmap='inferno', interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 300, 0, 120])
         ax2.set_title(f"t = {t[-1]} Gy")
         ax2.grid()
