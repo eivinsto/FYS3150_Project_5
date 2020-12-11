@@ -20,7 +20,7 @@ private:
   // Private functions
   void forward_euler_solve();
   void backward_euler_solve();
-  void crank_nicholson_solve();
+  void crank_nicolson_solve();
   void tridiag();
   void write_to_file();
   double (*m_init_func)(double); // Function pointer used to generate initial state of system
