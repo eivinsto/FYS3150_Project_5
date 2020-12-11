@@ -153,5 +153,5 @@ double init_func_heat(double x, double y){
 }
 
 double analytic_heat(double x, double y, double t){
-  return init_func_heat(x,y);
+  return init_func_heat(x,y)*exp(-2*M_PI*M_PI*t);
 }
