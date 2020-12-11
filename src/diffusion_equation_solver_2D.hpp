@@ -14,6 +14,7 @@ public:
                             double, double);
   void solve();
   void compare_with_analytic(double (*)(double,double,double), std::string);
+  void new_source_term(double (*)(double, double, double), std::string);
 
 private:
   void jacobi();
@@ -49,4 +50,5 @@ private:
   std::string m_error_filename;
   std::ofstream m_error_ofile;
   bool m_write_errors = false;
+  bool m_initialized = false;
 };
