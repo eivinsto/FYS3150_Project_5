@@ -1355,19 +1355,19 @@ according to the results we found in Section \ref{sec:formalism_1D_diff_eq_analy
 
 \subsection{Notes on 2D simulation} \label{sec:method_2D_sim}
 
-When testing the two-dimensional solver we have implemented and used the error as defined in equation \eqref{eq:error_2D}. The initial state is given by a product of sinusoidals:
+When testing the two-dimensional solver we have implemented and used the error as defined in equation \eqref{eq:error_2D}. The initial state is given by a product of sinusoidals plus a linear term:
 
 \begin{align*}
-g(x,y) &= \sin(2\pi x) \sin (2\pi y) \, ,
+g(x,y) &= \sin(2\pi x) \sin (2\pi y) + y \, ,
 \end{align*}
 
-where we also assume Dirichlet boundary conditions. In this case, according to the results in Section \ref{sec:formalism_2D_diff_eq_analytical}, the analytical solution is:
+where we set $u(0,y,t) = u(1,y,t) = y$, $u(x,0,t) = 0$ and $u(x,1,t) = 1$ as the boundary conditions. In this case, according to the results in Section \ref{sec:formalism_2D_diff_eq_analytical}, the analytical solution is:
 
 \begin{align*}
-u(x,y,t) &= \sin(2\pi x) \sin(2\pi y) e^{-8\pi^2 t} \, ,
+u(x,y,t) &= \sin(2\pi x) \sin(2\pi y) e^{-8\pi^2 t} + y \, ,
 \end{align*}
 
-which we will compare with the numerical result.
+which we will compare with the numerical result using equation \eqref{eq:error_2D}.
 
 
 
@@ -1404,8 +1404,14 @@ which we will compare with the numerical result.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\columnwidth]{../data/CrankNicholson.pdf}
+\includegraphics[width=\columnwidth]{../data/CrankNicolson.pdf}
 \caption{•} \label{fig:crank_nicolson_solution}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/1D-RMS.pdf}
+\caption{•} \label{fig:error_1D}
 \end{figure}
 
 \subsection{Two-dimensional simulation} \label{sec:results_2D}
