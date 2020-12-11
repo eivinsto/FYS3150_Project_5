@@ -92,7 +92,7 @@ TEST_CASE("Test DiffusionEquationSolver1D ForwardEuler solver.") {
   arma::mat result;
   result.load(filename, arma::auto_detect);
   std::remove(filename.c_str());
-  REQUIRE(int(result.n_cols)-1 == N);
+  REQUIRE(int(result.n_cols)-2 == N);
   REQUIRE(int(result.n_rows)-1 == M);
 
   REQUIRE(result(1, 1) == Approx(u_2_1));
