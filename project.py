@@ -63,13 +63,15 @@ if __name__ == "__main__":
     if runflag == "1d":
         Ns = [10, 100]
         dts = np.asarray([0.5*0.5/(N)**2 for N in Ns])
-        T = 0.1
+        T = 0.4
         t1 = 0.04
+        t2 = 0.1
         n_t1 = np.asarray(t1/dts, dtype=np.int64)
+        n_t2 = np.asarray(t2/dts, dtype=np.int64)
         n_T = np.asarray(T/dts, dtype=np.int64)
         Ms = np.asarray([int(T/dt) for dt in dts])
         write_limit = 1
-        methods = ["ForwardEuler", "BackwardEuler", "CrankNicholson"]
+        methods = ["ForwardEuler", "BackwardEuler", "CrankNicolson"]
 
         output_files = []
         for method in methods:
@@ -105,13 +107,13 @@ if __name__ == "__main__":
                 )[:, -1:].flatten()
 
         errordata = {}
+        ferr, axerr = plt.subplots(2, 1)
         for i, method in enumerate(methods):
-            ferr, axerr = plt.subplots(2, 1)
             f, ax = plt.subplots(2, 1)
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
                 t1 = tdict[method, N][n_t1[j]]
-                t2 = tdict[method, N][-1]
+                t2 = tdict[method, N][n_t2[j]]
 
                 errordata[method, N] = np.sqrt(np.sum(
                     (data[method, N] -
@@ -121,7 +123,7 @@ if __name__ == "__main__":
 
                 ax[j].plot(x, data[method, N][n_t1[j], :],
                            label=f"Numeric $t_{1} = $ {t1:.3f}")
-                ax[j].plot(x, data[method, N][-1, :],
+                ax[j].plot(x, data[method, N][n_t2[j], :],
                            label=f"Numeric $t_{2} = $ {t2:.3f}")
 
                 x = np.linspace(0, 1, 100)
@@ -135,7 +137,7 @@ if __name__ == "__main__":
                 ax[j].legend()
                 ax[j].grid()
 
-                axerr[j].loglog(errordata[method, N], ':')
+                axerr[j].semilogy(errordata[method, N], '-',label=method)
                 axerr[j].set_title(r"$\Delta x = $" + f"{1/N}" +
                                    r" $\Delta t = $" + f"{dts[j]}")
                 axerr[j].set_xlabel("Time steps $M$")
@@ -147,10 +149,12 @@ if __name__ == "__main__":
             f.tight_layout()
             f.savefig(datadir + method + ".pdf")
 
-            ferr.suptitle("Relative RMS error for " + method)
-            ferr.set_size_inches(10.5/2, 18.5/2)
-            ferr.tight_layout()
-            ferr.savefig(datadir + method + "-RMS.pdf")
+        axerr[0].legend()
+        axerr[1].legend()
+        ferr.suptitle("Relative RMS error")
+        ferr.set_size_inches(10.5/2, 18.5/2)
+        ferr.tight_layout()
+        ferr.savefig(datadir + "1D-RMS.pdf")
 
         # print(errordata)
         plt.show()

@@ -17,7 +17,7 @@
 * init_func - function, initial condition of the system (should return correct
 *             initial state u as u = init_func(x), where x is the length coordinate)
 * method - string, should contain the method of choice, can be either:
-*          ForwardEuler, BackwardEuler, or CrankNicholson.
+*          ForwardEuler, BackwardEuler, or CrankNicolson.
 * filename - string, name of file to write results to
 * u_b - double, lower boundary value
 * l_b - lower boundary value
@@ -43,23 +43,23 @@ DiffusionEquationSolver1D::DiffusionEquationSolver1D(int N, double dt, int M, in
 
   // If-else block to determine value of m_b pertaining to the choice of method
   if (m_method=="ForwardEuler"){
-    m_coeff = 1-2*m_alpha;  // Precalculated coefficient for use in moving system in time
+    m_coeff = 1.0-2.0*m_alpha;  // Precalculated coefficient for use in moving system in time
     // Print warning if solution will not converge
     if (m_alpha >= 1.0/2){
       std::cout << "Warning: Soution will not converge properly with this choice of parameters N and dt." << std::endl;
       std::cout << "They need to be such that dt/dx^2 < 1/2, where dx = 1/(N+1). Currently dt/dx^2 = " << m_alpha << std::endl;
     }
   } else if (m_method=="BackwardEuler"){
-    m_b = 1 + 2*m_alpha;    // Diagonal elements of matrix
-  } else if (m_method=="CrankNicholson"){
-    m_b = 2 + 2*m_alpha;    // Diagonal elements of matrix
-    m_coeff = 2 - 2*m_alpha;// Precalculated coefficient for use in moving system in time
+    m_b = 1.0 + 2.0*m_alpha;    // Diagonal elements of matrix
+  } else if (m_method=="CrankNicolson"){
+    m_b = 2.0 + 2.0*m_alpha;    // Diagonal elements of matrix
+    m_coeff = 2.0 - 2.0*m_alpha;// Precalculated coefficient for use in moving system in time
   } else {
     // Exit program if invalid method is specified
     std::cerr << "Invalid method specified. When initiating DiffusionEquationSolver1D class, please specify one of the following allowed methods:" << std::endl;
     std::cerr << "ForwardEuler" << std::endl;
     std::cerr << "BackwardEuler" << std::endl;
-    std::cerr << "CrankNicholson" << std::endl;
+    std::cerr << "CrankNicolson" << std::endl;
     std::cerr << "--------" << std::endl;
     std::cerr << "Your input: " << m_method << std::endl;
     std::exit(0);
@@ -178,7 +178,7 @@ void DiffusionEquationSolver1D::backward_euler_solve(){
 * performed directly in this function, and the second part is performed by the
 * tridiag() function.
 */
-void DiffusionEquationSolver1D::crank_nicholson_solve(){
+void DiffusionEquationSolver1D::crank_nicolson_solve(){
   // Set initial condition
   for (int i = 1; i < m_N; i++){
     m_u(i) = m_init_func(m_dx*i);
@@ -225,7 +225,7 @@ void DiffusionEquationSolver1D::solve(){
   // Calls the appropriate solver for scheme specified in constructor
   if (m_method=="ForwardEuler"){ forward_euler_solve(); }
   else if (m_method=="BackwardEuler"){ backward_euler_solve(); }
-  else if (m_method=="CrankNicholson"){ crank_nicholson_solve(); }
+  else if (m_method=="CrankNicolson"){ crank_nicolson_solve(); }
   else {
     // Output error if invalid method is specified.
     // Note that this is also done in the constructor, and is thus more
