@@ -182,15 +182,17 @@ if __name__ == "__main__":
 
         f, (ax1, ax2) = plt.subplots(2, 1)
         min, max = np.min(data[0, :, :]), np.max(data[0, :, :])
-        c1 = ax1.imshow(data[0, :, :], vmin=min, vmax=max, interpolation='none',
-                        origin="lower", aspect='auto', extent=[0, 1, 0, 1])
+        c1 = ax1.imshow(data[0, :, :], vmin=min, vmax=max,
+                        interpolation='none', origin="lower", aspect='auto',
+                        extent=[0, 1, 0, 1])
         ax1.set_title(f"t = {t[0]}")
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")
         ax1.grid()
 
-        c2 = ax2.imshow(data[-1, :, :], vmin=min, vmax=max, interpolation='none',
-                        origin="lower", aspect='auto', extent=[0, 1, 0, 1])
+        c2 = ax2.imshow(data[-1, :, :], vmin=min, vmax=max,
+                        interpolation='none', origin="lower", aspect='auto',
+                        extent=[0, 1, 0, 1])
         ax2.set_title(f"t = {t[-1]}")
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")
