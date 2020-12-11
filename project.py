@@ -1,4 +1,4 @@
-from subprocess import run  # , Popen, PIPE
+from subprocess import run, Popen, PIPE
 # import multiprocessing as mp
 import os
 import sys
@@ -268,34 +268,22 @@ if __name__ == "__main__":
 
 if runflag in runflags[6:]:
     # running simulation with current compilation.
-    p = Popen(
-        [
-            "./benchmark.exe",
-            rootdir + "/data/benchmarkrun.dat",
-            "multi",
-            f"{L}",
-            f"{N}",
-            f"{Tmin}",
-            f"{Tmax}",
-            f"{n_temps}"
-        ],
-        stdout=PIPE,
-        stderr=PIPE,
-        cwd=src
-    )
+    dims = ["1D", "2D"]
+    N = 100
+    M = 1000
+    u_b = 1
+    l_b = 0
+    write_limit = M
+    methods = ["ForwardEuler", "BackwardEuler", "CrankNicolson"]
+    filename = datadir + "benchmarkrun.dat"
+    p = Popen(["./main.exe", "1D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
+               method, filename, f"{u_b}", f"{l_b}"], stdout=PIPE, stderr=PIPE,
+              cwd=src
+              )
 
-    # capturing standard streams from process
-    # and decoding data
-    stdout, stderr = p.communicate()
-    output[(k, j, i)] = stdout.decode('utf-8')
-    run(["rm", "-rf", rootdir + "/data/benchmarkrun.dat"])
-
-    # unpacking data and storing in array
-    times = np.empty((len(N_list), 2, 4))
-    for key in output:
-        string = output[key].split('=')[3].strip()
-        time = string.split('\n')[0]
-        times[key[0], key[1], key[2]] = float(time)
+    # stdout, stderr = p.communicate()
+    # output[(k, j, i)] = stdout.decode('utf-8')
+    # run(["rm", "-rf", datadir + "benchmarkrun.dat"])
 
 
 if runflag in runflags[4:6]:
