@@ -64,8 +64,8 @@ int main(int argc, char** argv) {
       }
     } else {
       DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func2D,y_ub2D,y_lb2D,x_ub2D,x_lb2D,output_filename);
-      if (argc>11){
-        std::string error_filename = argv[11];
+      if (argc>8){
+        std::string error_filename = argv[8];
         system.compare_with_analytic(analytic_2D, error_filename);
       }
       system.solve();
