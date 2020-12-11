@@ -203,9 +203,6 @@ void DiffusionEquationSolver2D::calculate_and_output_errors(){
 
   // Get absolute error matrix
   arma::mat diff = m_u - m_u_analytic;
-  m_u.print();
-  m_u_analytic.print();
-  diff.print();
   double err = sqrt(arma::accu(diff%diff)/arma::accu(m_u_analytic%m_u_analytic));
 
   // Write error to file
