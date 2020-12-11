@@ -144,7 +144,7 @@ if __name__ == "__main__":
                 axerr[j].set_title(r"$\Delta x = $" + f"{1/N}" +
                                    r" $\Delta t = $" + f"{dts[j]}")
                 axerr[j].set_xlabel("Time steps $M$")
-                # axerr[j].legend()
+                axerr[j].legend()
                 axerr[j].grid()
 
             f.suptitle(method)
@@ -152,8 +152,6 @@ if __name__ == "__main__":
             f.tight_layout()
             f.savefig(datadir + method + ".pdf")
 
-        axerr[0].legend()
-        axerr[1].legend()
         ferr.suptitle("Relative RMS error")
         ferr.set_size_inches(10.5/2, 18.5/2)
         ferr.tight_layout()
