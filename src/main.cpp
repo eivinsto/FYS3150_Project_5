@@ -82,28 +82,27 @@ double init_func(double x){
 }
 
 double init_func2D(double x, double y){
-  return sin(2*M_PI*x)*sin(2*M_PI*y);
+  return sin(2*M_PI*x)*sin(2*M_PI*y) + y ;
 }
 
 double x_ub2D(double y){
-  return 0;
+  return y;
 }
 
 double x_lb2D(double y){
-  return 0;
+  return y;
 }
 
 double y_ub2D(double x){
-  return 0;
+  return 1;
 }
 
 double y_lb2D(double x){
   return 0;
 }
 
-// TODO: find analytic solution
 double analytic_2D(double x, double y, double t){
-  return init_func2D(x,y)*exp(-2*M_PI*M_PI*t);
+  return sin(2*M_PI*x)*sin(2*M_PI*y)*exp(-8*M_PI*M_PI*t) + y;
 }
 
 double x_ub_heat(double y){
