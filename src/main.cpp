@@ -103,7 +103,7 @@ double y_lb2D(double x){
 
 // TODO: find analytic solution
 double analytic_2D(double x, double y, double t){
-  return 0;
+  return init_func2D(x,y)*exp(-2*M_PI*M_PI*t);
 }
 
 double x_ub_heat(double y){
@@ -153,5 +153,5 @@ double init_func_heat(double x, double y){
 }
 
 double analytic_heat(double x, double y, double t){
-  return init_func_heat(x,y)*exp(-2*M_PI*M_PI*t);
+  return init_func_heat(x,y);
 }
