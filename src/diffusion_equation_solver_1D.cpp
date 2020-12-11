@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <fstream>
+#include <omp.h>
 
 /**
 * Constructor for the DiffusionEquationSolver1D class. This constructor assigns
@@ -223,6 +224,7 @@ void DiffusionEquationSolver1D::crank_nicolson_solve(){
 */
 void DiffusionEquationSolver1D::solve(){
   // Calls the appropriate solver for scheme specified in constructor
+  double wtime = omp_get_wtime();
   if (m_method=="ForwardEuler"){ forward_euler_solve(); }
   else if (m_method=="BackwardEuler"){ backward_euler_solve(); }
   else if (m_method=="CrankNicolson"){ crank_nicolson_solve(); }
@@ -233,6 +235,8 @@ void DiffusionEquationSolver1D::solve(){
     std::cerr << "Method specification does not match any implemented methods. Error occured during call to solve()." << std::endl;
     std::exit(0);
   }
+  wtime = omp_get_wtime() - wtime;
+  std::cout << "Finished simulating." << "\nElapsed time in seconds = " << wtime << std::endl;
 }
 
 /**
