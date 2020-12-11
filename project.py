@@ -257,7 +257,7 @@ if __name__ == "__main__":
         ax2.set_ylim(ax2.get_ylim()[::-1])
         f.colorbar(c1, ax=ax1, label=r"$T$ [$^\circ$C]")
         f.colorbar(c2, ax=ax2, label=r"$T$ [$^\circ$C]")
-        if source_type=="enriched":
+        if source_type == "enriched":
             f.suptitle("After enrichment")
         else:
             f.suptitle("Before enrichment")
@@ -267,7 +267,36 @@ if __name__ == "__main__":
         plt.show()
 
 if runflag in runflags[6:]:
-    print(runflag)
+    # running simulation with current compilation.
+    p = Popen(
+        [
+            "./benchmark.exe",
+            rootdir + "/data/benchmarkrun.dat",
+            "multi",
+            f"{L}",
+            f"{N}",
+            f"{Tmin}",
+            f"{Tmax}",
+            f"{n_temps}"
+        ],
+        stdout=PIPE,
+        stderr=PIPE,
+        cwd=src
+    )
+
+    # capturing standard streams from process
+    # and decoding data
+    stdout, stderr = p.communicate()
+    output[(k, j, i)] = stdout.decode('utf-8')
+    run(["rm", "-rf", rootdir + "/data/benchmarkrun.dat"])
+
+    # unpacking data and storing in array
+    times = np.empty((len(N_list), 2, 4))
+    for key in output:
+        string = output[key].split('=')[3].strip()
+        time = string.split('\n')[0]
+        times[key[0], key[1], key[2]] = float(time)
+
 
 if runflag in runflags[4:6]:
     run(["make", "test"], cwd=src)
