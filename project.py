@@ -257,7 +257,10 @@ if __name__ == "__main__":
         ax2.set_ylim(ax2.get_ylim()[::-1])
         f.colorbar(c1, ax=ax1, label=r"$T$ [$^\circ$C]")
         f.colorbar(c2, ax=ax2, label=r"$T$ [$^\circ$C]")
-        f.suptitle(source_type)
+        if source_type=="enriched":
+            f.suptitle("After enrichment")
+        else:
+            f.suptitle("Before enrichment")
         f.set_size_inches(10.5/2, 18.5/2)
         f.tight_layout()
         f.savefig(datadir + source_type + "2Dheat.pdf")
