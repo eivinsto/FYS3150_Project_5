@@ -1434,16 +1434,20 @@ We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diff
 
 \subsection{Temperature gradient of lithosphere} \label{sec:results_lithosphere}
 
+We solved the heat equation with an additional source term \eqref{eq:heat_eq_with_source_term} numerically, with the steady state solution with no radioactive materials as the initial state. The boundary conditions used, and further details on this system can be found in Section \ref{sec:formalism_heat_source_model}. A resolution of $N+1 = 101$ points are used in both the $x$- and $y$-directions (corresponding to width and depth respectively), and a timestep of $\Delta t = \num{1e-5}$ Gy is used.
+
+This simulation was run twice, once with the heat source as given in \eqref{eq:unfertilized_heat} and once with it being as given in \eqref{eq:refertilized_heat}. The first one corresponds to the amount of radioactive materials normally found in the lithosphere, and the latter corresponds to the amount of radioactive materials after further enrichment from the melting of subducting oceanic crust. The results from the simulation with the heat source term before further enrichment can be seen in Figure \ref{fig:lithosphere_before_enrichment}, and the results from the simulation with the heat source term after further enrichment can be seen in Figure \ref{fig:lithosphere_after_enrichment}.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/unenriched2Dheat.pdf}
-\caption{•} \label{fig:lithosphere_before_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Section \ref{sec:formalism_heat_source_model}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/enriched2Dheat.pdf}
-\caption{•} \label{fig:lithosphere_after_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Section \ref{sec:formalism_heat_source_model}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
 \end{figure}
 
 
