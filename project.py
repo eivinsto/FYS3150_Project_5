@@ -138,13 +138,13 @@ if __name__ == "__main__":
                 ax[j].set_xlabel(r"$x$")
                 ax[j].set_ylabel(r"$u$")
                 ax[j].set_title(r"$\Delta x = $" + f"{1/N}" +
-                                r" $\Delta t = $" + f"{dts[j]}")
+                                r"  $\Delta t = $" + f"{dts[j]}")
                 ax[j].legend()
                 ax[j].grid()
 
                 axerr[j].semilogy(errordata[method, N], '-', label=method)
                 axerr[j].set_title(r"$\Delta x = $" + f"{1/N}" +
-                                   r" $\Delta t = $" + f"{dts[j]}")
+                                   r"  $\Delta t = $" + f"{dts[j]}")
                 axerr[j].set_ylabel(r"$\epsilon(t)$")
                 axerr[j].set_xlabel("Time steps $M$")
                 axerr[j].legend()
@@ -197,8 +197,12 @@ if __name__ == "__main__":
 
         ferr, axerr = plt.subplots(1, 1)
         axerr.semilogy(errordata)
+        axerr.set_title(r"$\Delta x = $" + f"{1/N}" +
+                        r"  $\Delta t = $" + f"{dt}")
+        axerr.set_ylabel(r"$\epsilon(t)$")
+        axerr.set_xlabel("Time steps $M$")
         axerr.grid()
-        axerr.set_title("Relative RMS error")
+        ferr.suptitle("Relative RMS error of 2D solver")
         ferr.tight_layout()
         ferr.savefig(datadir + "2Dtesterr.pdf")
         plt.show()
