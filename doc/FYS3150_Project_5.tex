@@ -1347,7 +1347,7 @@ g(x) &= \sin ( 2\pi x) + x \, ,
 where we have set the boundary conditions to be $u(0,t) = 0$ and $u(1,t) = 1$. With this set of boundary conditions the steady-state solution is $x$, which means that the analytical solution is:
 
 \begin{align*}
-u(x,t) = \sin(2\pi x)e^{-4\pi^2 t} + x \, ,
+u(x,t) = \sin(2\pi x)e^{-4\pi^2 t} + x \, , \numberthis \label{eq:analytical_1D}
 \end{align*} 
 
 according to the results we found in Section \ref{sec:formalism_1D_diff_eq_analytical}.
@@ -1364,7 +1364,7 @@ g(x,y) &= \sin(2\pi x) \sin (2\pi y) + y \, ,
 where we set $u(0,y,t) = u(1,y,t) = y$, $u(x,0,t) = 0$ and $u(x,1,t) = 1$ as the boundary conditions. In this case, according to the results in Section \ref{sec:formalism_2D_diff_eq_analytical}, the analytical solution is:
 
 \begin{align*}
-u(x,y,t) &= \sin(2\pi x) \sin(2\pi y) e^{-8\pi^2 t} + y \, ,
+u(x,y,t) &= \sin(2\pi x) \sin(2\pi y) e^{-8\pi^2 t} + y \, , \numberthis \label{eq:analytical_2D}
 \end{align*}
 
 which we will compare with the numerical result using equation \eqref{eq:error_2D}.
@@ -1390,31 +1390,47 @@ which we will compare with the numerical result using equation \eqref{eq:error_2
 
 \subsection{One-dimensional simulations} \label{sec:results_1D}
 
+We solved the one-dimensional dimensionless diffusion equation \eqref{eq:1D_diff_eq} numerically with the three schemes outlined in Section \ref{sec:formalism_numerical_1D} and compared the results with an analytical solution. The initial state, boundary conditions and analytical solution (equation \eqref{eq:analytical_1D})are as specified in Section \ref{sec:method_1D_sims}. Plots of the solutions at two different timesteps, for two different sets of timestep $\Delta t$ and steplength $\Delta x$ can be seen in Figures \ref{fig:forward_euler_solution}, \ref{fig:backward_euler_solution} and \ref{fig:crank_nicolson_solution}. Each of these figures correspond to one of the schemes used. The relative RMS error (see equation \eqref{eq:error_1D}) was plotted as a function of time against the amount of timesteps for two different choices of timestep and steplength in Figure \ref{fig:error_1D}, with the results from the three schemes being in the same figure this time. 
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/ForwardEuler.pdf}
-\caption{•} \label{fig:forward_euler_solution}
+\caption{This figure contains plots of solutions to the one-dimensional diffusion equation, both analytical and numerical with the forward Euler based explicit scheme, for two sets of timestep $\Delta t$ and steplength $\Delta x$. For each set of timestep and steplength a separate plot is provided, and the solutions at two points in time are plotted, as indicated by the legend text. All quantities are dimensionless.} \label{fig:forward_euler_solution}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/BackwardEuler.pdf}
-\caption{•} \label{fig:backward_euler_solution}
+\caption{This figure contains plots of solutions to the one-dimensional diffusion equation, both analytical and numerical with the backward Euler based implicit scheme, for two sets of timestep $\Delta t$ and steplength $\Delta x$. For each set of timestep and steplength a separate plot is provided, and the solutions at two points in time are plotted, as indicated by the legend text. All quantities are dimensionless.} \label{fig:backward_euler_solution}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/CrankNicolson.pdf}
-\caption{•} \label{fig:crank_nicolson_solution}
+\caption{This figure contains plots of solutions to the one-dimensional diffusion equation, both analytical and numerical with the Crank-Nicolson scheme, for two sets of timestep $\Delta t$ and steplength $\Delta x$. For each set of timestep and steplength a separate plot is provided, and the solutions at two points in time are plotted, as indicated by the legend text. All quantities are dimensionless.} \label{fig:crank_nicolson_solution}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/1D-RMS.pdf}
-\caption{•} \label{fig:error_1D}
+\caption{This figure contains plots of the relative RMS error as a function of time against the amount of timesteps for two sets of timestep $\Delta t$ and steplength $\Delta x$ as indicated by the plot titles. The relative RMS error is calculated as in equation \eqref{eq:error_1D}. Each plot contains curves for each of the three numerical schemes outlined in Section \ref{sec:formalism_numerical_1D}, as indicated by the legend text.} \label{fig:error_1D}
 \end{figure}
 
 \subsection{Two-dimensional simulation} \label{sec:results_2D}
+
+We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diffusion_equation} numerically, and compared our results with the analytical solution. The intial state, boundary conditions, and analytical solution (equation \eqref{eq:analytical_2D}) are all given in Section \ref{sec:method_2D_sim}. We have plotted the numerical solution at $t=0$, and $t=0.5$ in Figure \ref{fig:solution_2D}. The timestep in this simulation was set to $\Delta t = \num{1e-4}$, and the steplength (both in $x$- and $y$-directions) was set to $h = 0.01$. The relative RMS error (equation \eqref{eq:error_2D}) as a function of time was also plotted against the amount of timesteps. This plot is shown in Figure \ref{fig:error_2D}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/2D.pdf}
+\caption{This figure contains plots of the initial state in the two-dimensional simulation and numerical solution after a certain amount of time has passed. The first plot shows the initial state, and the second plot shows the numerical solution after a time $t$ specified in the plot title. The timestep in this simulation was $\Delta t = \num{1e-4}$ and the steplength was $h = 0.01$. All quantities in the plots are dimensionless.} \label{fig:solution_2D}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/2Derr.pdf}
+\caption{This figure contains a plot of the relative RMS error (see equation \eqref{eq:error_2D}) as a function of time plotted against the amount of timesteps in the two-dimensional simulation. The timestep $\Delta t$ and steplength $h$ used is indicated in the title of the plot. All quantities in the plot are dimensionless.} \label{fig:error_2D}
+\end{figure}
 
 \subsection{Temperature gradient of lithosphere} \label{sec:results_lithosphere}
 
