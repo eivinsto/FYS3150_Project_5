@@ -123,6 +123,7 @@ void DiffusionEquationSolver2D::jacobi(){
 
 void DiffusionEquationSolver2D::solve(){
   // Set initial condition
+  double wtime = omp_get_wtime();
   for (int i = 0; i < m_N; i++){
     for (int j = 0; j < m_N; j++){
       m_u(i,j) = m_init_func(i*m_h,j*m_h);
@@ -135,7 +136,6 @@ void DiffusionEquationSolver2D::solve(){
     calculate_and_output_errors();
   }
 
-  double wtime = omp_get_wtime();
   // Time iteration
   for (m_t = 1; m_t <= m_M; m_t++){
     // Set source term
@@ -154,7 +154,7 @@ void DiffusionEquationSolver2D::solve(){
       calculate_and_output_errors();
     }
   }
-  wtime = omp_get_wtime() - wtime;  m_ofile.open(m_ofilename.c_str(), std::ofstream::out); // Ofstream object of output file
+  wtime = omp_get_wtime() - wtime;
   std::cout << "Finished simulating." << "\nElapsed time in seconds = " << wtime << std::endl;
 }
 
