@@ -131,6 +131,9 @@ void DiffusionEquationSolver2D::solve(){
 
   // Write initial state to file
   write_to_file();
+  if (m_write_errors){
+    calculate_and_output_errors();
+  }
 
   double wtime = omp_get_wtime();
   // Time iteration
@@ -192,15 +195,18 @@ void DiffusionEquationSolver2D::compare_with_analytic(double (*analytic)(double,
 
 void DiffusionEquationSolver2D::calculate_and_output_errors(){
   // Calculate analytic solution
-  for (int i = 0; i <= m_N; i++){
-    for (int j = 0; j <= m_N; j++){
+  for (int i = 0; i < m_N; i++){
+    for (int j = 0; j < m_N; j++){
       m_u_analytic(i,j) = m_analytic(i*m_h,j*m_h,m_t*m_dt);
     }
   }
 
   // Get absolute error matrix
   arma::mat diff = m_u - m_u_analytic;
-  double err = arma::accu(arma::sqrt(diff*diff))/arma::accu(m_u_analytic*m_u_analytic);
+  m_u.print();
+  m_u_analytic.print();
+  diff.print();
+  double err = sqrt(arma::accu(diff%diff)/arma::accu(m_u_analytic%m_u_analytic));
 
   // Write error to file
   m_error_ofile << std::setw(15) << std::setprecision(8) << err << ' ';
