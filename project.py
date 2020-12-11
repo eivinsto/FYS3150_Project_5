@@ -142,7 +142,7 @@ if __name__ == "__main__":
                 ax[j].legend()
                 ax[j].grid()
 
-                axerr[j].semilogy(errordata[method, N], '-',label=method)
+                axerr[j].semilogy(errordata[method, N], '-', label=method)
                 axerr[j].set_title(r"$\Delta x = $" + f"{1/N}" +
                                    r" $\Delta t = $" + f"{dts[j]}")
                 axerr[j].set_ylabel(r"$\epsilon(t)$")
@@ -165,8 +165,8 @@ if __name__ == "__main__":
 
     # 2D sample run
     if runflag == "2d":
-        N = 4
-        M = 1
+        N = 100
+        M = 5000
         dt = 1e-4
         write_limit = M
         output_filename = datadir + "test2d.dat"
@@ -177,6 +177,8 @@ if __name__ == "__main__":
 
         tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
+        errordata = np.genfromtxt(error_filename)[:, 0].flatten()
+        terr = np.genfromtxt(error_filename)[:, 1].flatten()
 
         f, (ax1, ax2) = plt.subplots(2, 1)
         c1 = ax1.imshow(data[0, :, :], vmin=0, vmax=1, interpolation='none',
@@ -192,6 +194,13 @@ if __name__ == "__main__":
         f.set_size_inches(10.5/2, 18.5/2)
         f.tight_layout()
         f.savefig(datadir + "2Dtest.pdf")
+
+        ferr, axerr = plt.subplots(1, 1)
+        axerr.semilogy(errordata)
+        axerr.grid()
+        axerr.set_title("Relative RMS error")
+        ferr.tight_layout()
+        ferr.savefig(datadir + "2Dtesterr.pdf")
         plt.show()
 
     if runflag == "heat":
