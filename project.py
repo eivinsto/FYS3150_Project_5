@@ -134,7 +134,9 @@ if __name__ == "__main__":
                            label=f"Analytic $t_{1} = $ {t1:.3f}")
                 ax[j].plot(x, anal_1d(x, t2), '--',
                            label="Analytic " +
-                           f"$t_{1} = $ {t2:.3f}")
+                           f"$t_{2} = $ {t2:.3f}")
+                ax[j].set_xlabel(r"$x$")
+                ax[j].set_ylabel(r"$u$")
                 ax[j].set_title(r"$\Delta x = $" + f"{1/N}" +
                                 r" $\Delta t = $" + f"{dts[j]}")
                 ax[j].legend()
@@ -143,6 +145,7 @@ if __name__ == "__main__":
                 axerr[j].semilogy(errordata[method, N], '-',label=method)
                 axerr[j].set_title(r"$\Delta x = $" + f"{1/N}" +
                                    r" $\Delta t = $" + f"{dts[j]}")
+                axerr[j].set_ylabel(r"$\epsilon(t)$")
                 axerr[j].set_xlabel("Time steps $M$")
                 axerr[j].legend()
                 axerr[j].grid()
