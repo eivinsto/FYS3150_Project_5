@@ -51,15 +51,15 @@ def import_data_2D(file, tsteps, N):
 
 
 runflag = "start"
+runflags = ["1d", "2d", "h", "heat", "t", "test", "b", "benchmark"]
 if __name__ == "__main__":
-    print("Runs: 1D, 2D, heat, test")
-    while (runflag != "1d" and runflag != "2d" and
-           runflag != "heat" and runflag != "test"):
+    print("Runs: 1D, 2D, [h]eat, [t]est")
+    while (runflag not in runflags):
         runflag = input("Choose run: ").lower()
         if runflag == "q" or runflag == "quit":
             sys.exit(0)
 
-    if runflag != "test":
+    if runflag not in runflags[4:]:
         genflag = input("Generate data? y/n: ").lower()
 
     # 1D sample run
@@ -216,7 +216,7 @@ if __name__ == "__main__":
         ferr.savefig(datadir + "2Derr.pdf")
         plt.show()
 
-    if runflag == "heat":
+    if runflag in runflags[2:4]:
         N = 100
         M = 10000
         dt = 1/M
@@ -263,6 +263,9 @@ if __name__ == "__main__":
         f.savefig(datadir + source_type + "2Dheat.pdf")
         plt.show()
 
-if runflag == "test":
+if runflag in runflags[6:]:
+    print(runflag)
+
+if runflag in runflags[4:6]:
     run(["make", "test"], cwd=src)
     run(["./test_main.exe"], cwd=src)
