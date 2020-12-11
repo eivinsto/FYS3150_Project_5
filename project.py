@@ -106,8 +106,8 @@ if __name__ == "__main__":
 
         errordata = {}
         for i, method in enumerate(methods):
-            ferr, axerr = plt.subplots(1, 2)
-            f, ax = plt.subplots(1, 2)
+            ferr, axerr = plt.subplots(2, 1)
+            f, ax = plt.subplots(2, 1)
             for j, N in enumerate(Ns):
                 x = np.linspace(0, 1, N+1)
                 t1 = tdict[method, N][n_t1[j]]
@@ -143,10 +143,12 @@ if __name__ == "__main__":
                 axerr[j].grid()
 
             f.suptitle(method)
+            f.set_size_inches(10.5/2, 18.5/2)
             f.tight_layout()
             f.savefig(datadir + method + ".pdf")
 
             ferr.suptitle("Relative RMS error for " + method)
+            ferr.set_size_inches(10.5/2, 18.5/2)
             ferr.tight_layout()
             ferr.savefig(datadir + method + "-RMS.pdf")
 
@@ -167,7 +169,7 @@ if __name__ == "__main__":
         tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
 
-        f, (ax1, ax2) = plt.subplots(1, 2)
+        f, (ax1, ax2) = plt.subplots(2, 1)
         c1 = ax1.imshow(data[0, :, :], vmin=0, vmax=1, interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 1, 0, 1])
         ax1.set_title(f"t = {t[0]}")
@@ -178,6 +180,7 @@ if __name__ == "__main__":
         ax2.grid()
         f.colorbar(c1, ax=ax1)
         f.colorbar(c2, ax=ax2)
+        f.set_size_inches(10.5/2, 18.5/2)
         f.tight_layout()
         f.savefig(datadir + "2Dtest.pdf")
         plt.show()
@@ -206,7 +209,7 @@ if __name__ == "__main__":
         tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
 
-        f, (ax1, ax2) = plt.subplots(1, 2)
+        f, (ax1, ax2) = plt.subplots(2, 1)
         c1 = ax1.imshow(data[0, :, :], interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 300, 0, 120])
         ax1.set_title(f"t = {t[0]} Gy")
@@ -224,6 +227,7 @@ if __name__ == "__main__":
         f.colorbar(c1, ax=ax1)
         f.colorbar(c2, ax=ax2)
         f.suptitle(source_type)
+        f.set_size_inches(10.5/2, 18.5/2)
         f.tight_layout()
         f.savefig(datadir + source_type + "2Dheat.pdf")
         plt.show()
