@@ -181,19 +181,26 @@ if __name__ == "__main__":
         terr = np.genfromtxt(error_filename)[:, 1].flatten()
 
         f, (ax1, ax2) = plt.subplots(2, 1)
-        c1 = ax1.imshow(data[0, :, :], vmin=0, vmax=1, interpolation='none',
+        min, max = np.min(data[0, :, :]), np.max(data[0, :, :])
+        c1 = ax1.imshow(data[0, :, :], vmin=min, vmax=max, interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 1, 0, 1])
         ax1.set_title(f"t = {t[0]}")
+        ax1.set_xlabel("$x$")
+        ax1.set_ylabel("$y$")
         ax1.grid()
-        c2 = ax2.imshow(data[-1, :, :], vmin=0, vmax=1, interpolation='none',
+
+        c2 = ax2.imshow(data[-1, :, :], vmin=min, vmax=max, interpolation='none',
                         origin="lower", aspect='auto', extent=[0, 1, 0, 1])
         ax2.set_title(f"t = {t[-1]}")
+        ax1.set_xlabel("$x$")
+        ax1.set_ylabel("$y$")
         ax2.grid()
-        f.colorbar(c1, ax=ax1)
-        f.colorbar(c2, ax=ax2)
+
+        f.colorbar(c1, ax=ax1, label="$u(x,y,t)$")
+        f.colorbar(c2, ax=ax2, label="$u(x,y,t)$")
         f.set_size_inches(10.5/2, 18.5/2)
         f.tight_layout()
-        f.savefig(datadir + "2Dtest.pdf")
+        f.savefig(datadir + "2D.pdf")
 
         ferr, axerr = plt.subplots(1, 1)
         axerr.semilogy(errordata)
@@ -204,7 +211,7 @@ if __name__ == "__main__":
         axerr.grid()
         ferr.suptitle("Relative RMS error of 2D solver")
         ferr.tight_layout()
-        ferr.savefig(datadir + "2Dtesterr.pdf")
+        ferr.savefig(datadir + "2Derr.pdf")
         plt.show()
 
     if runflag == "heat":
