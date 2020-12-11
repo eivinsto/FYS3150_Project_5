@@ -22,10 +22,13 @@ def run_1D(filename, method, N, dt, M, u_b, l_b, write_limit):
          filename, f"{u_b}", f"{l_b}"], cwd=src)
 
 
-def run_2D(filename, N, dt, M, write_limit):
+def run_2D(filename, N, dt, M, write_limit, errfilename=None):
     build_cpp()
-    run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
-         filename, "regular"], cwd=src)
+    commandlist = ["./main.exe", "2D", f"{N}", f"{dt}", f"{M}",
+                   f"{write_limit}", filename, "regular"]
+    if errfilename is not None:
+        commandlist.append(errfilename)
+    run(commandlist, cwd=src)
 
 
 def run_heat(filename, N, dt, M, write_limit, ax, ay, source_type):
@@ -157,14 +160,15 @@ if __name__ == "__main__":
 
     # 2D sample run
     if runflag == "2d":
-        N = 50
-        M = 10000
+        N = 4
+        M = 1
         dt = 1e-4
         write_limit = M
         output_filename = datadir + "test2d.dat"
+        error_filename = datadir + "error2d.dat"
 
         if genflag == "y":
-            run_2D(output_filename, N, dt, M, write_limit)
+            run_2D(output_filename, N, dt, M, write_limit, error_filename)
 
         tsteps = int(M/write_limit) + 1
         t, data = import_data_2D(output_filename, tsteps, N)
