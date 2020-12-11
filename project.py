@@ -53,7 +53,7 @@ def import_data_2D(file, tsteps, N):
 runflag = "start"
 runflags = ["1d", "2d", "h", "heat", "t", "test", "b", "benchmark"]
 if __name__ == "__main__":
-    print("Runs: 1D, 2D, [h]eat, [t]est")
+    print("Runs: 1D, 2D, [h]eat, [t]est, [b]enchmark")
     while (runflag not in runflags):
         runflag = input("Choose run: ").lower()
         if runflag == "q" or runflag == "quit":
