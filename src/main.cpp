@@ -125,12 +125,12 @@ double analytic_2D(double x, double y, double t){
 
 double x_ub_heat(double y){
   //return y*(1300-8) + 8;
-  return -3.16e-2*120*120*y*y + 13.81*120*y + 73.2;
+  return -439.46*y*y + 1634.21*y + 81.40;
 }
 
 double x_lb_heat(double y){
   //return y*(1300-8) + 8;
-  return -3.16e-2*120*120*y*y + 13.81*120*y + 73.2;
+  return -439.46*y*y + 1634.21*y + 81.40;
 }
 
 double y_ub_heat(double x){
