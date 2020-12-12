@@ -31,7 +31,8 @@ def run_2D(filename, N, dt, M, write_limit, errfilename=None):
     run(commandlist, cwd=src)
 
 
-def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2, ax, ay):
+def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2,
+             ax, ay):
     build_cpp()
     run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M1}", f"{write_limit1}",
          filename1, "heat", f"{ax}", f"{ay}", f"{M2}", f"{write_limit2}",
@@ -245,15 +246,18 @@ if __name__ == "__main__":
             print(p)  # -439.46119612 1634.20540059 81.39770713
 
             f[i], ax[i] = plt.subplots(2, 1)
-            c1 = ax[i][0].imshow(data[0, :, :], cmap='inferno', interpolation='none',
-                                 origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+            c1 = ax[i][0].imshow(data[0, :, :], cmap='inferno',
+                                 interpolation='none', origin="lower",
+                                 aspect='auto', extent=[0, 300, 0, 120])
             ax[i][0].set_title(rf"$t$ = {t[0]} Gy")
             ax[i][0].grid()
             ax[i][0].set_xlabel(r"Width $x$ [km]")
             ax[i][0].set_ylabel(r"Depth $y$ [km]")
             ax[i][0].set_ylim(ax[i][0].get_ylim()[::-1])
-            c2 = ax[i][1].imshow(data[-1, :, :], cmap='inferno', interpolation='none',
-                                 origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+
+            c2 = ax[i][1].imshow(data[-1, :, :], cmap='inferno',
+                                 interpolation='none', origin="lower",
+                                 aspect='auto', extent=[0, 300, 0, 120])
             ax[i][1].set_title(rf"$t$ = {t[-1]} Gy")
             ax[i][1].grid()
             ax[i][1].set_xlabel(r"Width $x$ [km]")
@@ -267,33 +271,7 @@ if __name__ == "__main__":
             f[i].set_size_inches(10.5/2, 18.5/2)
             f[i].tight_layout()
             f[i].savefig(datadir + filenames[i])
-            """
-            t2, data2 = import_data_2D(output_filename2, tsteps2, N)
 
-            f2, (ax21, ax22) = plt.subplots(2, 1)
-            c21 = ax21.imshow(data2[0, :, :], cmap='inferno', interpolation='none',
-                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
-            ax21.set_title(rf"$t$ = {t2[0]} Gy")
-            ax21.grid()
-            ax21.set_xlabel(r"Width $x$ [km]")
-            ax21.set_ylabel(r"Depth $y$ [km]")
-            ax21.set_ylim(ax21.get_ylim()[::-1])
-            c22 = ax22.imshow(data2[-1, :, :], cmap='inferno', interpolation='none',
-                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
-            ax22.set_title(rf"$t$ = {t2[-1]} Gy")
-            ax22.grid()
-            ax22.set_xlabel(r"Width $x$ [km]")
-            ax22.set_ylabel(r"Depth $y$ [km]")
-            ax22.set_ylim(ax22.get_ylim()[::-1])
-
-            f2.colorbar(c21, ax=ax21, label=r"$T$ [$^\circ$C]")
-            f2.colorbar(c22, ax=ax22, label=r"$T$ [$^\circ$C]")
-
-            f2.suptitle("After enrichment")
-            f2.set_size_inches(10.5/2, 18.5/2)
-            f2.tight_layout()
-            f2.savefig(datadir + "2Dheat_after.pdf")
-            """
         plt.show()
 
 if runflag in runflags[6:]:
