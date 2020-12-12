@@ -14,7 +14,7 @@ public:
                             double, double);
   void solve();
   void compare_with_analytic(double (*)(double,double,double), std::string);
-  void new_source_term(double (*)(double, double, double), std::string);
+  void new_source_term(double (*)(double, double, double), std::string, int, int);
 
 private:
   void jacobi();

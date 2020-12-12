@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
     std::string output_filename = argv[6];
     std::string sim = argv[7];
 
+    /*
     if (sim=="heat"){
       double ax = atof(argv[8]);
       double ay = atof(argv[9]);
@@ -70,10 +71,27 @@ int main(int argc, char** argv) {
       }
       system.solve();
     }
+    */
+    if (sim=="heat"){
+      double ax = atof(argv[8]);
+      double ay = atof(argv[9]);
+      int M2 = atoi(argv[10]);
+      int write_limit2 = atoi(argv[11]);
+      std::string output_filename2 = argv[12];
+      DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
+                                       x_ub_heat,x_lb_heat,output_filename, unfertilized_source, ax, ay);
+      system.solve();
+      system.new_source_term(fertilized_source,output_filename2,M2,write_limit2);
+      system.solve();
+    } else {
+      DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func2D,y_ub2D,y_lb2D,x_ub2D,x_lb2D,output_filename);
+      if (argc>8){
+        std::string error_filename = argv[8];
+        system.compare_with_analytic(analytic_2D, error_filename);
+      }
+      system.solve();
+    }
   }
-
-
-
   return 0;
 }
 

@@ -188,12 +188,14 @@ void DiffusionEquationSolver2D::set_source_term(){
   }
 }
 
-void DiffusionEquationSolver2D::new_source_term(double (*source_term)(double, double, double),std::string ofilename){
+void DiffusionEquationSolver2D::new_source_term(double (*source_term)(double, double, double),std::string ofilename, int M_new, int write_limit_new){
   m_t = 0;
   m_source_term = source_term;
   m_ofile.close();
   m_ofilename = ofilename;
   m_ofile.open(m_ofilename.c_str(), std::ofstream::out); // Ofstream object of output file
+  m_M = M_new;
+  m_write_limit = write_limit_new;
 }
 
 void DiffusionEquationSolver2D::compare_with_analytic(double (*analytic)(double, double, double), std::string error_filename){

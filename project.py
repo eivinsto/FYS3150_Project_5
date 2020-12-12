@@ -31,10 +31,12 @@ def run_2D(filename, N, dt, M, write_limit, errfilename=None):
     run(commandlist, cwd=src)
 
 
-def run_heat(filename, N, dt, M, write_limit, ax, ay, source_type):
+def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2, ax, ay):
     build_cpp()
-    run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}", f"{write_limit}",
-         filename, "heat", f"{ax}", f"{ay}", source_type], cwd=src)
+    run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M1}", f"{write_limit1}",
+         filename1, "heat", f"{ax}", f"{ay}", f"{M2}", f"{write_limit2}",
+         filename2], cwd=src)
+
 
 
 def import_data_2D(file, tsteps, N):
@@ -218,52 +220,81 @@ if __name__ == "__main__":
 
     if runflag in runflags[2:4]:
         N = 100
-        M = 10000
-        dt = 1/M
+        Ms = [100000,10000]
+        dt = 1/Ms[1]
         a_x = 2.0            # Gy^1/2
         a_y = 0.8            # Gy^1/2
-        write_limit = M
+        write_limits = [Ms[0],Ms[1]]
 
-        source_type = input("Used enriched source? y/n: ").lower()
-        if source_type == "y":
-            source_type = "enriched"
-        else:
-            source_type = "unenriched"
 
-        output_filename = datadir + source_type + "-heat.dat"
+        output_filenames = [datadir + "before-enrichment.dat",
+                            datadir + "after-enrichment.dat"]
+
 
         if genflag == "y":
 
-            run_heat(output_filename, N, dt, M, write_limit, a_x, a_y,
-                     source_type)
+            run_heat(output_filenames[0], output_filenames[1], N, dt, Ms[0],
+                     write_limits[0], Ms[1], write_limits[1], a_x, a_y)
 
-        tsteps = int(M/write_limit) + 1
-        t, data = import_data_2D(output_filename, tsteps, N)
 
-        f, (ax1, ax2) = plt.subplots(2, 1)
-        c1 = ax1.imshow(data[0, :, :], cmap='inferno', interpolation='none',
-                        origin="lower", aspect='auto', extent=[0, 300, 0, 120])
-        ax1.set_title(rf"$t$ = {t[0]} Gy")
-        ax1.grid()
-        ax1.set_xlabel(r"Width $x$ [km]")
-        ax1.set_ylabel(r"Depth $y$ [km]")
-        ax1.set_ylim(ax1.get_ylim()[::-1])
-        c2 = ax2.imshow(data[-1, :, :], cmap='inferno', interpolation='none',
-                        origin="lower", aspect='auto', extent=[0, 300, 0, 120])
-        ax2.set_title(rf"$t$ = {t[-1]} Gy")
-        ax2.grid()
-        ax2.set_xlabel(r"Width $x$ [km]")
-        ax2.set_ylabel(r"Depth $y$ [km]")
-        ax2.set_ylim(ax2.get_ylim()[::-1])
-        f.colorbar(c1, ax=ax1, label=r"$T$ [$^\circ$C]")
-        f.colorbar(c2, ax=ax2, label=r"$T$ [$^\circ$C]")
-        if source_type=="enriched":
-            f.suptitle("After enrichment")
-        else:
-            f.suptitle("Before enrichment")
-        f.set_size_inches(10.5/2, 18.5/2)
-        f.tight_layout()
-        f.savefig(datadir + source_type + "2Dheat.pdf")
+        f = {}
+        ax = {}
+        titles = ["Before enrichment", "After enrichment"]
+        filenames = ["2D_heat_before.pdf", "2D_heat_after.pdf"]
+        for i in range(2):
+            tsteps = int(Ms[i]/write_limits[i]) + 1
+            t, data = import_data_2D(output_filenames[i], tsteps, N)
+
+            f[i], ax[i] = plt.subplots(2, 1)
+            c1 = ax[i][0].imshow(data[0, :, :], cmap='inferno', interpolation='none',
+                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+            ax[i][0].set_title(rf"$t$ = {t[0]} Gy")
+            ax[i][0].grid()
+            ax[i][0].set_xlabel(r"Width $x$ [km]")
+            ax[i][0].set_ylabel(r"Depth $y$ [km]")
+            ax[i][0].set_ylim(ax[i][0].get_ylim()[::-1])
+            c2 = ax[i][1].imshow(data[-1, :, :], cmap='inferno', interpolation='none',
+                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+            ax[i][1].set_title(rf"$t$ = {t[-1]} Gy")
+            ax[i][1].grid()
+            ax[i][1].set_xlabel(r"Width $x$ [km]")
+            ax[i][1].set_ylabel(r"Depth $y$ [km]")
+            ax[i][1].set_ylim(ax[i][1].get_ylim()[::-1])
+
+            f[i].colorbar(c1, ax=ax[i][0], label=r"$T$ [$^\circ$C]")
+            f[i].colorbar(c2, ax=ax[i][1], label=r"$T$ [$^\circ$C]")
+
+            f[i].suptitle(titles[i])
+            f[i].set_size_inches(10.5/2, 18.5/2)
+            f[i].tight_layout()
+            f[i].savefig(datadir + filenames[i])
+            """
+            t2, data2 = import_data_2D(output_filename2, tsteps2, N)
+
+            f2, (ax21, ax22) = plt.subplots(2, 1)
+            c21 = ax21.imshow(data2[0, :, :], cmap='inferno', interpolation='none',
+                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+            ax21.set_title(rf"$t$ = {t2[0]} Gy")
+            ax21.grid()
+            ax21.set_xlabel(r"Width $x$ [km]")
+            ax21.set_ylabel(r"Depth $y$ [km]")
+            ax21.set_ylim(ax21.get_ylim()[::-1])
+            c22 = ax22.imshow(data2[-1, :, :], cmap='inferno', interpolation='none',
+                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+            ax22.set_title(rf"$t$ = {t2[-1]} Gy")
+            ax22.grid()
+            ax22.set_xlabel(r"Width $x$ [km]")
+            ax22.set_ylabel(r"Depth $y$ [km]")
+            ax22.set_ylim(ax22.get_ylim()[::-1])
+
+            f2.colorbar(c21, ax=ax21, label=r"$T$ [$^\circ$C]")
+            f2.colorbar(c22, ax=ax22, label=r"$T$ [$^\circ$C]")
+
+            f2.suptitle("After enrichment")
+            f2.set_size_inches(10.5/2, 18.5/2)
+            f2.tight_layout()
+            f2.savefig(datadir + "2Dheat_after.pdf")
+            """
         plt.show()
 
 if runflag in runflags[6:]:
