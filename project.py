@@ -38,7 +38,6 @@ def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2, ax
          filename2], cwd=src)
 
 
-
 def import_data_2D(file, tsteps, N):
     t_N = N+1
     data = np.genfromtxt(file)
@@ -220,22 +219,19 @@ if __name__ == "__main__":
 
     if runflag in runflags[2:4]:
         N = 100
-        Ms = [100000,10000]
+        Ms = [100000, 10000]
         dt = 1/Ms[1]
         a_x = 2.0            # Gy^1/2
         a_y = 0.8            # Gy^1/2
-        write_limits = [Ms[0],Ms[1]]
-
+        write_limits = [Ms[0], Ms[1]]
 
         output_filenames = [datadir + "before-enrichment.dat",
                             datadir + "after-enrichment.dat"]
-
 
         if genflag == "y":
 
             run_heat(output_filenames[0], output_filenames[1], N, dt, Ms[0],
                      write_limits[0], Ms[1], write_limits[1], a_x, a_y)
-
 
         f = {}
         ax = {}
@@ -245,19 +241,19 @@ if __name__ == "__main__":
             tsteps = int(Ms[i]/write_limits[i]) + 1
             t, data = import_data_2D(output_filenames[i], tsteps, N)
 
-            p = np.polyfit(np.linspace(0,1,N+1), data[-1,:,int(N/2)],2)
-            print(p)
+            p = np.polyfit(np.linspace(0, 1, N+1), data[-1, :, int(N/2)], 2)
+            print(p)  # -439.46119612 1634.20540059 81.39770713
 
             f[i], ax[i] = plt.subplots(2, 1)
             c1 = ax[i][0].imshow(data[0, :, :], cmap='inferno', interpolation='none',
-                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+                                 origin="lower", aspect='auto', extent=[0, 300, 0, 120])
             ax[i][0].set_title(rf"$t$ = {t[0]} Gy")
             ax[i][0].grid()
             ax[i][0].set_xlabel(r"Width $x$ [km]")
             ax[i][0].set_ylabel(r"Depth $y$ [km]")
             ax[i][0].set_ylim(ax[i][0].get_ylim()[::-1])
             c2 = ax[i][1].imshow(data[-1, :, :], cmap='inferno', interpolation='none',
-                            origin="lower", aspect='auto', extent=[0, 300, 0, 120])
+                                 origin="lower", aspect='auto', extent=[0, 300, 0, 120])
             ax[i][1].set_title(rf"$t$ = {t[-1]} Gy")
             ax[i][1].grid()
             ax[i][1].set_xlabel(r"Width $x$ [km]")
