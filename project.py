@@ -245,7 +245,7 @@ if __name__ == "__main__":
             tsteps = int(Ms[i]/write_limits[i]) + 1
             t, data = import_data_2D(output_filenames[i], tsteps, N)
 
-            p = np.polyfit(np.linspace(0,120,N+1), data[-1,:,int(N/2)],2)
+            p = np.polyfit(np.linspace(0,1,N+1), data[-1,:,int(N/2)],2)
             print(p)
 
             f[i], ax[i] = plt.subplots(2, 1)
