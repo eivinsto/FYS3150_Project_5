@@ -31,7 +31,8 @@ def run_2D(filename, N, dt, M, write_limit, errfilename=None):
     run(commandlist, cwd=src)
 
 
-def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2, ax, ay):
+def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2,
+             ax, ay):
     build_cpp()
     run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M1}", f"{write_limit1}",
          filename1, "heat", f"{ax}", f"{ay}", f"{M2}", f"{write_limit2}",
