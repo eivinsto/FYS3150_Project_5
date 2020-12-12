@@ -168,7 +168,7 @@ if __name__ == "__main__":
     # 2D sample run
     if runflag == "2d":
         N = 100
-        M = 5000
+        M = 10000
         dt = 1e-4
         write_limit = M
         output_filename = datadir + "test2d.dat"
