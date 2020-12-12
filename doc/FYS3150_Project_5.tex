@@ -1400,6 +1400,19 @@ where the constants are unknown, and must be such that the solution in each regi
 \section{Results} \label{sec:results}
 
 \subsection{Benchmark} \label{sec:results_benchmark}
+We performed a benchmark of the three methods of the 1D solver, as well as the 2D solver. For the benchmarks we used a spatial resolution of \(\Delta h = 1/N\) where \(N = 100\) is the amount of steps taken in space, as well as \(M = 1000\) time steps and a \(\Delta t = \num{2.5e-05}\). We used the initial and boundary conditions outlined in \ref{sec:method_1D_sims} for 1D and \ref{sec:method_2D_sim} for 2D. In the 2D case, we use \(N\) spacial steps along each axis. The results are averaged over \(N\) simulations, and are listed in table \ref{table:benchmark}.
+
+\begin{table}[H]
+\centering
+\caption{This table lists the mean times spent in seconds on simulating systems with initial and boundary conditions as outlined in \ref{sec:method_1D_sims} for 1D and \ref{sec:method_2D_sim} for 2D. The results are averaged over \(N = 100\) simulations per method, with \(\Delta h = 1/N\), \(M = 1000\) time steps and \(\Delta t = \num{2.5e-05}\).} \label{table:benchmark}
+\begin{tabular}{|c|c|c|}
+Method & Mean time [s] & Standard deviation [s]\\\hline
+ForwardEuler & \(\num{3.475e-04}\) & \(\num{3.027e-05}\) \\
+BackwardEuler & \(\num{2.131e-03}\) & \(\num{2.431e-05}\) \\
+CrankNicolson & \(\num{2.284e-03}\) & \(\num{1.222e-04}\) \\
+2D Solver & \(\num{1.392e+00}\) & \(\num{6.643e-02}\) \\
+\end{tabular}
+\end{table}
 
 \subsection{One-dimensional simulations} \label{sec:results_1D}
 
