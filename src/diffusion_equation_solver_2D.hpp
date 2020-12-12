@@ -40,7 +40,7 @@ private:
   arma::mat m_u;
   arma::mat m_q;
   double m_maxiter = 100000;
-  double m_abstol = 1e-14;
+  double m_abstol = 1e-10;
   int m_write_limit;
   double m_diag_element;
   bool m_use_source_term = false;
