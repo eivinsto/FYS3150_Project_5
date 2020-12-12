@@ -245,6 +245,9 @@ if __name__ == "__main__":
             tsteps = int(Ms[i]/write_limits[i]) + 1
             t, data = import_data_2D(output_filenames[i], tsteps, N)
 
+            p = np.polyfit(np.linspace(0,120,N+1), data[-1,:,int(N/2)],2)
+            print(p)
+
             f[i], ax[i] = plt.subplots(2, 1)
             c1 = ax[i][0].imshow(data[0, :, :], cmap='inferno', interpolation='none',
                             origin="lower", aspect='auto', extent=[0, 300, 0, 120])
