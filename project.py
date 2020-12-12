@@ -1,4 +1,4 @@
-from subprocess import run  # , Popen, PIPE
+from subprocess import run, Popen, PIPE
 # import multiprocessing as mp
 import os
 import sys
@@ -297,7 +297,51 @@ if __name__ == "__main__":
         plt.show()
 
 if runflag in runflags[6:]:
-    print(runflag)
+    # running simulation with current compilation.
+    dims = ["1D", "2D"]
+    N = 100
+    dt = 0.5*0.5/(N)**2
+    M = 1000
+    u_b = 1
+    l_b = 0
+    write_limit = M
+    methods = ["ForwardEuler", "BackwardEuler", "CrankNicolson"]
+    filename = datadir + "benchmarkrun.dat"
+
+    output = {}
+    for method in methods:
+        times = np.empty(N)
+        for i in range(N):
+            p = Popen(["./main.exe", "1D", f"{N}", f"{dt}", f"{M}",
+                       f"{write_limit}", method, filename, f"{u_b}", f"{l_b}"],
+                      stdout=PIPE, stderr=PIPE, cwd=src)
+            stdout, stderr = p.communicate()
+            outstr = stdout.decode('utf-8')
+            time = float(outstr.split('=')[1].strip())
+            times[i] = time
+
+        output[method] = np.mean(times), np.std(times)
+
+    print("Solver benchmarks. N runs.")
+    print(f"N = {N}, M = {M}, dt = {dt}, u_b = {u_b}, l_b = {l_b}")
+    for m in methods:
+        print(f"{m:14}: \u03BC = {output[m][0]:.3e} s," +
+              f" \u03C3 = {output[m][1]:.3e} s")
+
+    for i in range(N):
+        p = Popen(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}",
+                   f"{write_limit}", filename, "regular"],
+                  stdout=PIPE, stderr=PIPE, cwd=src)
+        stdout, stderr = p.communicate()
+        outstr = stdout.decode('utf-8')
+        time = float(outstr.split('=')[1].strip())
+        times[i] = time
+
+    print(f"{'2D Solver':14}: \u03BC = {np.mean(times):.3e} s," +
+          f" \u03C3 = {np.std(times):.3e} s")
+
+    run(["rm", "-rf", datadir + "benchmarkrun.dat"])
+
 
 if runflag in runflags[4:6]:
     run(["make", "test"], cwd=src)
