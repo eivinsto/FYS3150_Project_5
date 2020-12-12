@@ -1370,9 +1370,18 @@ u(x,y,t) &= \sin(2\pi x) \sin(2\pi y) e^{-8\pi^2 t} + y \, , \numberthis \label{
 which we will compare with the numerical result using equation \eqref{eq:error_2D}.
 
 
+\subsection{Notes on lithosphere temperature simulations} \label{sec:method_heat_sim}
 
+We did not find the steady-state solution when there is an additional heat source (before further enrichment) \eqref{eq:unfertilized_heat} in Section \ref{sec:formalism_heat_eq_with_source_term_analytical_sol}.
+It is, however, something which we wish to estimate and we can do so numerically. First we simulate the system with boundary conditions and initial state dictated by the steady-state solution when there are no additional sources \eqref{eq:steady_state_heat}. We can then fit a polynomial $p(y)$ to the middle of the system (in the numerical solution after it has stabilized) in the $x$-direction, and use this as the boundary conditions $T(0 \text{ km},y) = T(300 \text{ km},y) = p(y)$. This is something that can be done iteratively until the polynomial estimated is similar to the one that is currently being used. At that point we can assume that we have found a better set of boundary conditions. Thus, when simulating the system after the further enrichment with radioactive materials we can first simulate the system before further enrichment with this set of boundary conditions until it has reached a steady state, and then use that solution as the initial state when we simulate the system with the heat source as it is after further enrichment \eqref{eq:refertilized_heat}. This is how we choose to perform our simulations.
 
+We estimate the polynomial $p(y)$ as a second order polynomial. As the added heat source before further enrichment is constant for a given region, Poisson's equation (used to find the steady-state solution) is reduced to a double derivative of $T$ with respect to $y$ being equal to a constant. This results in a second order polynomial of $y$ in each region:
 
+\begin{align*}
+T(y) = ay^2 + by + c \, ,
+\end{align*} 
+
+where the constants are unknown, and must be such that the solution in each region fits the solutions in the other regions as well. These constants will differ for each region, but as it behaves as a second order polyonomial everywhere, we approximate the entire solution with a second order polynomial. This is not entirely accurate, but it should improve the results compared to if we used the boundary conditions as dictated by the steady-state solution with no added heat sources \eqref{eq:steady_state_heat}. The polynomial is fitted using NumPy's \citep{numpy} \verb+polyfit()+ function.
 
 
 
@@ -1434,20 +1443,36 @@ We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diff
 
 \subsection{Temperature gradient of lithosphere} \label{sec:results_lithosphere}
 
-We solved the heat equation with an additional source term \eqref{eq:heat_eq_with_source_term} numerically, with the steady state solution with no radioactive materials as the initial state. The boundary conditions used, and further details on this system can be found in Section \ref{sec:formalism_heat_source_model}. A resolution of $N+1 = 101$ points are used in both the $x$- and $y$-directions (corresponding to width and depth respectively), and a timestep of $\Delta t = \num{1e-5}$ Gy is used.
+We simulated the temperature gradient of the lithosphere using our two-dimensional solver. This equates to solving the heat equation with a source term \eqref{eq:heat_eq_with_source_term}. In this section we assume that the reader has read Section \ref{sec:formalism_heat_source_model}. All simulations were run with $N+1 = 101$ grid points in the spatial dimensions and a timestep of $\Delta t = 1e-4$ Gy. 
 
-This simulation was run twice, once with the heat source as given in \eqref{eq:unfertilized_heat} and once with it being as given in \eqref{eq:refertilized_heat}. These simulations are sequential such that the second simulation starts with the system as it was when the first one finished, with the time being reset between the simulations. The first one corresponds to the amount of radioactive materials normally found in the lithosphere, and the latter corresponds to the amount of radioactive materials after further enrichment from the melting of subducting oceanic crust. The results from the simulation with the heat source term before further enrichment can be seen in Figure \ref{fig:lithosphere_before_enrichment}, and the results from the simulation with the heat source term after further enrichment can be seen in Figure \ref{fig:lithosphere_after_enrichment}.
+We estimated the second-order polynomial $p(y)$ as discussed in Section \ref{sec:method_heat_sim}, and used this as the boundary conditions for further simulations. We found:
+
+\begin{align*}
+p(y) &= -\frac{439.46}{120^2} \, \frac{\text{K}}{\text{km}^2} \cdot y^2 + \frac{1634.21}{120} \, \frac{\text{K}}{\text{km}} \cdot y + 81.40 \, \text{K} \, ,
+\end{align*}
+
+and in order to showcase the fact that the numerical solution is not stable in $x$ with the boundary conditions as dictated by the steady-state solution with no heat sources \eqref{eq:steady_state_heat}, we have included a plot of the first "iteration" of these simulations in Figure \ref{fig:lithosphere_steady_state_project}.
+
+We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(y)$, and the other boundary conditions being the same as before. First a simulation was ran with these boundary conditions with the initial state being the steady state with no heat sources \eqref{eq:steady_state_heat} until the numerical solution had stabilized. We then used the final result from this simulation as the initial state when the heat sources include the further enrichment from the melting sediments \eqref{eq:refertilized_heat}, and simulated this for $1$ Gy. The initial and final states of these two simulations can be seen in Figures \ref{fig:lithosphere_before_enrichment} and \ref{fig:lithosphere_after_enrichment} respectively. 
+
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\columnwidth]{../data/unenriched2Dheat.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Section \ref{sec:formalism_heat_source_model}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
+\includegraphics[width=\columnwidth]{../data/2D_first_heat_before.pdf}
+\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions derived from the steady-state solution with no added heat. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed. } \label{fig:lithosphere_steady_state_project}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/2D_heat_before.pdf}
+\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions that were found from estimating the steady state solution with added heat from radioactive materials. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\columnwidth]{../data/enriched2Dheat.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Section \ref{sec:formalism_heat_source_model}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
+\includegraphics[width=\columnwidth]{../data/2D_heat_after.pdf}
+\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
 \end{figure}
 
 
