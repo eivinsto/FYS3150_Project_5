@@ -292,20 +292,23 @@ if runflag in runflags[6:]:
 
         output[method] = np.mean(times), np.std(times)
 
-    print("1D solver benchmarks. N runs.")
+    print("Solver benchmarks. N runs.")
     print(f"N = {N}, M = {M}, dt = {dt}, u_b = {u_b}, l_b = {l_b}")
     for m in methods:
-        print(f"{m:14}: \u03BC = {output[m][0]:.3e}," +
-              " \u03C3 = {output[m][1]:.3e}")
+        print(f"{m:14}: \u03BC = {output[m][0]:.3e} s," +
+              f" \u03C3 = {output[m][1]:.3e} s")
 
     for i in range(N):
-        p = Popen(["./main.exe", "1D", f"{N}", f"{dt}", f"{M}",
-                   f"{write_limit}", method, filename, f"{u_b}", f"{l_b}"],
+        p = Popen(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}",
+                   f"{write_limit}", filename, "regular"],
                   stdout=PIPE, stderr=PIPE, cwd=src)
         stdout, stderr = p.communicate()
         outstr = stdout.decode('utf-8')
         time = float(outstr.split('=')[1].strip())
         times[i] = time
+
+    print(f"{'2D Solver':14}: \u03BC = {np.mean(times):.3e} s," +
+          f" \u03C3 = {np.std(times):.3e} s")
 
     run(["rm", "-rf", datadir + "benchmarkrun.dat"])
 
