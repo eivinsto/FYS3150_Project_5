@@ -1295,6 +1295,8 @@ for (m_t = 1; m_t <= m_M; m_t++){
 
 The for loop performs \verb+m_M+ iterations, corresponding to the set amount of timesteps that we should simulate for. Each iteration the \verb+set_source_term()+ and \verb+jacobi()+ functions are called. The first of these functions sets the matrix \verb+m_q+ to the solution in the previous timestep \verb+m_u+, which is then used by the Jacobi iterative solver (the latter function) to find the solution in the next timestep. As all variables are stored as member variables, no arguments are passed in these functions, and they both instead access the variables directly. 
 
+Lastly, we need to cover the amount of FLOPs needed. This will depend on the amount of iterations needed by the Jacobi solver for the solution to converge, so we will not be able to give definitive numbers. For each iteration using the Jacobi iteration, a total of $8(N-2)^2 \approx 8N^2$ FLOPs is needed for the first double for loop to find the elements of the solution in the next iteration. After this we need to check the convergence with a second double for loop, which requires $2N^2$ FLOPs to complete. In total, we thus write that the Jacobi solver needs $\mathcal{O}(10N^2)$ FLOPs to complete, and that when doing this for $M$ timesteps that the total amount of FLOPs needed is $\mathcal{O}(10MN^2)$. 
+
 \subsubsection{Solver for the heat equation with a source term} \label{sec:method_heat_solver}
 
 We wished to solve the heat equation with an added source term $Q$ as outlined in Section \ref{sec:formalism_heat_source_model}. This can be done in two dimensions as we have outlined in Section \ref{sec:formalism_heat_eq_with_source_numerical_sol}, in a fashion that is similar to that which was implemented in the last section. By changing the values of some variables we can use the exact same solver, so that is what we do. In terms of the variables specified in the last section referred to, the variables \verb+m_Ax+ and \verb+m_Ay+ from the code snippet of the Jacobi iterative method are set to $A_x$ and $A_y$ respectively. The variable \verb+m_diag_element+ is also set to $1/(1+ 2\alpha(A_x + A_y)$ (the inverse of the diagonal elements). The final modification is to \verb+m_q+ which now needs to contain the $\Delta t Q'$ as well. This is implemented as follows:
@@ -1308,6 +1310,8 @@ for (int i = 0; i < m_N; i++){
 \end{cpp}
 
 We iterate over the elements of \verb+m_q+ setting them equal to the elements of the solution in the previous timestep \verb+m_u+ plus the timestep \verb+m_dt+ multiplied with a function that corresponds to $Q'$ (\verb+m_source_term()+) which is specified upon instantiating an object of the solver class.
+
+As for the FLOPs needed, it is clear that we need an additional $5N^2$ FLOPs per timestep in order to calculate the new source term and include it in \verb+m_q+, plus any additional FLOPs necessary in order to compute the result of the \verb+m_source_term()+ function. This means that in this case the total amount of FLOPs needed is $\mathcal{O}(10MN^2) + 5N^2$. The second term will generally be much less than the first one (assuming that \verb+m_source_term()+ does not require a lot of FLOPs), and so we assume that this specialization of the solver will not use an amount of FLOPs that is significantly larger than it would otherwise.
 
 
 \subsection{Source of errors and error calculation} \label{sec:method_errors}
