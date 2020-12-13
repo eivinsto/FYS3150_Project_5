@@ -45,33 +45,6 @@ int main(int argc, char** argv) {
     std::string output_filename = argv[6];
     std::string sim = argv[7];
 
-    /*
-    if (sim=="heat"){
-      double ax = atof(argv[8]);
-      double ay = atof(argv[9]);
-      std::string source_type = argv[10];
-      if (source_type=="enriched"){
-        DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
-                                         x_ub_heat,x_lb_heat,output_filename, fertilized_source, ax, ay);
-        system.solve();
-      } else {
-        DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func_heat,y_ub_heat,y_lb_heat,
-                                         x_ub_heat,x_lb_heat,output_filename, unfertilized_source, ax, ay);
-        if (argc>11){
-          std::string error_filename = argv[11];
-          system.compare_with_analytic(analytic_heat, error_filename);
-        }
-        system.solve();
-      }
-    } else {
-      DiffusionEquationSolver2D system(N,dt,M,write_limit,init_func2D,y_ub2D,y_lb2D,x_ub2D,x_lb2D,output_filename);
-      if (argc>8){
-        std::string error_filename = argv[8];
-        system.compare_with_analytic(analytic_2D, error_filename);
-      }
-      system.solve();
-    }
-    */
     if (sim=="heat"){
       double ax = atof(argv[8]);
       double ay = atof(argv[9]);
