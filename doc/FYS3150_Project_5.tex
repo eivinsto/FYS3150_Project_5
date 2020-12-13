@@ -1466,7 +1466,7 @@ We simulated the temperature gradient of the lithosphere using our two-dimension
 We estimated the second-order polynomial $p(y)$ as discussed in Section \ref{sec:method_heat_sim}, and used this as the boundary conditions for further simulations. We found:
 
 \begin{align*}
-p(y) &= -\frac{439.46}{120^2} \, \frac{\text{K}}{\text{km}^2} \cdot y^2 + \frac{1634.21}{120} \, \frac{\text{K}}{\text{km}} \cdot y + 81.40 \, \text{K} \, ,
+p(y) &= -\frac{439.46}{120^2} \, \frac{^\circ\text{C}}{\text{km}^2} \cdot y^2 + \frac{1634.21}{120} \, \frac{^\circ\text{C}}{\text{km}} \cdot y + 81.40 \, ^\circ\text{C} \, , \numberthis \label{eq:lithosphere_boundary_estimate}
 \end{align*}
 
 and in order to showcase the fact that the numerical solution is not stable in $x$ with the boundary conditions as dictated by the steady-state solution with no heat sources \eqref{eq:steady_state_heat}, we have included a plot of the first "iteration" of these simulations in Figure \ref{fig:lithosphere_steady_state_project}.
@@ -1524,7 +1524,19 @@ We ran a simulation using our two-dimensional solver with the boundary and initi
 
 \subsection{Temperature gradient of lithosphere} \label{sec:discussion_lithosphere}
 
+We simulated the temperature gradient of the lithosphere in several settings. First we simulated the system with the regular amount of radioactive materials present, with the initial state being that of the steady-state solution with no radioactive elements \eqref{eq:steady_state_heat}. The results can be seen in Figure \ref{fig:lithosphere_steady_state_project}. A series of simulations starting with this one was used to estimate the boundary conditions in the $x$-direction as outlined in Section \ref{sec:method_heat_sim}. The estimated boundary conditions are given in \eqref{eq:lithosphere_boundary_estimate}. 
+
+This result somewhat fits our expectations as they were outlined in Section \ref{sec:formalism_heat_eq_with_source_term_analytical_sol}. 
+As the coefficient in front of $y^2$ is negative and the coefficient in front of $y$ is larger than in the steady-state with no radioactive materials, this indicates that the temperatures are higher for any depth. Note that the original boundary conditions are not preserved by the polynomial, and as such there is now a small discontinuity in the boundary conditions used (in the corners of the system). As we are solving numerically this does not cause any problems, so we continue using this polynomial as the boundaries in the $x$-direction, even while the boundaries are now discontinuous in the corners. If we tried to "fix" the polynomial this would lead to the other values being wrong as well, so we leave it as is, and remember that it might cause issues later down the line. 
+
+We then used this estimate of the boundary conditions and simulated the steady-state of the system, as seen in Figure \ref{fig:lithosphere_before_enrichment}. This simulation lasted a total of $10$ Gy in simulation time, so we could be certain the the state we had reached was stable. We then used the final state of this system as the initial state in a second simulation where we used the heat source term as it is when the mantle has been refertilized \eqref{eq:refertilized_heat}. The results for this simulation can be seen in Figure \ref{fig:lithosphere_after_enrichment}. We can clearly see a marked difference in the temperature gradient in the part of the mantle that is further enriched in radioactive materials ($x \in [75,225]$ km). As expected it also seems to increase the temperatures all around. In terms of the physical problem at hand, this means that if such a refertilization of the mantle occured, we would expect to see that the lithosphere is warmer than it would be otherwise. At a depth of $30$ km above the area of the mantle that is refertilized we see a clear increase in the temperature, such that the difference should be measurable. These results indicate that such measurements in an experimental setup could very likely indicate that such an event has occured in the past, and is something that is of interest for further research. By first making experimental measurements and comparing them with numerical results, it can also be ascertained whether or not the assumptions made on the levels of enrichment that occurs are correct, or approximately correct. This would allow us to correct and improve the model, and thus this topic is of interest for further research both in terms of experimental and theoretical aspects.
+
+
+
+
+
 \clearpage
+
 
 
 
