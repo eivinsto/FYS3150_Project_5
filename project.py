@@ -1,5 +1,4 @@
 from subprocess import run, Popen, PIPE
-# import multiprocessing as mp
 import os
 import sys
 import numpy as np
@@ -17,12 +16,39 @@ def build_cpp():
 
 
 def run_1D(filename, method, N, dt, M, u_b, l_b, write_limit):
+    """Function for running 1D solver.
+
+    Arguments:
+    filename -- str: string containing name and absolute path to output file.
+    method -- str: string containing name of solver method to use.
+    N -- int: number of steps to take in space minus one.
+    dt -- float: length of time step.
+    M -- int: number of steps to take in time.
+    u_b -- float: boundary value u(1, t) = u_b.
+    l_b -- float: boundary value u(0, t) = l_b.
+    write_limit -- int: number of time steps to skip when writing to file.
+    """
     build_cpp()
     run(["./main.exe", "1D", f"{N}", f"{dt}", f"{M}", f"{write_limit}", method,
          filename, f"{u_b}", f"{l_b}"], cwd=src)
 
 
 def run_2D(filename, N, dt, M, write_limit, errfilename=None):
+    """Function for running 2D solver on generic problem.
+
+    Arguments:
+    filename -- str: string containing name and absolute path to output file.
+    method -- str: string containing name of solver method to use.
+    N -- int: number of steps to take in space minus one.
+    dt -- float: length of time step.
+    M -- int: number of steps to take in time.
+    write_limit -- int: number of time steps to skip when writing to file.
+
+    Keyword arguments:
+    errfilename -- str: string containing name of, and absolute path to,
+                        output file for error between numeric and
+                        analytic solution (default=None).
+    """
     build_cpp()
     commandlist = ["./main.exe", "2D", f"{N}", f"{dt}", f"{M}",
                    f"{write_limit}", filename, "regular"]
@@ -33,6 +59,22 @@ def run_2D(filename, N, dt, M, write_limit, errfilename=None):
 
 def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2,
              ax, ay):
+    """Function for running 2D solver on heat problem.
+
+    Arguments:
+    filename -- str: string containing name and absolute path to output file.
+    method -- str: string containing name of solver method to use.
+    N -- int: number of steps to take in space minus one.
+    dt -- float: length of time step.
+    M1 -- int: number of steps to take in time before enrichment.
+    write_limit1 -- int: number of time steps to skip when writing to file
+                         before enrichment.
+    M1 -- int: number of steps to take in time after enrichment.
+    write_limit1 -- int: number of time steps to skip when writing to file
+                         after enrichment.
+    ax -- float: scaling constant for x-coordinates.
+    ay -- float: scaling constant for y-coordinates.
+    """
     build_cpp()
     run(["./main.exe", "2D", f"{N}", f"{dt}", f"{M1}", f"{write_limit1}",
          filename1, "heat", f"{ax}", f"{ay}", f"{M2}", f"{write_limit2}",
@@ -40,6 +82,14 @@ def run_heat(filename1, filename2, N, dt, M1, write_limit1, M2, write_limit2,
 
 
 def import_data_2D(file, tsteps, N):
+    """Returns tuple with 1D-array of time values t, and 2D-array of
+    u(x, y, t) values. Function reading 2D-solver data from file.
+
+    Arguments:
+    file -- str: string containing name of, and absolute path to data file.
+    tsteps -- float: number of steps in time.
+    N -- int: number of steps in space minus one along both axes.
+    """
     t_N = N+1
     data = np.genfromtxt(file)
     reformatted_data = np.zeros([tsteps, t_N, t_N])
@@ -62,37 +112,50 @@ if __name__ == "__main__":
             sys.exit(0)
 
     if runflag not in runflags[4:]:
+        # Choose whether to run simulation.
         genflag = input("Generate data? y/n: ").lower()
 
-    # 1D sample run
     if runflag == "1d":
-        Ns = [10, 100]
+        """Perform data analysis for the 1D solvers."""
+        Ns = [10, 100]  # Defined such that step length h = 1/N
+        # Calculating timestep to ensure convergence:
         dts = np.asarray([0.5*0.5/(N)**2 for N in Ns])
-        T = 0.4
-        t1 = 0.04
-        t2 = 0.1
+        T = 0.4  # Amount of time to simulate
+        t1 = 0.04  # first time to plot
+        t2 = 0.1  # second time to plot
+
+        # Calculating amount of timesteps to reach t1, t2, and T
         n_t1 = np.asarray(t1/dts, dtype=np.int64)
         n_t2 = np.asarray(t2/dts, dtype=np.int64)
         n_T = np.asarray(T/dts, dtype=np.int64)
         Ms = np.asarray([int(T/dt) for dt in dts])
-        write_limit = 1
+        write_limit = 1  # write all data to file
         methods = ["ForwardEuler", "BackwardEuler", "CrankNicolson"]
 
-        output_files = []
+        output_files = []  # creating list of filenames:
         for method in methods:
             output_files.append([datadir + method + f"_{N}.dat" for N in Ns])
 
+        # setting boundary conditions:
         u_b = 1
         l_b = 0
 
-        if genflag == "y":
+        if genflag == "y":  # running simulations if needed:
             for i, method in enumerate(methods):
                 for j, N in enumerate(Ns):
                     run_1D(output_files[i][j], method, N, dts[j], Ms[j], u_b,
                            l_b, write_limit)
 
         def anal_1d(x, t):
-            """Analytic solution for 1D example"""
+            """Analytic solution for 1D example
+            Args:
+            x -- array or float: x-value(s) to evaluate at.
+            t -- array or float: t-value(s) to evaluate at.
+
+            Returns float if x and t are float. Returns 2D or 1D array if x
+            and/or t is 1D array, with first index corresponding to t,
+            and second index corresponding to x.
+            """
             if isinstance(t, np.ndarray):
                 arr = np.empty((len(t), len(x)))
                 for i in range(len(t)):
@@ -102,8 +165,10 @@ if __name__ == "__main__":
             else:
                 return (np.sin(2*np.pi*x)*np.exp(-4*t*np.pi**2) + x)
 
+        # creating dictionaries for u(x, t) and t respectivly.
         data = {}
         tdict = {}
+        # iterating over methods and resolutions to read data.
         for i, method in enumerate(methods):
             for j, N in enumerate(Ns):
                 data[method, N] = np.genfromtxt(output_files[i][j])[:, :-1]
@@ -111,26 +176,31 @@ if __name__ == "__main__":
                     output_files[i][j]
                 )[:, -1:].flatten()
 
-        errordata = {}
-        ferr, axerr = plt.subplots(2, 1)
-        for i, method in enumerate(methods):
-            f, ax = plt.subplots(2, 1)
-            for j, N in enumerate(Ns):
-                x = np.linspace(0, 1, N+1)
-                t1 = tdict[method, N][n_t1[j]]
-                t2 = tdict[method, N][n_t2[j]]
+        errordata = {}  # creating dictionary for relative errors.
+        ferr, axerr = plt.subplots(2, 1)  # figure for relative errors.
 
+        # iterating through, calculating errors and plotting data:
+        for i, method in enumerate(methods):
+            f, ax = plt.subplots(2, 1)  # figure for numeric solutions.
+            for j, N in enumerate(Ns):
+                x = np.linspace(0, 1, N+1)  # x-values
+                t1 = tdict[method, N][n_t1[j]]  # retrieving t1
+                t2 = tdict[method, N][n_t2[j]]  # retrieving t2
+
+                # calculating error
                 errordata[method, N] = np.sqrt(np.sum(
                     (data[method, N] -
                      anal_1d(x, tdict[method, N]))**2, axis=1) /
                     np.sqrt(np.sum(anal_1d(x, tdict[method, N])**2, axis=1))
                 )
 
+                # plotting results:
                 ax[j].plot(x, data[method, N][n_t1[j], :],
                            label=f"Numeric $t_{1} = $ {t1:.3f}")
                 ax[j].plot(x, data[method, N][n_t2[j], :],
                            label=f"Numeric $t_{2} = $ {t2:.3f}")
 
+                # plotting analytic solution for comparison:
                 x = np.linspace(0, 1, 100)
                 ax[j].plot(x, anal_1d(x, t1), '--',
                            label=f"Analytic $t_{1} = $ {t1:.3f}")
@@ -144,6 +214,7 @@ if __name__ == "__main__":
                 ax[j].legend()
                 ax[j].grid()
 
+                # plotting reltaive error as function of time steps:
                 axerr[j].semilogy(errordata[method, N], '-', label=method)
                 axerr[j].set_title(r"$\Delta x = $" + f"{1/N}" +
                                    r"  $\Delta t = $" + f"{dts[j]}")
@@ -165,25 +236,29 @@ if __name__ == "__main__":
         # print(errordata)
         plt.show()
 
-    # 2D sample run
     if runflag == "2d":
-        N = 100
-        M = 10000
-        dt = 1e-4
-        write_limit = M
+        """Perform data analysis for 2D solver with generic problem."""
+        N = 100  # number of grid points minus one along axes.
+        M = 10000  # number of time steps to perform.
+        dt = 1e-4  # size of time step.
+        write_limit = M  # number of steps to skip when writing to file.
         output_filename = datadir + "test2d.dat"
         error_filename = datadir + "error2d.dat"
 
-        if genflag == "y":
+        if genflag == "y":  # running simulation if needed:
             run_2D(output_filename, N, dt, M, write_limit, error_filename)
 
-        tsteps = int(M/write_limit) + 1
+        tsteps = int(M/write_limit) + 1  # number of time steps to read in.
+        # extracting results and relative error:
         t, data = import_data_2D(output_filename, tsteps, N)
         errordata = np.genfromtxt(error_filename)[:, 0].flatten()
         terr = np.genfromtxt(error_filename)[:, 1].flatten()
 
-        f, (ax1, ax2) = plt.subplots(2, 1)
+        f, (ax1, ax2) = plt.subplots(2, 1)  # creating figure.
+        # setting extent of colorbar:
         min, max = np.min(data[0, :, :]), np.max(data[0, :, :])
+
+        # plotting initial state:
         c1 = ax1.imshow(data[0, :, :], vmin=min, vmax=max, cmap='inferno',
                         interpolation='none', origin="lower", aspect='auto',
                         extent=[0, 1, 0, 1])
@@ -192,6 +267,7 @@ if __name__ == "__main__":
         ax1.set_ylabel("$y$")
         ax1.grid()
 
+        # plotting final state:
         c2 = ax2.imshow(data[-1, :, :], vmin=min, vmax=max, cmap='inferno',
                         interpolation='none', origin="lower", aspect='auto',
                         extent=[0, 1, 0, 1])
@@ -206,6 +282,7 @@ if __name__ == "__main__":
         f.tight_layout()
         f.savefig(datadir + "2D.pdf")
 
+        # plotting relative error as function of time steps:
         ferr, axerr = plt.subplots(1, 1)
         axerr.semilogy(errordata)
         axerr.set_title(r"$\Delta x = $" + f"{1/N}" +
@@ -219,6 +296,8 @@ if __name__ == "__main__":
         plt.show()
 
     if runflag in runflags[2:4]:
+        """Perform simulation and data analysis of heat problem."""
+        # setting simulation parameters:
         N = 100
         Ms = [100000, 10000]
         dt = 1/Ms[1]
@@ -226,11 +305,11 @@ if __name__ == "__main__":
         a_y = 0.8            # Gy^1/2
         write_limits = [Ms[0], Ms[1]]
 
+        # output filenames for data:
         output_filenames = [datadir + "before-enrichment.dat",
                             datadir + "after-enrichment.dat"]
 
-        if genflag == "y":
-
+        if genflag == "y":  # running simulation if needed:
             run_heat(output_filenames[0], output_filenames[1], N, dt, Ms[0],
                      write_limits[0], Ms[1], write_limits[1], a_x, a_y)
 
@@ -238,14 +317,17 @@ if __name__ == "__main__":
         ax = {}
         titles = ["Before enrichment", "After enrichment"]
         filenames = ["2D_heat_before.pdf", "2D_heat_after.pdf"]
-        for i in range(2):
+        for i in range(2):  # reading datasets and plotting results:
             tsteps = int(Ms[i]/write_limits[i]) + 1
             t, data = import_data_2D(output_filenames[i], tsteps, N)
 
+            # calculating boundary conditions for unenriched steady state,
+            # this was used to calibrate the simulation:
             p = np.polyfit(np.linspace(0, 1, N+1), data[-1, :, int(N/2)], 2)
             print(p)  # -439.46119612 1634.20540059 81.39770713
 
             f[i], ax[i] = plt.subplots(2, 1)
+            # plotting initial state:
             c1 = ax[i][0].imshow(data[0, :, :], cmap='inferno',
                                  interpolation='none', origin="lower",
                                  aspect='auto', extent=[0, 300, 0, 120])
@@ -255,6 +337,7 @@ if __name__ == "__main__":
             ax[i][0].set_ylabel(r"Depth $y$ [km]")
             ax[i][0].set_ylim(ax[i][0].get_ylim()[::-1])
 
+            # plotting final state:
             c2 = ax[i][1].imshow(data[-1, :, :], cmap='inferno',
                                  interpolation='none', origin="lower",
                                  aspect='auto', extent=[0, 300, 0, 120])
@@ -275,52 +358,71 @@ if __name__ == "__main__":
         plt.show()
 
 if runflag in runflags[6:]:
-    # running simulation with current compilation.
+    """Run benchmarks for each method in 1D and 2D."""
     dims = ["1D", "2D"]
+
+    # setting parameters:
     N = 100
     dt = 0.5*0.5/(N)**2
     M = 1000
+    write_limit = M
+
+    # boundary conditions for 1D run:
     u_b = 1
     l_b = 0
-    write_limit = M
+
+    # method names and filenames:
     methods = ["ForwardEuler", "BackwardEuler", "CrankNicolson"]
     filename = datadir + "benchmarkrun.dat"
 
     output = {}
-    for method in methods:
+    for method in methods:  # performing N runs for each 1D method:
         times = np.empty(N)
         for i in range(N):
+            # running simulation:
             p = Popen(["./main.exe", "1D", f"{N}", f"{dt}", f"{M}",
                        f"{write_limit}", method, filename, f"{u_b}", f"{l_b}"],
                       stdout=PIPE, stderr=PIPE, cwd=src)
+
+            # capturing standard streams and decoding output:
             stdout, stderr = p.communicate()
             outstr = stdout.decode('utf-8')
+            # storing time spent in array:
             time = float(outstr.split('=')[1].strip())
             times[i] = time
 
+        # storing mean and standard deviation of time spent:
         output[method] = np.mean(times), np.std(times)
 
+    # printing results of 1D solvers:
     print("Solver benchmarks. N runs.")
     print(f"N = {N}, M = {M}, dt = {dt}, u_b = {u_b}, l_b = {l_b}")
     for m in methods:
         print(f"{m:14}: \u03BC = {output[m][0]:.3e} s," +
               f" \u03C3 = {output[m][1]:.3e} s")
 
-    for i in range(N):
+    for i in range(N):  # running N runs of 2D solver:
         p = Popen(["./main.exe", "2D", f"{N}", f"{dt}", f"{M}",
                    f"{write_limit}", filename, "regular"],
                   stdout=PIPE, stderr=PIPE, cwd=src)
+
+        # capturing standard streams and decoding output:
         stdout, stderr = p.communicate()
         outstr = stdout.decode('utf-8')
+
+        # storing time spent in array:
         time = float(outstr.split('=')[1].strip())
         times[i] = time
 
+    # printing mean time spent on 2D solver with standard deviation:
     print(f"{'2D Solver':14}: \u03BC = {np.mean(times):.3e} s," +
           f" \u03C3 = {np.std(times):.3e} s")
 
+    # removing unused datafile generated by simulations:
     run(["rm", "-rf", datadir + "benchmarkrun.dat"])
 
 
 if runflag in runflags[4:6]:
+    """Run unit tests."""
     run(["make", "test"], cwd=src)
     run(["./test_main.exe"], cwd=src)

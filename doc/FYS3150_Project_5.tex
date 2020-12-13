@@ -123,7 +123,7 @@
 
 
 \begin{document}
-\title{Title}   % self-explanatory
+\title{On the numerical simulation of the diffusion equation in 1D with explicit and implicit schemes, and the 2D simulation of heat diffusion in the litosphere using Jacobi's iterative method}   % self-explanatory
 \author{Eivind Støland, Anders P. Åsbø}               % self-explanatory
 \date{\today}                             % self-explanatory
 \noaffiliation                            % ignore this
@@ -1499,6 +1499,11 @@ We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(
 \section{Discussion} \label{sec:discussion}
 
 \subsection{Benchmark} \label{sec:discussion_benchmark}
+We see from the benchmark results listed in table \ref{table:benchmark} that the forward Euler method is the fastest of the 1D solver methods. By comparison, the backward Euler and Crank-Nicolson are approximately one order of magnitude slower, with the Crank Nicolson method being the slowest of the 1D solver methods. This is what we expected to see given the FLOP counts listed in table \ref{table:FLOPs_1D}.
+
+From table \ref{table:benchmark} we also see that the 2D solver is slower than the 1D solvers by at least three orders of magnitude, something which is expected given the amount of FLOPs needed goes as \(\mathcal{O}(MN^{2})\) (see section \ref{sec:method_2D_solver}) where \(N\) is the number of steps minus one along each axis, and \(M\) is the number of steps in time.
+
+The 2D solver could be further optimized by parallelizing the for-loops that iterate over the matrix elements for each Jacobi iteration, since each element only depends on the state of the matrix in the previous iteration. However, our simple attempts at such a parallelization using OpenMP gave less than satisfactory results, as our solver became significantly slower. At first we assumed the slowdown to be due to the overhead of starting and stopping the parallel region, which occurs once for each Jacobi iteration every time step. To combat the diminishing returns from overhead, we would require a large amount of grid-points in space, and relatively few steps in time. Attempting the parallelized simulation with only one time-step however, was still significantly slow. We assume therefore that our attempt at parallelization was hindered by some other problem, such as false sharing etc.. Due to time constraints, we had to leave the task of parallelization to future research. 
 
 \subsection{One-dimensional simulations} \label{sec:discussion_1D}
 
