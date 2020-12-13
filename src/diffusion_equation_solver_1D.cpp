@@ -173,7 +173,7 @@ void DiffusionEquationSolver1D::backward_euler_solve(){
 }
 
 /**
-* Solves dimensionless diffusion equation in one dimension using the Crank-CrankNicolson
+* Solves dimensionless diffusion equation in one dimension using the CrankNicolson
 * scheme. This iterative part consists of a matrix-vector multiplication and a
 * matrix inversion (used to solve a matrix-vector equation). The first part is
 * performed directly in this function, and the second part is performed by the
