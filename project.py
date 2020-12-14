@@ -239,7 +239,7 @@ if __name__ == "__main__":
     if runflag == "2d":
         """Perform data analysis for 2D solver with generic problem."""
         N = 200  # number of grid points minus one along axes.
-        M = 10000  # number of time steps to perform.
+        M = 50000  # number of time steps to perform.
         dt = 1e-4  # size of time step.
         write_limit = M  # number of steps to skip when writing to file.
         output_filename = datadir + "test2d.dat"
