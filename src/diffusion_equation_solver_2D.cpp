@@ -146,9 +146,8 @@ void DiffusionEquationSolver2D::jacobi(){
         }
       }
 
-      // Check convergence, loop exits if sqrt(s) is less than the tolerance
-      // specified in member variable m_abstol (defined in header)
     } // end of parallel region
+    // Check convergence
     converged = arma::approx_equal(m_u, old, "absdiff", m_abstol);
     old = m_u;
     k++;
