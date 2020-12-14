@@ -110,7 +110,7 @@ void DiffusionEquationSolver2D::jacobi(){
   int i, j;
   int thrds = 0.75*omp_get_max_threads();
   int thrds_to_use = std::min(3*m_N/100, thrds);
-  if (m_t == 1) {
+  if (m_t == 1 && m_N > 100) {
     std::cout << "Simulating 2D diffusion with " << thrds_to_use << " threads." << std::endl;
   }
   // Iterative solver
