@@ -1265,6 +1265,7 @@ while (!converged && k < m_maxiter){
       		   + m_Ay*(u02 + u01)) + q);
     }
   }
+  // Check convergence
   converged = arma::approx_equal(m_u, old, "absdiff", m_abstol);
   old = m_u;
   k++;
