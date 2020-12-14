@@ -373,6 +373,7 @@ if __name__ == "__main__":
 
 if runflag in runflags[6:]:
     """Run benchmarks for each method in 1D and 2D."""
+    build_cpp()
     dims = ["1D", "2D"]
 
     # setting parameters:
