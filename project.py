@@ -355,6 +355,20 @@ if __name__ == "__main__":
             f[i].tight_layout()
             f[i].savefig(datadir + filenames[i])
 
+        f_diff, ax_diff = plt.subplots()
+        c_diff = ax_diff.imshow(x,data[-1,:,:]-data[0,:,:],cmap='inferno',
+                       interpolation ='none', origin="lower",
+                       aspect='auto', extent=[0,300,0,120])
+        ax_diff.set_title("Temperature difference after enrichment")
+        ax_diff.grid()
+        ax_diff.set_xlabel(r"Width $x$ [km]")
+        ax_diff.set_ylabel(r"Depth $y$ [km]")
+        ax_diff.set_ylim(ax_diff.get_ylim()[::-1])
+
+        f_diff.colorbar(c_diff, ax=ax_diff, label=r"$T$ [$^\circ$C]")
+        f_diff.tight_layout()
+        f_diff.savefig(datadir + "2D_heat_temp_diff.pdf")
+
         plt.show()
 
 if runflag in runflags[6:]:
