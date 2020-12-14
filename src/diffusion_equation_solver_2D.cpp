@@ -93,7 +93,7 @@ DiffusionEquationSolver2D::DiffusionEquationSolver2D(int N, double dt, int M, in
 */
 void DiffusionEquationSolver2D::jacobi(){
   // Define sum variable
-  double s = 1;
+  bool converged = false;
 
   // Boundary conditions
   for (int i = 0; i < m_N; i++){
@@ -108,10 +108,10 @@ void DiffusionEquationSolver2D::jacobi(){
 
   int k = 0;
   int i, j;
-  // int thrds = 0.5*omp_get_max_threads();
+  int thrds = 0.5*omp_get_max_threads();
   // Iterative solver
-  while (std::sqrt(s) > m_abstol && k < m_maxiter){
-    // #pragma omp parallel if(m_N > 1000) num_threads(2) default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay) reduction(+:s)
+  while (!converged && k < m_maxiter){
+    #pragma omp parallel num_threads(thrds) if(m_N > 100) default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay)
     {
       // Define elements used for extraction
       double u10;
@@ -120,18 +120,18 @@ void DiffusionEquationSolver2D::jacobi(){
       double u02;
       double q;
 
-      // #pragma omp for
+      #pragma omp for
       for (i = 1; i < m_N-1; i++){
         for (j = 1; j < m_N-1; j++){
           // Extract elements
 
-          // #pragma omp atomic read
+          #pragma omp atomic read
           u10 = old(i+1,j);
-          // #pragma omp atomic read
+          #pragma omp atomic read
           u20 = old(i-1,j);
-          // #pragma omp atomic read
+          #pragma omp atomic read
           u01 = old(i,j+1);
-          // #pragma omp atomic read
+          #pragma omp atomic read
           u02 = old(i,j-1);
 
           q = m_q(i,j);
@@ -144,26 +144,15 @@ void DiffusionEquationSolver2D::jacobi(){
 
       // Check convergence, loop exits if sqrt(s) is less than the tolerance
       // specified in member variable m_abstol (defined in header)
-      s = 0;
-      double term = 0;
-
-      // #pragma omp for
-      for (i = 0; i < m_N; i++){
-        for (j = 0; j < m_N; j++){
-          term = old(i,j) - m_u(i,j);
-          s += term*term;
-
-          // Overwrite old solution
-          old(i,j) = m_u(i,j);
-        }
-      }
-    }
+    } // end of parallel region
+    converged = arma::approx_equal(m_u, old, "absdiff", m_abstol);
+    old = m_u;
     k++;
   }
   if (k==m_maxiter){
     // Output error/warning if solution did not converge within set number of max iterations
     std::cerr << "Solution using Jacobi iterative method did not converge properly within set limit of maximum iterations." << std::endl;
-    std::cout << "Final sum: " << std::sqrt(s) << std::endl;
+    // std::cout << "Final sum: " << std::sqrt(s) << std::endl;
   }
 }
 
@@ -315,7 +304,7 @@ void DiffusionEquationSolver2D::calculate_and_output_errors(){
   // Get absolute error matrix
   arma::mat diff = m_u - m_u_analytic;
 
-  // Calculate relative RMS error 
+  // Calculate relative RMS error
   double err = sqrt(arma::accu(diff%diff)/arma::accu(m_u_analytic%m_u_analytic));
 
   // Write error to file

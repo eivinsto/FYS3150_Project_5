@@ -6,7 +6,7 @@
 /**
 * Class that is used to solve the diffusion equation in two dimensions using
 * an implicit scheme and the Jacobi iterative method. The class is set up such
-* that it can also handle a source term in the equation. 
+* that it can also handle a source term in the equation.
 */
 class DiffusionEquationSolver2D{
 public:
@@ -49,7 +49,7 @@ private:
   arma::mat m_u;
   arma::mat m_q;
   double m_maxiter = 100000;
-  double m_abstol = 1e-10;
+  double m_abstol = 1e-12;
   int m_write_limit;
   double m_diag_element;
   bool m_use_source_term = false;
