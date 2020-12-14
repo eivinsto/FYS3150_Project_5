@@ -298,7 +298,7 @@ if __name__ == "__main__":
     if runflag in runflags[2:4]:
         """Perform simulation and data analysis of heat problem."""
         # setting simulation parameters:
-        N = 200
+        N = 300
         Ms = [100000, 10000]
         dt = 1/Ms[1]
         a_x = 2.0            # Gy^1/2
