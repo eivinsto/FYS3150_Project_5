@@ -129,7 +129,7 @@
 \noaffiliation                            % ignore this
 
 \begin{abstract}
-Abstract
+We solved the general diffusion equation numerically in one and two dimensions. Comparison between numerical and analytical results showed a good level of agreement, and thus we conclude that the solvers work as intended. To solve the one-dimensional diffusion equation three different schemes were used: a forward Euler based explicit scheme, a backward Euler based implicit scheme and the Crank-Nicolson (implicit) scheme. The explicit scheme was clearly better suited for the problem we applied our solvers to, but when simulating systems that require a high resolution in the spatial coordinate the timestep must be very small for the solution to be stable, such that the implicit schemes may be a better choice due to computational cost as they converge for any choice of timestep. The simulation of the temperature distribution in the lithosphere showed results as we expected, with the temperatures increasing due to the radioactive elements introduced as heat sources in the heat equation. Our results can be compared with measurements in order to assert whether or not the subduction zone off the western coast of Norway caused a further enrichment of the upper mantle 1 Gy ago.
 \end{abstract}
 
 \maketitle                                % creates the title, author, date
@@ -1580,7 +1580,57 @@ All code for this report was written in C++ and Python 3.6, and the complete set
 
 \url{https://github.com/eivinsto/FYS3150_Project_5.git}.
 
-\cprotect\subsection{temp} \label{A.1}
+\cprotect\subsection{\verb+diffusion_equation_solver_1D.hpp+} \label{A.1}
+
+Header file containing definitions for \verb+DiffusionEquationSolver1D+ class, which is used to solve the one-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_1D.hpp}
+
+
+\cprotect\subsection{\verb+diffusion_equation_solver_1D.cpp+} \label{A.2}
+
+Source file containing the methods and constructors belonging to the \verb+DiffusionEquationSolver1D+ class, which is used to solve the one-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_1D.cpp}
+
+\cprotect\subsection{\verb+diffusion_equation_solver_2D.hpp+} \label{A.3}
+
+Header file containing definitions for \verb+DiffusionEquationSolver2D+ class, which is used to solve the two-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_2D.hpp}
+
+
+\cprotect\subsection{\verb+diffusion_equation_solver_2D.cpp+} \label{A.4}
+
+Source file containing the methods and constructors belonging to the \verb+DiffusionEquationSolver2D+ class, which is used to solve the two-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_2D.cpp}
+
+
+\cprotect\subsection{\verb+main.cpp+} \label{A.5}
+
+Main program used to perform the simulations in the report with input controlled by command line arguments, with implementation of necessary functions passed to the solver classes.
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/main.cpp}
+
+
+\cprotect\subsection{\verb+project.py+} \label{A.5} 
+
+Python script used to automate simulations and plotting of results. Some small calculations are also performed in this script using the data that the solvers output. 
+
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/project.py}
+
+
+\cprotect\subsection{Unit-tests} \label{A.6}
+
+A few unit-tests were implemented using Catch2 in C++, and they can be found in the following files:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/test_functions.cpp}
+
+and:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/test_main.cpp} 
 
 \clearpage
 \section{Selected results} \label{B}
