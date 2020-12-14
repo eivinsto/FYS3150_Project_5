@@ -1576,7 +1576,57 @@ All code for this report was written in C++ and Python 3.6, and the complete set
 
 \url{https://github.com/eivinsto/FYS3150_Project_5.git}.
 
-\cprotect\subsection{temp} \label{A.1}
+\cprotect\subsection{\verb+diffusion_equation_solver_1D.hpp+} \label{A.1}
+
+Header file containing definitions for \verb+DiffusionEquationSolver1D+ class, which is used to solve the one-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_1D.hpp}
+
+
+\cprotect\subsection{\verb+diffusion_equation_solver_1D.cpp+} \label{A.2}
+
+Source file containing the methods and constructors belonging to the \verb+DiffusionEquationSolver1D+ class, which is used to solve the one-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_1D.cpp}
+
+\cprotect\subsection{\verb+diffusion_equation_solver_2D.hpp+} \label{A.3}
+
+Header file containing definitions for \verb+DiffusionEquationSolver2D+ class, which is used to solve the two-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_2D.hpp}
+
+
+\cprotect\subsection{\verb+diffusion_equation_solver_2D.cpp+} \label{A.4}
+
+Source file containing the methods and constructors belonging to the \verb+DiffusionEquationSolver2D+ class, which is used to solve the two-dimensional diffusion equation. The file can be found at:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/diffusion_equation_solver_2D.cpp}
+
+
+\cprotect\subsection{\verb+main.cpp+} \label{A.5}
+
+Main program used to perform the simulations in the report with input controlled by command line arguments, with implementation of necessary functions passed to the solver classes.
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/main.cpp}
+
+
+\cprotect\subsection{\verb+project.py+} \label{A.5} 
+
+Python script used to automate simulations and plotting of results. Some small calculations are also performed in this script using the data that the solvers output. 
+
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/project.py}
+
+
+\cprotect\subsection{Unit-tests} \label{A.6}
+
+A few unit-tests were implemented using Catch2 in C++, and they can be found in the following files:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/test_functions.cpp}
+
+and:
+
+\url{https://github.com/eivinsto/FYS3150_Project_5/blob/main/src/test_main.cpp} 
 
 \clearpage
 \section{Selected results} \label{B}
