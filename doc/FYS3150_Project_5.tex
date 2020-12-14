@@ -139,6 +139,14 @@ Abstract
 
 \section{Introduction} \label{sec:introduction}
 
+The general diffusion equation permeates physics, and is present in many different applications as it is related to continuity equations. It is used to describe events such as transfer of particles, heat transfer, and more. Solutions to a general dimensionless diffusion equation is thus something that can be used to describe a multitude of physical systems. 
+
+In this report we present and implement numerical solvers for the one-dimensional dimensionless diffusion equation using an explicit scheme, and two implicit schemes with different truncation errors. The explicit scheme and one of the implicit schemes are based on the Euler method, and the other implicit scheme is the Crank-Nicolson scheme. We also present and implement a solver for the two-dimensional dimensionless diffusion equation. In this case we wish to apply our solver to real-world problem with the heat equation with a heat source term, and so the solver is made to be compatible with such source terms in general. 
+
+We judge both the one-dimensional solvers and the two-dimensional solvers by comparison of the numerical results with analytical results. This, factored together with the computational costs will let us compare the one-dimensional schemes, and confirm the validity of the results of both the one-dimensional and two-dimensional solvers. These comparisons are done both visually with plots, and are also quantified with a measure of the error in the numerical solutions.
+
+As for the real-world application of the two-dimensional solver, we seek to the model the temperature gradient of the lithosphere before and after a further enrichment of the upper mantle. Such an event is theorized to have occured when an active subduction zone off the western coast of Norway led to a refertilization of the upper mantle in the Oslo Graben about 1 Gy ago. We solve this system numerically to develop expectations of what the temperature gradient would look like if this was the case. This can be compared with experimental results, and used to further improve the model in further research. 
+
 
 \clearpage
 
