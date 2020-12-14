@@ -1468,7 +1468,7 @@ p(y) &= -\frac{439.46}{120^2} \, \frac{^\circ\text{C}}{\text{km}^2} \cdot y^2 + 
 
 and in order to showcase the fact that the numerical solution is not stable in $x$ with the boundary conditions as dictated by the steady-state solution with no heat sources \eqref{eq:steady_state_heat}, we have included a plot of the first "iteration" of these simulations in Figure \ref{fig:lithosphere_steady_state_project}.
 
-We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(y)$, and the other boundary conditions being the same as before. First a simulation was ran with these boundary conditions with the initial state being the steady state with no heat sources \eqref{eq:steady_state_heat} until the numerical solution had stabilized. We then used the final result from this simulation as the initial state when the heat sources include the further enrichment from the melting sediments \eqref{eq:refertilized_heat}, and simulated this for $1$ Gy. The initial and final states of these two simulations can be seen in Figures \ref{fig:lithosphere_before_enrichment} and \ref{fig:lithosphere_after_enrichment} respectively. 
+We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(y)$, and the other boundary conditions being the same as before. First a simulation was ran with these boundary conditions with the initial state being the steady state with no heat sources \eqref{eq:steady_state_heat} until the numerical solution had stabilized. We then used the final result from this simulation as the initial state when the heat sources include the further enrichment from the melting sediments \eqref{eq:refertilized_heat}, and simulated this for $1$ Gy. The initial and final states of these two simulations can be seen in Figures \ref{fig:lithosphere_before_enrichment} and \ref{fig:lithosphere_after_enrichment} respectively. We also plotted the difference in temperature between the initial and final states of the simulation where the mantle is further enriched. This plot is shown in Figure \ref{fig:lithosphere_temp_diff}.
 
 
 \begin{figure}[H]
@@ -1481,13 +1481,19 @@ We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_heat_before.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions that were found from estimating the steady state solution with added heat from radioactive materials. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions that were found from estimating the steady state solution with added heat from radioactive materials. Further details on this system can be found in Sections \ref{sec:formalism_temp_dist_lithosphere} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_heat_after.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Sections \ref{sec:formalism_temp_dist_lithosphere} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/2D_heat_temp_diff.pdf}
+\caption{This figure shows the difference in temperature caused by the further enrichment from the melting of the subducting slab. See Section \ref{sec:formalism_temp_dist_lithosphere} for further details on this system. The difference in temperature is calculated as the difference in temperatures in the initial state and final states of the simulation (after 1 Gy in simulation time). The temperature difference is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots.} \label{fig:lithosphere_temp_diff}
 \end{figure}
 
 
