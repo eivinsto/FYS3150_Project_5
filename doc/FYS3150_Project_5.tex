@@ -1388,6 +1388,10 @@ T(y) = ay^2 + by + c \, ,
 where the constants are unknown, and must be such that the solution in each region fits the solutions in the other regions as well. These constants will differ for each region, but as it behaves as a second order polyonomial everywhere, we approximate the entire solution with a second order polynomial. This is not entirely accurate, but it should improve the results compared to if we used the boundary conditions as dictated by the steady-state solution with no added heat sources \eqref{eq:steady_state_heat}. The polynomial is fitted using NumPy's \citep{numpy} \verb+polyfit()+ function.
 
 
+\subsection{Unit testing} \label{sec:method_unit_testing}
+
+To test our implementation of the 1D solver methods and the 2D solver, we wrote unit tests using the CATCH2 C++ unit testing framework. The tests can all be found in \verb+test_functions.cpp+ [add ref to appendix]. There are five tests, the first two checks that an output data file is created when the constructor of either solver is called. The remaining three tests checks that the solver methods behave as expected for a single time step. The forward Euler test function compares the forward Euler 1D solver with the expected results for \(3\) points, with \(h=0.5\), \(\Delta t = 0.98\cdot h^{2}/2\), and boundary conditions \(u(1, t) = 1\) and \(u(0, t) = 0\), as well as initial condition \(u(x, 0) = 0\) for \(x \neq 1\). The tests for the remaining methods, simply check if the simulated system remains zero everywhere when the initial conditions and boundary conditions are zero.
+
 
 
 
