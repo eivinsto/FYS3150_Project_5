@@ -1243,7 +1243,7 @@ We have implemented an object-oriented solver in C++ for the numerical solution 
 This implementation is based on the methods outlined in Section \ref{sec:formalism_2D_diff_eq_numerical}. The scheme we have set up is an implicit one, and we have decided to use the Jacobi iterative method in order to solve it. This method is implemented as follows:
 
 \begin{cpp}
-while (std::sqrt(s) > m_abstol && k < m_maxiter){
+while (!converged && k < m_maxiter){
   // Define elements used for extraction
   double u10;
   double u20;
@@ -1265,28 +1265,17 @@ while (std::sqrt(s) > m_abstol && k < m_maxiter){
       		   + m_Ay*(u02 + u01)) + q);
     }
   }
-
-  // Check convergence, loop exits if sqrt(s) is less than the 
-  // tolerance specified 
-  s = 0;
-  double term = 0;
-
-  for (i = 0; i < m_N; i++){
-    for (j = 0; j < m_N; j++){
-      term = old(i,j) - m_u(i,j);
-      s += term*term;
-
-      // Overwrite old solution
-      old(i,j) = m_u(i,j);
-    }
-  }
+  converged = arma::approx_equal(m_u, old, "absdiff", m_abstol);
+  old = m_u;
   k++;
 }
 \end{cpp}
 
-In this case the Armadillo matrix \verb+m_q+ contains the solution in the previous timestep, and the elements of the matrix \verb+m_u+ is updated iteratively until they have converged. The outer while loop runs until either the maximum number of iterations has been reached, or the solution has converged. The first double for loop iterates over and calculates all the elements of the solution matrix \verb+m_u+ using equation \eqref{eq:2D_diff_eq_jacobi_iter}. Related to the parameters in this equation, the variable \verb+m_diag_element+ is set to $1/(1 + 4\alpha)$ (the inverse of the diagonal elements) in this case and \verb+m_alpha+ is set to $\alpha$. The variables \verb+m_Ax+ and \verb+m_Ay+ are in this case set to one, but as we will cover in the Section \ref{sec:method_heat_solver} they can be changed so that the solution fits a rectangular grid. 
+In this case the Armadillo matrix \verb+m_q+ contains the solution in the previous timestep, and the elements of the matrix \verb+m_u+ is updated iteratively until they have converged. The outer while loop runs until either the maximum number of iterations has been reached, or the solution has converged, specified by the bool called \verb+convergence+. The double for loop iterates over and calculates all the elements of the solution matrix \verb+m_u+ using equation \eqref{eq:2D_diff_eq_jacobi_iter}. Related to the parameters in this equation, the variable \verb+m_diag_element+ is set to $1/(1 + 4\alpha)$ (the inverse of the diagonal elements) in this case and \verb+m_alpha+ is set to $\alpha$. The variables \verb+m_Ax+ and \verb+m_Ay+ are in this case set to one, but as we will cover in the Section \ref{sec:method_heat_solver} they can be changed so that the solution fits a rectangular grid. 
 
-The second double for loop checks whether the solution has converged. In order to do this we sum up the square of the difference between the elements of the solution in the current iteration and the previous iteration, and store it in the variable \verb+s+. The square of this sum is then compared against a set tolerance limit \verb+m_abstol+, and if it is less than the tolerance limit the iteration is finished.
+In order to check the convergence of the solution we used a built-in Armadillo function \verb+approx_equal()+ that performs an element-wise comparison of elements for two matrices and checks whether they are closer than the tolerance specified. If this is the case for all of the elements then the function returns \verb+true+, and otherwise it returns \verb+false+. This is assigned to the bool \verb+converged+ which is present in the while loop statement so that the iteration is interrupted if the solution has converged. 
+
+%The second double for loop checks whether the solution has converged. In order to do this we sum up the square of the difference between the elements of the solution in the current iteration and the previous iteration, and store it in the variable \verb+s+. The square of this sum is then compared against a set tolerance limit \verb+m_abstol+, and if it is less than the tolerance limit the iteration is finished.
 
 Thus we can implement the full solution as such:
 
@@ -1479,7 +1468,7 @@ p(y) &= -\frac{439.46}{120^2} \, \frac{^\circ\text{C}}{\text{km}^2} \cdot y^2 + 
 
 and in order to showcase the fact that the numerical solution is not stable in $x$ with the boundary conditions as dictated by the steady-state solution with no heat sources \eqref{eq:steady_state_heat}, we have included a plot of the first "iteration" of these simulations in Figure \ref{fig:lithosphere_steady_state_project}.
 
-We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(y)$, and the other boundary conditions being the same as before. First a simulation was ran with these boundary conditions with the initial state being the steady state with no heat sources \eqref{eq:steady_state_heat} until the numerical solution had stabilized. We then used the final result from this simulation as the initial state when the heat sources include the further enrichment from the melting sediments \eqref{eq:refertilized_heat}, and simulated this for $1$ Gy. The initial and final states of these two simulations can be seen in Figures \ref{fig:lithosphere_before_enrichment} and \ref{fig:lithosphere_after_enrichment} respectively. 
+We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(y)$, and the other boundary conditions being the same as before. First a simulation was ran with these boundary conditions with the initial state being the steady state with no heat sources \eqref{eq:steady_state_heat} until the numerical solution had stabilized. We then used the final result from this simulation as the initial state when the heat sources include the further enrichment from the melting sediments \eqref{eq:refertilized_heat}, and simulated this for $1$ Gy. The initial and final states of these two simulations can be seen in Figures \ref{fig:lithosphere_before_enrichment} and \ref{fig:lithosphere_after_enrichment} respectively. We also plotted the difference in temperature between the initial and final states of the simulation where the mantle is further enriched. This plot is shown in Figure \ref{fig:lithosphere_temp_diff}.
 
 
 \begin{figure}[H]
@@ -1492,13 +1481,19 @@ We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_heat_before.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions that were found from estimating the steady state solution with added heat from radioactive materials. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions that were found from estimating the steady state solution with added heat from radioactive materials. Further details on this system can be found in Sections \ref{sec:formalism_temp_dist_lithosphere} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_heat_after.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Sections \ref{sec:formalism_temp_dist_lithosphere} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{../data/2D_heat_temp_diff.pdf}
+\caption{This figure shows the difference in temperature caused by the further enrichment from the melting of the subducting slab. See Section \ref{sec:formalism_temp_dist_lithosphere} for further details on this system. The difference in temperature is calculated as the difference in temperatures in the initial state and final states of the simulation (after 1 Gy in simulation time). The temperature difference is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots.} \label{fig:lithosphere_temp_diff}
 \end{figure}
 
 
