@@ -127,7 +127,7 @@ TEST_CASE("Test DiffusionEquationSolver1D BackwardEuler solver.") {
 }
 
 
-TEST_CASE("Test DiffusionEquationSolver2D CrankNicholson solver.") {
+TEST_CASE("Test DiffusionEquationSolver2D Jacobi solver.") {
   std::string filename = "../data/2D-CN-filetest.dat";
   int N = 10;
   int M = 100;
