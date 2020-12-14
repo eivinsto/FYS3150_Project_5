@@ -110,12 +110,12 @@ void DiffusionEquationSolver2D::jacobi(){
   int i, j;
   int thrds = 0.75*omp_get_max_threads();
   int thrds_to_use = std::min(3*m_N/100, thrds);
-  if (m_t == 1 && m_N > 100) {
+  if (m_t == 1 && m_N > 101) {
     std::cout << "Simulating 2D diffusion with " << thrds_to_use << " threads." << std::endl;
   }
   // Iterative solver
   while (!converged && k < m_maxiter){
-    #pragma omp parallel num_threads(thrds_to_use) if(m_N > 100) default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay)
+    #pragma omp parallel num_threads(thrds_to_use) if(m_N > 101) default(shared) private(i, j) firstprivate(m_diag_element, m_alpha, m_Ax, m_Ay)
     {
       // Define elements used for extraction
       double u10;
