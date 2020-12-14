@@ -238,7 +238,7 @@ if __name__ == "__main__":
 
     if runflag == "2d":
         """Perform data analysis for 2D solver with generic problem."""
-        N = 100  # number of grid points minus one along axes.
+        N = 200  # number of grid points minus one along axes.
         M = 10000  # number of time steps to perform.
         dt = 1e-4  # size of time step.
         write_limit = M  # number of steps to skip when writing to file.
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     if runflag in runflags[2:4]:
         """Perform simulation and data analysis of heat problem."""
         # setting simulation parameters:
-        N = 500
+        N = 200
         Ms = [100000, 10000]
         dt = 1/Ms[1]
         a_x = 2.0            # Gy^1/2
@@ -356,9 +356,9 @@ if __name__ == "__main__":
             f[i].savefig(datadir + filenames[i])
 
         f_diff, ax_diff = plt.subplots()
-        c_diff = ax_diff.imshow(x,data[-1,:,:]-data[0,:,:],cmap='inferno',
-                       interpolation ='none', origin="lower",
-                       aspect='auto', extent=[0,300,0,120])
+        c_diff = ax_diff.imshow(data[-1, :, :]-data[0, :, :], cmap='inferno',
+                                interpolation='none', origin="lower",
+                                aspect='auto', extent=[0, 300, 0, 120])
         ax_diff.set_title("Temperature difference after enrichment")
         ax_diff.grid()
         ax_diff.set_xlabel(r"Width $x$ [km]")
