@@ -1445,12 +1445,12 @@ We solved the one-dimensional dimensionless diffusion equation \eqref{eq:1D_diff
 
 \subsection{Two-dimensional simulation} \label{sec:results_2D}
 
-We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diffusion_equation} numerically, and compared our results with the analytical solution. The intial state, boundary conditions, and analytical solution (equation \eqref{eq:analytical_2D}) are all given in Section \ref{sec:method_2D_sim}. We have plotted the numerical solution at $t=0$, and $t=0.5$ in Figure \ref{fig:solution_2D}. The timestep in this simulation was set to $\Delta t = \num{1e-4}$, and the steplength (both in $x$- and $y$-directions) was set to $h = 0.01$. The relative RMS error (equation \eqref{eq:error_2D}) as a function of time was also plotted against the amount of timesteps. This plot is shown in Figure \ref{fig:error_2D}.
+We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diffusion_equation} numerically, and compared our results with the analytical solution. The intial state, boundary conditions, and analytical solution (equation \eqref{eq:analytical_2D}) are all given in Section \ref{sec:method_2D_sim}. We have plotted the numerical solution at $t=0$, and $t=5$ in Figure \ref{fig:solution_2D}. The timestep in this simulation was set to $\Delta t = \num{1e-4}$, and the steplength (both in $x$- and $y$-directions) was set to $h = 0.005$ resulting in \(201\times 201\) grid-points. The relative RMS error (equation \eqref{eq:error_2D}) as a function of time was also plotted against the amount of timesteps. This plot is shown in Figure \ref{fig:error_2D}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D.pdf}
-\caption{This figure contains plots of the initial state in the two-dimensional simulation and numerical solution after a certain amount of time has passed. The first plot shows the initial state, and the second plot shows the numerical solution after a time $t$ specified in the plot title. The timestep in this simulation was $\Delta t = \num{1e-4}$ and the steplength was $h = 0.01$. All quantities in the plots are dimensionless.} \label{fig:solution_2D}
+\caption{This figure contains plots of the initial state in the two-dimensional simulation and numerical solution after a certain amount of time has passed. The first plot shows the initial state, and the second plot shows the numerical solution after a time $t$ specified in the plot title. The timestep in this simulation was $\Delta t = \num{1e-4}$ and the steplength was $h = 0.005$. All quantities in the plots are dimensionless.} \label{fig:solution_2D}
 \end{figure}
 
 \begin{figure}[H]
