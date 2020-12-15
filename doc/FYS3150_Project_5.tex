@@ -1425,11 +1425,11 @@ To test our implementation of the 1D solver methods and the 2D solver, we wrote 
 \section{Results} \label{sec:results}
 
 \subsection{Benchmark} \label{sec:results_benchmark}
-We performed a benchmark of the three methods of the 1D solver, as well as the 2D solver. For the benchmarks we used a spatial resolution of \(\Delta h = 1/N\) where \(N = 100\) is the amount of steps taken in space minus \(1\), as well as \(M = 1000\) time steps and a \(\Delta t = \num{2.5e-05}\). We used the initial and boundary conditions outlined in \ref{sec:method_1D_sims} for 1D and \ref{sec:method_2D_sim} for 2D. In the 2D case, we use \(N\) spacial steps along each axis. The results are averaged over \(N\) simulations, and are listed in table \ref{table:benchmark}.
+We performed a benchmark of the three methods of the 1D solver, as well as the 2D solver. For the benchmarks we used a spatial resolution of \( h = 1/N\) where \(N+1 = 101\) is the amount of steps taken in space, as well as \(M = 1000\) time steps and a timestep \(\Delta t = \num{2.5e-05}\). We used the initial and boundary conditions outlined in \hyperref[sec:method_1D_sims]{III.D} for 1D and \hyperref[sec:method_2D_sim]{III.E} for 2D. In the 2D case, we use \(N+1=101\) spatial steps along each axis. The results are averaged over \(k\) simulations, and are listed in table \ref{table:benchmark}.
 
 \begin{table}[H]
 \centering
-\caption{This table lists the mean times spent in seconds on simulating systems with initial and boundary conditions as outlined in \ref{sec:method_1D_sims} for 1D and \ref{sec:method_2D_sim} for 2D. The results are averaged over \(N = 100\) simulations per method, with \(\Delta h = 1/N\), \(M = 1000\) time steps and \(\Delta t = \num{2.5e-05}\).} \label{table:benchmark}
+\caption{This table lists the mean times spent in seconds on simulating systems with initial and boundary conditions as outlined in \ref{sec:method_1D_sims} for 1D and \ref{sec:method_2D_sim} for 2D. The results are averaged over \(k = 100\) simulations per method, with $N+1 = 101$ spatial steps along each axis, a steplength \(\Delta h = 1/N\), \(M = 1000\) time steps and \(\Delta t = \num{2.5e-05}\) (dimensionless).} \label{table:benchmark}
 \begin{tabular}{|c|c|c|}
 \hline
 Method & Mean time [s] & Standard deviation [s]\\\hline
@@ -1442,7 +1442,7 @@ CrankNicolson & \(\num{2.212e-03}\) & \(\num{2.122e-04}\) \\
 
 \subsection{One-dimensional simulations} \label{sec:results_1D}
 
-We solved the one-dimensional dimensionless diffusion equation \eqref{eq:1D_diff_eq} numerically with the three schemes outlined in Section \ref{sec:formalism_numerical_1D} and compared the results with an analytical solution. The initial state, boundary conditions and analytical solution (equation \eqref{eq:analytical_1D})are as specified in Section \ref{sec:method_1D_sims}. Plots of the solutions at two different timesteps, for two different sets of timestep $\Delta t$ and steplength $\Delta x$ can be seen in Figures \ref{fig:forward_euler_solution}, \ref{fig:backward_euler_solution} and \ref{fig:crank_nicolson_solution}. Each of these figures correspond to one of the schemes used. The relative RMS error (see equation \eqref{eq:error_1D}) was plotted as a function of time against the amount of timesteps for two different choices of timestep and steplength in Figure \ref{fig:error_1D}, with the results from the three schemes being in the same figure this time. 
+We solved the one-dimensional dimensionless diffusion equation \eqref{eq:1D_diff_eq} numerically with the three schemes outlined in Section \hyperref[sec:formalism_numerical_1D]{II.C} and compared the results with an analytical solution. The initial state, boundary conditions and analytical solution (equation \eqref{eq:analytical_1D}) are as specified in Section \hyperref[sec:method_1D_sims]{III.D}. Plots of the solutions at two different timesteps, for two different sets of timestep $\Delta t$ and steplength $\Delta x$ can be seen in Figures \ref{fig:forward_euler_solution}, \ref{fig:backward_euler_solution} and \ref{fig:crank_nicolson_solution}. Each of these figures correspond to one of the schemes used. The relative RMS error (see equation \eqref{eq:error_1D}) was plotted as a function of time against the amount of timesteps for two different choices of timestep and steplength in Figure \ref{fig:error_1D}, with the results from the three schemes being in the same figure this time. 
 
 \begin{figure}[H]
 \centering
@@ -1465,12 +1465,12 @@ We solved the one-dimensional dimensionless diffusion equation \eqref{eq:1D_diff
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/1D-RMS.pdf}
-\caption{This figure contains plots of the relative RMS error as a function of time against the amount of timesteps for two sets of timestep $\Delta t$ and steplength $\Delta x$ as indicated by the plot titles. The relative RMS error is calculated as in equation \eqref{eq:error_1D}. Each plot contains curves for each of the three numerical schemes outlined in Section \ref{sec:formalism_numerical_1D}, as indicated by the legend text.} \label{fig:error_1D}
+\caption{This figure contains plots of the relative RMS error as a function of time against the amount of timesteps for two sets of timestep $\Delta t$ and steplength $\Delta x$ as indicated by the plot titles. The relative RMS error is calculated as in equation \eqref{eq:error_1D}. Each plot contains curves for each of the three numerical schemes outlined in Section \hyperref[sec:formalism_numerical_1D]{II.C}, as indicated by the legend text.} \label{fig:error_1D}
 \end{figure}
 
 \subsection{Two-dimensional simulation} \label{sec:results_2D}
 
-We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diffusion_equation} numerically, and compared our results with the analytical solution. The intial state, boundary conditions, and analytical solution (equation \eqref{eq:analytical_2D}) are all given in Section \ref{sec:method_2D_sim}. We have plotted the numerical solution at $t=0$, and $t=5$ in Figure \ref{fig:solution_2D}. The timestep in this simulation was set to $\Delta t = \num{1e-4}$, and the steplength (both in $x$- and $y$-directions) was set to $h = 0.005$ resulting in \(201\times 201\) grid-points. The relative RMS error (equation \eqref{eq:error_2D}) as a function of time was also plotted against the amount of timesteps. This plot is shown in Figure \ref{fig:error_2D}.
+We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diffusion_equation} numerically, and compared our results with the analytical solution. The intial state, boundary conditions, and analytical solution (equation \eqref{eq:analytical_2D}) are all given in Section \hyperref[sec:method_2D_sim]{III.E}. We have plotted the numerical solution at $t=0$, and $t=5$ in Figure \ref{fig:solution_2D}. The timestep in this simulation was set to $\Delta t = \num{1e-4}$, and the steplength (both in $x$- and $y$-directions) was set to $h = 0.005$ resulting in \(201\times 201\) grid-points. Note that all quantities are dimensionless. The relative RMS error (equation \eqref{eq:error_2D}) as a function of time was also plotted against the amount of timesteps. This plot is shown in Figure \ref{fig:error_2D}.
 
 \begin{figure}[H]
 \centering
@@ -1486,7 +1486,7 @@ We solved the two-dimensional dimensionless diffusion equation \eqref{eq:2D_diff
 
 \subsection{Temperature gradient of lithosphere} \label{sec:results_lithosphere}
 
-We simulated the temperature gradient of the lithosphere using our two-dimensional solver. This equates to solving the heat equation with a source term \eqref{eq:heat_eq_with_source_term}. In this section we assume that the reader has read Section \ref{sec:formalism_heat_source_model}. All simulations were run with $N+1 = 301$ grid points in the spatial dimensions and a timestep of $\Delta t = 1e-4$ Gy. 
+We simulated the temperature gradient of the lithosphere using our two-dimensional solver. This equates to solving the heat equation with a source term \eqref{eq:heat_eq_with_source_term}. In this section we assume that the reader has read Section \hyperref[sec:formalism_heat_source_model]{II.F.1}. All simulations were run with $N+1 = 301$ grid points in the spatial dimensions and a timestep of $\Delta t = 1e-4$ Gy. 
 
 We estimated the second-order polynomial $p(y)$ as discussed in Section \ref{sec:method_heat_sim}, and used this as the boundary conditions for further simulations. We found:
 
@@ -1502,26 +1502,26 @@ We then ran simulations with the boundary conditions being $T(0,y) = T(1,y) = p(
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_first_heat_before.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions derived from the steady-state solution with no added heat. Further details on this system can be found in Sections \ref{sec:formalism_heat_source_model} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed. } \label{fig:lithosphere_steady_state_project}
+\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions derived from the steady-state solution with no added heat. Further details on this system can be found in Sections \hyperref[sec:formalism_heat_source_model]{II.F.1} and \hyperref[sec:method_heat_sim]{III.F}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed. } \label{fig:lithosphere_steady_state_project}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_heat_before.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions that were found from estimating the steady state solution with added heat from radioactive materials. Further details on this system can be found in Sections \ref{sec:formalism_temp_dist_lithosphere} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere before further radioactive enrichment from the melting of subducting oceanic crust. This simulation uses the boundary conditions that were found from estimating the steady state solution with added heat from radioactive materials. Further details on this system can be found in Sections \hyperref[sec:formalism_temp_dist_lithosphere]{II.F} and \hyperref[sec:method_heat_sim]{III.F}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $10$ Gy has passed.} \label{fig:lithosphere_before_enrichment}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_heat_after.pdf}
-\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Sections \ref{sec:formalism_temp_dist_lithosphere} and \ref{sec:method_heat_sim}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
+\caption{This figure shows the simulated heat gradient of the lithosphere after further radioactive enrichment from the melting of subducting oceanic crust. Further details on this system can be found in Sections \hyperref[sec:formalism_temp_dist_lithosphere]{II.F} and \hyperref[sec:method_heat_sim]{III.F}. The temperature is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots. The first plot shows the initial state of the system, and the second plot shows the system after a time of $1$ Gy has passed.} \label{fig:lithosphere_after_enrichment}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{../data/2D_heat_temp_diff.pdf}
-\caption{This figure shows the difference in temperature caused by the further enrichment from the melting of the subducting slab. See Section \ref{sec:formalism_temp_dist_lithosphere} for further details on this system. The difference in temperature is calculated as the difference in temperatures in the initial state and final states of the simulation (after 1 Gy in simulation time). The temperature difference is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plots.} \label{fig:lithosphere_temp_diff}
+\caption{This figure shows the difference in temperature caused by the further enrichment from the melting of the subducting slab. See Section \hyperref[sec:formalism_temp_dist_lithosphere]{II.F} for further details on this system. The difference in temperature is calculated as the difference in temperatures in the initial state and final states of the simulation (after 1 Gy in simulation time). The temperature difference is marked by the color of the plot as indicated by the colorbar. Units are as shown in the plot.} \label{fig:lithosphere_temp_diff}
 \end{figure}
 
 
