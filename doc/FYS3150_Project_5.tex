@@ -941,7 +941,7 @@ where $\hat{x},\hat{y} \in [0,1]$ are dimensionless parameters. This implies tha
 \frac{1}{\alpha^2 a_x^2}\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{1}{\alpha^2 a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &= D\frac{\partial T}{\partial t} - \frac{Q}{k} \, ,
 \end{align*} 
 
-where $D = k/(\rho c_p)$. We can multiply by $\alpha^2$ on both sides:
+where $D = \rho c_p /k$. We can multiply by $\alpha^2$ on both sides:
 
 \begin{align*}
 \frac{1}{a_x^2}\frac{\partial^2 T}{\partial \hat{x}^2} + \frac{1}{a_y^2} \frac{\partial^2 T}{\partial \hat{y}^2} &= \alpha^2 D \frac{\partial T}{\partial t} - \frac{Q}{k}\alpha^2 
@@ -1027,7 +1027,7 @@ T_{i,j}^l - T_{i,j}^{l-1} &= \beta (\Delta_{i,j}^l - 2(A_x+A_y)T_{i,j}^l) + \Del
 T_{i,j}^l &= \frac{1}{1 + 2\beta (A_x+A_y) } (\beta \Delta_{i,j}^l + T_{i,j}^{l-1} + \Delta t Q') \numberthis \label{eq:heat_eq_with_source_term_numerical_solution}
 \end{align*}
 
-This is similar to what we found in equation \eqref{eq:2D_diff_eq_numerical_solution}, and can be solved in the same fashion (see Section \ref{sec:formalism_2D_diff_eq_numerical}) by setting the components of the matrix $b$ to be:
+This is similar to what we found in equation \eqref{eq:2D_diff_eq_numerical_solution}, and can be solved in the same fashion (see Section \hyperref[sec:formalism_2D_diff_eq_numerical]{II.E}) by setting the components of the matrix $b$ to be:
 
 \begin{align*}
 b_{i,j} &= T_{i,j}^{l-1} + \Delta t Q' \, ,
@@ -1052,7 +1052,7 @@ First we wish to find the steady-state solution without considering the effects 
 \frac{\partial^2 T_s(x,y)}{\partial x^2} + \frac{\partial^2 T_s(x,y)}{\partial y^2} &= 0 \, ,
 \end{align*}
 
-where the subscript $s$ is used to mark this as the steady-state solution. We know only the boundary conditions:
+where the subscript $s$ is used to mark this as the steady-state solution. We know only the boundary conditions in the $y$-direction:
 
 \begin{align*}
 T_s(x,0 \text{ km}) &= 8 \text{ } ^\circ\text{C} \\
@@ -1124,7 +1124,7 @@ We also need to find the value of $1/(\rho c_p)$ as $Q' = Q/(\rho c_p)$. This va
 \frac{1}{\rho c_p} &= \frac{1}{3500 \text{ } \frac{\text{kg}}{\text{m}^3} \text{ } \cdot 1000 \text{ } \frac{\text{J}}{\text{kg K}}} = \num{2.86e-7} \text{ } \frac{\text{K m}^3}{\text{J}}
 \end{align*}
 
-Lastly we also need a factor $10^{-6}$ as we divide $\mu$J by J. Tallying up all the factors gives us:
+Lastly we also need a factor $10^{-6}$ as the added heat has units of $\mu$W/m$^3$ and not W/m$^3$. Tallying up all the factors gives us:
 
 \begin{align*}
 Q' &\approx Q \cdot \num{3.15e16} \cdot \num{2.86e-7} \text{ } \frac{\text{K m}^3}{\text{J}} \cdot 10^{-6} \\
