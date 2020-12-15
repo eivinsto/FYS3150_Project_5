@@ -613,7 +613,7 @@ and that $u_n$ is no longer handled as a special case. By these simple adaptatio
 
 \subsection{Analytical solution of diffusion equation in two dimensions} \label{sec:formalism_2D_diff_eq_analytical}
 
-The equation we wish to solve is to two-dimensional diffusion equation:
+The equation we wish to solve is the two-dimensional diffusion equation:
 
 \begin{align*}
 \frac{\partial^2 u(x,y,t)}{\partial x^2} + \frac{\partial^2 u(x,y,t)}{\partial y^2} &= \frac{\partial u(x,y,t)}{\partial t} \numberthis \label{eq:2D_diffusion_equation}
@@ -671,13 +671,13 @@ where:
 
 \begin{align*}
 X'' &= \frac{\partial^2 X}{\partial x^2} \\
-Y'' &= \frac{\partial^2 Y}{\partial y^2}
+Y'' &= \frac{\partial^2 Y}{\partial y^2} \, .
 \end{align*}
 
 As $X$ is only dependent on $x$ and $Y$ only dependent on $y$, this means that:
 
 \begin{align*}
-\frac{X''}{X} &= - \frac{Y''}{Y} - \lambda^2 &= \text{constant}
+\frac{X''}{X} &= - \frac{Y''}{Y} - \lambda^2 = \text{constant} \, .
 \end{align*}
 
 We define this constant to be $-\mu^2$. And we also define $\nu^2 = \lambda^2 - \mu^2$. This gives us the following set of differential equation:
@@ -713,15 +713,15 @@ g(x,y) &= u(x,y,0) \\
 g(x,y) &= \sum\limits_{n=1}^\infty \sum\limits_{m=1}^\infty A_{n,m} \sin (\frac{n\pi}{L} x)  \sin (\frac{m\pi}{L} y)
 \end{align*}
 
-Similarly to the one-dimensional case, this is reminiscent of a Fourier transform. As $x$ and $y$ are independent, we can find the coefficients $A_{n,m}$ as:
+Similarly to the one-dimensional case, this is reminiscent of a Fourier expansion. As $x$ and $y$ are independent, we can find the coefficients $A_{n,m}$ as:
 
 \begin{align*}
 A_{n,m} &= \frac{4}{L^2} \int_0^L \int_0^L g(x,y) \sin( \frac{n\pi}{L} x) \sin (\frac{m\pi}{L} y) \, dx \, dy \numberthis \label{eq:2D_diffusion_equation_analytical_coefficients}
 \end{align*}
 
-This lets us determine the analytical solution in two dimensions for any initial state $g(x,y)$ such that this integral is solvable, with Dirichlet boundary conditions.
+This lets us determine the analytical solution in two dimensions with Dirichlet boundary conditions for any initial state $g(x,y)$ such that this integral is solvable.
 
-Again, similarly to the one dimensional case, we can extend this solution for general time-independent boundary conditions. If the boundary conditions are independent of time we can simply add the steady-state function of that system to the solution with Dirichlet boundary conditions:
+Again, similarly to the one-dimensional case, we can extend this solution for general time-independent boundary conditions. If the boundary conditions are independent of time we can simply add the steady-state function of that system to the solution with Dirichlet boundary conditions:
 
 \begin{align*}
 u(x,y,t) = v(x,y,t) + f(x,y) \, ,
@@ -741,7 +741,7 @@ constrained by the boundary conditions specified. As long as the Laplace equatio
 \nabla^2 v(x,y,t) &= \frac{\partial v(x,y,t)}{\partial t} \, ,
 \end{align*}
 
-where we have used that the Laplace equation holds for $f(x,y)$ and that it is independent of time. Finding a general steady state solution is not as easy as in the one-dimensional case, however, as the boundaries need to be well defined at the corners. In order for this to be the case, the boundary conditions for at least one of the spatial coordinates has to depend on the other spatial coordinate if we assume the boundary values to be non-zero. 
+where we have used that the Laplace equation holds for $f(x,y)$ and that it is independent of time. Finding a general steady state solution is not as easy as in the one-dimensional case, however, as the boundary conditions generally will only be constant with respect to one of the spatial coordinates unless they are all equal to the same constant value. This has to be the case in order for the boundary conditions to be continuous in the corners. Note that it is also possible for the boundaries in one of the spatial dimensions to be constant and unequal to eachother, but this then automatically demands that the boundary counditions in the other spatial dimension cannot be constant with respect to both spatial coordinates.
 
 
 
@@ -757,7 +757,7 @@ y_j &= j h \,\,\,\quad 0 \leq j \leq n+1 \\
 t_l &= l \Delta t \quad 0 \leq l \, ,
 \end{align*}
 
-where $h = 1/(n+1)$, $n$ a selected integer, and $\Delta t$ a selected float. We denote a value of the solution $u$ by the indices $i$, $j$ and $l$ as follows:
+where $h = 1/(n+1)$, $n+2$ is the number of gridpoints, and $\Delta t$ is the timestep. We denote a value of the solution $u$ by the indices $i$, $j$ and $l$ as follows:
 
 \begin{align*}
 u_{i,j}^l = u(x_i,y_j,t_l)
@@ -802,7 +802,9 @@ this method can be formulated as:
 x^{k+1} = D^{-1}(b - (L+U)x^k) \, , \numberthis \label{eq:jacobi_iterative_method}
 \end{align*}
 
-where $A = D + U + L$, $D$ is a diagonal matrix, $U$ an upper triangular matrix, $L$ a lower triangular matrix, and $k$ denotes the iteration. This is iterated until $x^k$ is sufficiently close to $x^{k+1}$, which is usually marked as the case when the sum of the square of the elements of $x^{k+1} - x^k$ is less than a specified tolerance limit. 
+where $A = D + U + L$, $D$ is a diagonal matrix, $U$ an upper triangular matrix, $L$ a lower triangular matrix, and $k$ denotes the iteration. This is iterated until $x^k$ is sufficiently close to $x^{k+1}$, which can be said to be the case when the absolute difference between all of their elements is less than a specified tolerance limit.
+
+%is usually marked as the case when the sum of the square of the elements of $x^{k+1} - x^k$ is less than a specified tolerance limit. 
 
 %If we instead define the elements of each of these matrices as the $d^{-1}_{i,j}$ for $D^{-1}$, $v_{i,j}$ for $U$ and $l_{i,j}$ for $L$ we can rewrite this equation as:
 
@@ -815,7 +817,7 @@ x^{k+1}_i &= \frac{1}{a_{ii}} ( b_i - \sum\limits_i \sum\limits_{j\neq i} a_{i,j
 This can be adapted to a two-dimensional case by adding more indices to $a$:
 
 \begin{align*}
-x_{i,j}^{k+1} &= \frac{1}{a_{i,j,i,j}} (b_{i,j} - \sum\limits_i \sum\limits_j \sum\limits_{m\neq i} \sum\limits_{n \neq j} a_{i,j,m,n} x_{i,j}^k ) \, ,
+x_{i,j}^{k+1} &= \frac{1}{a_{i,j,i,j}} (b_{i,j} - \sum\limits_i \sum\limits_j \sum\limits_{m\neq i} \sum\limits_{n \neq j} a_{i,j,m,n} x_{m,n}^k ) \, ,
 \end{align*}
 
 where $a_{i,j,i,j}$ equates to the "diagonal elements" in this case. We wish to adopt this iterative scheme to solve the 2D diffusion equation as it is given in \eqref{eq:2D_diff_eq_numerical_solution}. This equation is already nearly on the form of what we need for the iterative scheme if we set:
@@ -823,7 +825,7 @@ where $a_{i,j,i,j}$ equates to the "diagonal elements" in this case. We wish to 
 \begin{align*}
 x_{i,j} &= u_{i,j}^l \\
 b_{i,j} &= u_{i,j}^{l-1} \\
-\alpha \Delta_{i,j}^l &= -\sum\limits_m \sum\limits_n a_{i,j,m,n}  u_{i,j}^l
+\alpha \Delta_{i,j}^l &= -\sum\limits_m \sum\limits_n a_{i,j,m,n}  u_{m,n}^l
 \end{align*} 
 
 We can then also add the iteration index $k$, in order to obtain the equation that we iterate:
