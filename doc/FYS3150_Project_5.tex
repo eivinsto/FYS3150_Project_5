@@ -160,13 +160,13 @@ By scaling variables, we can write the general diffusion equation as follows:
 \nabla^2 u(\vec{r},t) = \frac{\partial u(\vec{r},t)}{\partial t} \, , \numberthis \label{eq:3D_diff_eq}
 \end{align*}
 
-where $\nabla$ is the spatial derivative, $\vec{r}$ a vector containing spatial coordinates, $t$ is time, and what $u$ is depends on which system we are looking it in particular. This equation can be used to model several physical phenomena, such as mixing of particles, and perhaps most famously heat conductance through the heat equation:
+where $\nabla$ is the spatial derivative, $\vec{r}$ a vector containing spatial coordinates, $t$ is time, and what $u$ is depends on which system we are looking it in particular. This equation can be used to model several physical phenomena, such as mixing of particles, and perhaps most famously heat transfer through the heat equation:
 
 \begin{align*}
 \frac{k}{c_p \rho} \nabla^2 T(\vec{r},t) = \frac{\partial T (\vec{r},t)}{\partial t} \, , \numberthis \label{eq:heat_equation_general}
 \end{align*}
 
-where $k$ is the thermal conductivity, $c_p$ is the specific heat, $\rho$ is the density of the material, and $T$ is the temperature gradient. This is an equation that we will use, and so we need to scale it. Firstly we can define the diffusion constant $D = c_p \rho / k$. This means we can write the heat equation as:
+where $k$ is the thermal conductivity, $c_p$ is the specific heat, $\rho$ is the density of the material, and $T$ is the temperature gradient. We show this now as an example of how such equations can be scaled. Even though we will use it later on we will do so in two dimensions with some further constraints that makes it so that we have to scale it differently. Firstly we can define the diffusion constant $D = c_p \rho / k$. This means we can write the heat equation as:
 
 \begin{align*}
 \nabla^2 T(\vec{r},t) &= D \frac{\partial T(\vec{r},t)}{\partial t}
@@ -175,13 +175,13 @@ where $k$ is the thermal conductivity, $c_p$ is the specific heat, $\rho$ is the
 Now we define the spatial coordinate vector $\vec{r} = \alpha \hat{\vec{r}}$, where $\alpha$ is an arbitrary constant. Substituting this affects the spatial derivative such that the equation now reads:
 
 \begin{align*}
-\frac{1}{\alpha^2} \nabla^2 T(\vec{r},t) &= D \frac{\partial T(\vec{r},t)}{\partial t}
+\frac{1}{\alpha^2} \nabla^2 T(\hat{\vec{r}},t) &= D \frac{\partial T(\hat{\vec{r}},t)}{\partial t}
 \end{align*}  
 
 As $\alpha$ is an arbitrary constant we can now choose it such that $D = 1/\alpha^2$. The equation then reads:
 
 \begin{align*}
-\nabla^2 T(\vec{r},t) &= \frac{\partial T(\vec{r},t)}{\partial t} \, ,
+\nabla^2 T(\hat{\vec{r}},t) &= \frac{\partial T(\hat{\vec{r}},t)}{\partial t} \, ,
 \end{align*}
 
 which is just the general diffusion equation we have listed earlier, with $u$ exchanged for $T$. In other words, if we can solve the general diffusion equation, we can also solve the heat equation.
@@ -275,7 +275,7 @@ This is the expression for a Fourier expansion of $g(x)$, and we can thus determ
 A_n &= \frac{2}{L} \int_0^L g(x) \sin (\frac{n\pi}{L} x) \, dx
 \end{align*}
 
-We can also adapt our solution for different boundary conditions. In most cases we assume the the boundary values are constants $u(0,t) = a$, $u(L,t) = b$ where $a$ and $b$ are constants. If we assume there to be a steady state solution $f(x)$ fitting these boundary conditions, then we can write $u(x,t) = v(x,t) + f(x)$, where $v(x,t)$ is the solution of the differential equation when the boundary conditions are zero. The steady state solution is determined by solving the Laplace equation:
+We can also adapt our solution for different boundary conditions. In most cases we assume the the boundary values are constants $u(0,t) = a$, $u(L,t) = b$ where $a$ and $b$ are constants. If we assume there to be a steady state solution $f(x)$ fitting these boundary conditions, then we can write $u(x,t) = v(x,t) + f(x)$, where $v(x,t)$ is the solution of the diffusion equation with Dirichlet boundary conditions. The steady state solution is determined by solving the Laplace equation:
 
 \begin{align*}
 \frac{\partial^2 f(x)}{\partial x^2} &= 0 
@@ -334,7 +334,7 @@ u_{xx} = u_t \, ,
 where the subscripts denote a partial derivative with respect to the variable in the subscript. The spatial derivative part of this equation can be approximated:
 
 \begin{align*}
-u_{xx} &= \frac{u(x + \Delta x,t) - 2u(x,t) + u(x-\Delta x,t)}{\Delta x^2} + \mathcal{O}(\Delta x^2)
+u_{xx} &= \frac{u(x + \Delta x,t) - 2u(x,t) + u(x-\Delta x,t)}{\Delta x^2} + \mathcal{O}(\Delta x^2) \, .
 \end{align*}
 
 We also need to approximate the time derivative part, and we can do this in one of two ways, either using the forward approximation of the derivative:
@@ -362,7 +362,13 @@ x_i &= i \Delta x \quad 0 \leq i \leq n+1 \\
 t_j &= j \Delta t \quad 0 \leq j \, ,
 \end{align*}
 
-with both $i,j$ being positive integers or zero. By denoting $u$ with subscripts $i$ and $j$ we can thus express which set of $x$ and $t$ it is evaluated at. We can then rewrite the spatial approximation:
+with both $i,j$ being positive integers or zero. We define the following short-hand notation:
+
+\begin{align*}
+u_{i,j} = u(x_i,t_j) \, .
+\end{align*}
+
+We can then rewrite the spatial approximation using this notation:
 
 \begin{align*}
 u_{xx} &\approx \frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta x^2} \, ,
@@ -377,7 +383,7 @@ u_t &\approx \frac{u_{i,j+1} - u_{i,j}}{\Delta t} \, ,
 and the backwards time approximation:
 
 \begin{align*}
-u_t &\approx \frac{u_{i,j}- u_{i,j-1}}{\Delta t}
+u_t &\approx \frac{u_{i,j}- u_{i,j-1}}{\Delta t} \, .
 \end{align*}
 
 Now, we set up the diffusion equation using the forward approximation in time first:
@@ -389,7 +395,7 @@ u_{i,j+1} &= u_{i,j} + \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} +
 u_{i,j+1} &= u_{i,j} + \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \, ,\numberthis \label{eq:forward_euler_method}
 \end{align*}
 
-where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. At this point we make the assumption that the boundary conditions are zero. By the arguments given in \ref{sec:formalism_1D_diff_eq_analytical} this can easily be extended to constant boundary conditions by use of the steady state solution of the problem. Implementing a numerical solution for other boundary conditions is not difficult either, as the only requirement we must have is that the solver cannot modify the boundary values outside to anything else than what is specified by the boundary conditions. Assuming Dirichlet boundary conditions simplify the calculaton of the condition for convergence, and so we keep them in this section.
+where $\alpha = \Delta t /\Delta x^2$ (not to be confused with the constant used earlier). It is clear that if we know the initial state and boundary conditions of this system that we can move the system ahead in time using the equation above. At this point we make the assumption that the boundary conditions are zero. By the arguments given in \hyperref[sec:formalism_1D_diff_eq_analytical]{II.B} this can easily be extended to constant boundary conditions by use of the steady state solution of the problem. Implementing a numerical solution for other boundary conditions is not difficult either, as the only requirement we must have is that the solver cannot modify the boundary values outside to anything else than what is specified by the boundary conditions. Assuming Dirichlet boundary conditions simplify the calculaton of the condition for convergence, and so we keep them in this section.
 
 The equation above gives directly the solution in the next timestep, and thus this is an explicit scheme. This can also be rewritten as a matrix vector equation by using $U_j = [u_{1,j} \quad u_{1,j} \quad ... \quad u_{n,j} ] ^T$. And the matrix:
 
@@ -406,7 +412,7 @@ A_\text{f} &= \begin{bmatrix}
 where the subscript f denotes that this is the scheme based on the forward Euler method. This gives us that the explicit scheme can be described by the matrix-vector equation:
 
 \begin{align*}
-U_{j+1} &= A_\text{f} U_{j}
+U_{j+1} &= A_\text{f} U_{j} \, .
 \end{align*}
 
 Note that if we know the solution at a previous timestep $U_j$ we can directly determine the solution in the next timestep $U_{j+1}$, and thus we do not need to solve this matrix-vector equation per se. It is just a practical way of denoting things that we will get back to. The vector $U_j$ does not contain the boundary elements $u_{0,j}$ and $u_{n+1,j}$ as they are generally assumed to be zero.
@@ -417,7 +423,7 @@ Using the backwards time approximation in a similar fashion gives us the followi
 u_t &= u_{xx} \\ 
 \frac{u_{i,j} - u_{i,j-1}}{\Delta t} &= \frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta x^2} \\
 u_{i,j-1} &= u_{i,j} - \frac{\Delta t}{\Delta x^2} \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \\
-u_{i,j-1} &= u_{i,j} - \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \numberthis \label{eq:backward_euler_method}
+u_{i,j-1} &= u_{i,j} - \alpha \bigg( u_{i+1,j} - 2u_{i,j} + u_{i-1,j} \bigg) \, . \numberthis \label{eq:backward_euler_method}
 \end{align*}
 
 As we cannot directly determine the solution in the next timestep from this equation, this is an implicit scheme, and we must formulate a way we can solve this equation. We can write down the above equation as a matrix-vector equation by using the same vector $U_j$ as earlier and the matrix:
@@ -436,11 +442,11 @@ where the subscript b denotes that this is the matrix based on the backwards Eul
 
 \begin{align*}
 U_{j-1} &= A_\text{b} U_j \\
-A_\text{b}^{-1} &= U_j
+A_\text{b}^{-1} U_{j-1} &= U_j \, .
 \end{align*}
 
 
-In order to determine the solution in the next timestep $j$ it is thus necessary to solve this matrix-vector equation. This can be done in a multitude of ways, but the simplest way of solving this is that this matrix is tridiagonal if we exclude the boundaries. Thus we can use a solver for a tridiagonal matrix, as long as we handle the boundaries correctly as a special case. Solving the equation as such greatly reduces the computational cost of solving the problem compared to a general matrix inversion.
+In order to determine the solution in the next timestep $j$ it is thus necessary to solve this matrix-vector equation. This can be done in a multitude of ways, but the simplest way of solving this is by recognizing that this matrix is tridiagonal if we exclude the boundaries, and that we can thus use a specialized solver for such a matrix-vector equation (see Section \hyperref[sec:formalism_tridiagonal_solver]{II.C.4}). Solving the equation as such greatly reduces the computational cost of solving the problem compared to a general matrix inversion.
 
 We also wish to examine the convergence of these schemes. By defining the matrix:
 
@@ -454,7 +460,7 @@ B &= \begin{bmatrix}
 \end{bmatrix} \, , \numberthis \label{eq:matrix_B}
 \end{align*}
 
-we can rewrite $A_\text{f} = I - 2B$ and $A_\text{b} = I + 2B$. First we look at the explicit scheme.
+we can rewrite $A_\text{f} = I - \alpha B$ and $A_\text{b} = I + \alpha B$. First we look at the explicit scheme.
 
 For the solution to converge we need the spectral radius to be less than one. The spectral radius of a matrix is the absolute of the largest eigenvalue of the matrix. Thus we need to find the eigenvalues of $A_\text{f}$, $\lambda$. Since $A_\text{f} = I - \alpha B$ it is obvious that it has eigenvalues $\lambda_{k} = 1 - \alpha \mu_k$ where $\mu$ are the eigenvalues of $B$ and the subscript $k$ denotes which eigenvalue we are looking at. The eigenvalues of $B$ are (\cite[p.~307]{Hjorth-Jensen2015}):
 
@@ -483,7 +489,7 @@ The right-hand side can never be smaller than $1/2$, which gives us that $\alpha
 \frac{\Delta t}{\Delta x^2} &\leq \frac{1}{2} \, , \numberthis \label{eq:forward_euler_convergence}
 \end{align*}
 
-In order to determine the condition for convergence with the implicit scheme we need that $\rho(A_\text{b}^{-1}) < 1$. This is the case if $\rho(A_\text{b}) > 1$. As we can write $A_\text{b} = I + 2B$, we can infer that the eigenvalues of $A_\text{b}$ are $\lambda_k = 1 + 2\alpha \mu_k = 1 + 2\alpha (1 - \cos(k\pi/n + 1) )$ which is always greater than one. Thus the spectral radius $\rho(A_\text{b})$ is always greater than one, and the solutions converges for any choice of $\alpha$. 
+In order to determine the condition for convergence with the implicit scheme we need that $\rho(A_\text{b}^{-1}) < 1$. This is the case if $\rho(A_\text{b}) > 1$. As we can write $A_\text{b} = I + \alpha B$, we can infer that the eigenvalues of $A_\text{b}$ are $\lambda_k = 1 + 2\alpha \mu_k = 1 + 2\alpha (1 - \cos(k\pi/n + 1) )$ which is always greater than one. Thus the spectral radius $\rho(A_\text{b})$ is always greater than one, and the numerical solution converges for any choice of $\alpha$. 
 
 
 \subsubsection{Crank-Nicolson scheme} \label{sec:formalism_crank_nicolson}
@@ -495,7 +501,7 @@ The two schemes outlined above can be combined into a single scheme using a para
 - 2u_{i,j-1} + u_{i-1,j-1} \bigg) &= \frac{1}{\Delta t} \bigg( u_{i,j} - u_{i,j-1} \bigg) \numberthis \label{eq:theta_rule}
 \end{align*}
 
-We recognize that by setting $\theta=0$ this returns the explicit scheme, and that it returns the implicit scheme when $\theta = 1$. If we set $\theta = 1/2$, however, we get what is called the Crank-Nicolson scheme. By using $\alpha = \Delta t / \Delta x^2$ we can in this case rewrite the equation above as:
+We recognize that by setting $\theta=0$ this returns the explicit scheme, and that it returns the implicit scheme when $\theta = 1$. If we set $\theta = 1/2$, however, we get the Crank-Nicolson scheme. By using $\alpha = \Delta t / \Delta x^2$ we can in this case rewrite the equation above as:
 
 \begin{align*}
 &-\alpha u_{i-1,j} + (2 + 2 \alpha) u_{i,j} - \alpha u_{i+1,j} \\
@@ -533,7 +539,7 @@ In order to easily refer to the errors and convergence requirements for each sch
 
 \begin{table}[H]
 \centering
-\caption{This table lists the truncation and errors and stability requirements in the three numerical schemes (see Section \ref{sec:formalism_numerical_1D}) used for solving the one-dimensional diffusion equation as they relate to the timestep $\Delta t$ and the steplength $\Delta x$.} \label{table:schemes_conv_and_err_1D}
+\caption{This table lists the truncation and errors and stability requirements in the three numerical schemes (see Section \hyperref[sec:formalism_numerical_1D]{II.C}) used for solving the one-dimensional diffusion equation as they relate to the timestep $\Delta t$ and the steplength $\Delta x$.} \label{table:schemes_conv_and_err_1D}
 \begin{tabular}{|c|c|c|c|}
 \hline
 Scheme: & Truncation error: & Stability requirements: \\
@@ -549,7 +555,7 @@ Crank-Nicolson & $\mathcal{O}(\Delta t^2)$ and $\mathcal{O}(\Delta x^2)$ & None 
 
 \subsubsection{Tridiagonal solver} \label{sec:formalism_tridiagonal_solver}
 
-In the previous sections we have mentioned that we can use a tridiagonal solver to solve the matrix-vector equations we get. Given a tridiagonal matrix where the elements are constant along the diagonal bands, except for the first and last rows:
+In the previous sections we have mentioned that we can use a tridiagonal solver to solve the matrix-vector equations we get. We define a tridiagonal matrix where the elements are constant along the diagonal bands:
 
 \begin{align*}
 A &= \begin{bmatrix}
@@ -558,37 +564,50 @@ a & b & c &   \cdots & 0 \\
 \vdots & \ddots & \ddots & \ddots & \vdots \\
 0 & \cdots  & a & b & c \\
 0 & \cdots & \cdots  & a & b \\
-\end{bmatrix} \numberthis \label{eq:tridiag_matrix}
+\end{bmatrix} \, , \numberthis \label{eq:tridiag_matrix}
 \end{align*}
 
-If the matrix-vector equation is:
+and the matrix-vector equation that we need to solve:
 
 \begin{align*}
 Au = f \, ,
 \end{align*}
 
-where $u$ and $f$ are vectors. Assuming that we know $f$ as well, we can find the components of $u$ by first finding:
+where $u$ and $f$ are vectors. Dirichlet boundary conditions are assumed such that $u_0 = u_{n+1} = 0$, and that these components are thus not included in the vector $u$. Assuming that we know $f$ as well, we can find the components of $u$ by first finding:
 
 \begin{align*}
 \tilde{b}_i = b - \frac{ac}{\tilde{b}_{i-1}} \\
 \tilde{f}_i = f_i - \frac{\tilde{f}_{i-1} a}{\tilde{b}_{i-1}} \, , \numberthis \label{eq:tridiag_forward}
 \end{align*}
 
-where the subscript $i$ indicates component $i$. We can then find the components of $u$ as:
+where the subscript $i$ indicates which component of the vectors we are looking at. The first components need to be handled separately:
 
 \begin{align*}
-u_i &= \frac{\tilde{f}_i - c u_{i+1}}{\tilde{b}_{i-1}} \, . \numberthis \label{eq:tridiag_backward}
+\tilde{b}_1 &= b \\
+\tilde{f}_1 &= f_1 \, .
+\end{align*}
+
+We can then find the components of $u$ as:
+
+\begin{align*}
+u_i &= \frac{\tilde{f}_i - c u_{i+1}}{\tilde{b}_{i}} \, , \numberthis \label{eq:tridiag_backward}
+\end{align*}
+
+where the endpoint is found separately as:
+
+\begin{align*}
+u_n &= \frac{\tilde{f}_n}{\tilde{b}_n} \, .
 \end{align*}
 
 This can be performed as first a forward iteration to find $\tilde{b}_i$ and $\tilde{f}_i$, and a backwards iteration to find $u_i$. This iterative solver is discussed in more detail in \citep{Project1}.
 
-This assumes that the boundary conditions are zero, but if they are not a simple adaptation can be made to accommodate this. If we assume that the boundary values $u_0$ and $u_{n+1}$ are known, non-zero values (which also means we have to exclude these indices from the iterations above), we need to use that:
+This solution assumes Dirichlet boundary conditions, but if they are non-zero a simple adaptation can be made to accommodate this. If we assume that the boundary values $u_0$ and $u_{n+1}$ are known, non-zero values (which also means we have to exclude these indices from the iterations above), we need to use that:
 
 \begin{align*}
-\tilde{f}_1 = f_1 - au_0 \, .
+\tilde{f}_1 &= f_1 - au_0 \, ,
 \end{align*} 
 
-By this simple adaptation the solver now works for non-zero boundary conditions.
+and that $u_n$ is no longer handled as a special case. By these simple adaptations the solver now works for non-zero boundary conditions.
 
 
 
