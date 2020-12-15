@@ -517,7 +517,7 @@ Equation \eqref{eq:crank_nicolson} can be rewritten as a matrix-vector equation 
 U_j &= (2I + \alpha B)^{-1} (2I - \alpha B) U_{j-1} \numberthis \label{eq:crank_nicolson_matrix}
 \end{align*}
 
-In other words a matrix inversion is required in order to find the solution in the next timestep. This means that this scheme is an implicit one. First we need to multiply the previous solution with the matrix $(2I - \alpha B)$, which is straightforward. After that we need to find the inverse of $(2I + \alpha B)$ and apply this. As this matrix is tridiagonal we can use a tridiagonal solver for this operation. Thus the numerical solution of this scheme can be split into two parts, one which functions similar to the way in which the solver for the forward Euler based explicit scheme, and a second part that functions similarly to the solver for the backwards Euler based implicit scheme.
+In other words a matrix inversion is required in order to find the solution in the next timestep. This means that this scheme is an implicit one. First we need to multiply the previous solution with the matrix $(2I - \alpha B)$, which is straightforward. After that we need to find the inverse of $(2I + \alpha B)$ and apply this. As this matrix is tridiagonal we can use a tridiagonal solver for this operation. Thus the numerical solution of this scheme can be split into two parts, one which functions similar to the solver for the forward Euler based explicit scheme, and a second part that functions similarly to the solver for the backwards Euler based implicit scheme.
 
 The solution with the Crank-Nicolson scheme converges if the spectral radius:
 
@@ -1131,7 +1131,7 @@ Q' &\approx Q \cdot \num{3.15e16} \cdot \num{2.86e-7} \text{ } \frac{\text{K m}^
 Q' &\approx Q \cdot 9000 \text{ } \frac{\text{K m}^3}{\text{J}} \, , \numberthis \label{eq:parameters_heat_transform}
 \end{align*}
 
-which makes it so that $Q'$ is in units of K/Gy as we wish. 
+which makes it so that $Q'$ is in units of K/Gy as wanted. 
 
 
 
