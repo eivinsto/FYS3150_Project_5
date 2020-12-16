@@ -129,13 +129,14 @@
 \noaffiliation                            % ignore this
 
 \begin{abstract}
-We solved the general diffusion equation numerically in one and two dimensions. Comparison between numerical and analytical results showed a good level of agreement, and thus we conclude that the solvers work as intended. To solve the one-dimensional diffusion equation three different schemes were used: a forward Euler based explicit scheme, a backward Euler based implicit scheme and the Crank-Nicolson (implicit) scheme. The explicit scheme was clearly better suited for the problem we applied our solvers to, but when simulating systems that require a high resolution in the spatial coordinate, the timestep must be very small for the solution to be stable. Therefore implicit schemes may be a better choice due to computational cost as they converge for any choice of timestep. The simulation of the temperature distribution in the lithosphere showed results as we expected, with the temperatures increasing due to the radioactive elements introduced as heat sources in the heat equation. Our results can be compared with measurements in order to assert whether or not the subduction zone off the western coast of Norway caused a further enrichment of the upper mantle 1 Gy ago.
+We solved the general diffusion equation numerically in one and two dimensions. Comparison between numerical and analytical results showed a good level of agreement, and thus we conclude that the solvers work as intended. To solve the one-dimensional diffusion equation three different schemes were used: a forward Euler based explicit scheme, a backward Euler based implicit scheme and the Crank-Nicolson (implicit) scheme. The explicit scheme was clearly better suited for the problem we applied our solvers to, but when simulating systems that require a high resolution in the spatial coordinate, the timestep must be very small for the solution to be stable. Therefore implicit schemes may be a better choice due to computational cost as they converge for any choice of timestep. The two-dimensional solver used Jacobi's iterative method, and our test-simulation showed good correspondance with an analytic solution. The simulation of the temperature distribution in the lithosphere showed results as we expected, with a temperature increase of \(25-100^{\circ}\)C at a depth of \(10-\SI{30}{\kilo\metre}\) due to the radioactive elements introduced as heat sources in the heat equation. Our results could potentially be compared with measurements in order to assertain whether the subduction zone off the western coast of Norway enriched the upper mantle 1 Gy ago.
 \end{abstract}
 
 \maketitle                                % creates the title, author, date
 
 
 \tableofcontents
+\newpage
 
 \section{Introduction} \label{sec:introduction}
 
